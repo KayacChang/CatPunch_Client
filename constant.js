@@ -15,6 +15,7 @@ const sourceDir = resolve(rootPath, 'src');
 const baseDir = resolve(rootPath, 'base');
 const toolDir = resolve(rootPath, 'tools');
 const productDir = resolve(rootPath, 'dist');
+const assetsDir = resolve(rootPath, 'assets');
 
 //  Public Path
 const publicPath = '/';
@@ -29,4 +30,5 @@ module.exports = readOnly({
   getBaseDir: baseDir,
   getToolDir: toolDir,
   getProductDir: productDir,
+  getAssetsDir: assetsDir,
 });

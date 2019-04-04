@@ -4,6 +4,7 @@ const {ProgressPlugin, optimize} = require('webpack');
 const {ModuleConcatenationPlugin} = optimize;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CSPHtmlWebpackPlugin = require('csp-html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 //  Path
 const {mapObjIndexed, call} = require('ramda');
@@ -13,6 +14,7 @@ const {
   getPublicPath: publicPath,
   getBaseDir: baseDir,
   getToolDir: toolDir,
+  getAssetsDir: assetsDir,
 } = mapObjIndexed(call)(require('../constant'));
 
 //  Exports
@@ -78,6 +80,10 @@ module.exports = function(...args) {
       }),
 
       new CSPHtmlWebpackPlugin(),
+
+      new CopyWebpackPlugin([
+        {from: assetsDir, to: resolve(publicPath, 'assets')},
+      ]),
 
     ],
     //  END ============================================

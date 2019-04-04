@@ -4,4 +4,9 @@ module.exports = {
     "plugins": [
         "flowtype"
     ],
+    "rules": {
+        "require-jsdoc": "off",
+        "indent": ["error", 4],
+        "new-cap": "off"
+    }
 };

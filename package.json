@@ -9,7 +9,7 @@
     "build": "npm run clean && NODE_ENV=production npm run webpack -- --env.mode=production",
     "watch": "npm run clean && NODE_ENV=development npm run webpack -- --env.mode=development --watch",
     "dev-server": "webpack-dev-server --config ./tools/build.js",
-    "start": "npm run clean && NODE_ENV=development npm run dev-server -- --env.mode=development --open",
+    "start": "NODE_ENV=development npm run dev-server -- --env.mode=development --open",
     "chrome": "open -a 'Google Chrome' http://localhost:3000",
     "local-server": "node ./server/main.js -- --PORT=3000 --mode=development",
     "server": "sleep 1 && npm run chrome & NODE_ENV=development npm run local-server"
@@ -23,7 +23,8 @@
     "@babel/preset-flow": "^7.0.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
-    "csp-html-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^5.0.2",
+    "csp-html-webpack-plugin": "^3.0.1",
     "eslint": "^5.13.0",
     "eslint-config-google": "^0.12.0",
     "eslint-loader": "^2.1.2",
@@ -41,6 +42,9 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
-    "core-js": "^2.6.4"
+    "animejs": "^3.0.1",
+    "core-js": "^2.6.4",
+    "npm": "^6.9.0",
+    "pixi.js": "^4.8.7"
   }
 }
