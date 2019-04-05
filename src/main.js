@@ -26,6 +26,11 @@ function loadResources() {
         .add('assets/flowerTop.png')
         .add('assets/helmLok.png')
         .add('assets/skully.png')
+        .add('assets/panda.png')
+        .add('assets/object01.png')
+        .add('assets/object02.png')
+        .add('assets/object03.png')
+        .add('assets/object04.png')
         .load(onCreate);
 }
 

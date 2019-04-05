@@ -14,5 +14,25 @@
   {
     "name": "skully",
     "url": "assets/skully.png"
+  },
+  {
+    "name": "panda",
+    "url": "assets/panda.png"
+  },
+  {
+    "name": "object01",
+    "url": "assets/object01.png"
+  },
+  {
+    "name": "object02",
+    "url": "assets/object02.png"
+  },
+  {
+    "name": "object03",
+    "url": "assets/object03.png"
+  },
+  {
+    "name": "object04",
+    "url": "assets/object04.png"
   }
 ]

@@ -5,22 +5,23 @@ import {
 
 import anime from 'animejs';
 
-import {pipe, map} from 'ramda';
+import {pipe, map, addIndex} from 'ramda';
 
-const {defineProperty} = Object;
+const mapIndexed = addIndex(map);
+
+const {defineProperties} = Object;
 
 import payTable from './payTable';
-
 
 /**
  * Mapping id => texture using payTable.
  *
- * @param {number} id
+ * @param {number} icon
  * @return {PIXI.Texture}
  */
-function SymbolTexture(id: number) {
+function SymbolTexture(icon: number) {
     return app.loader
-        .resources[payTable[id].url]
+        .resources[payTable[icon].url]
         .texture;
 }
 
@@ -28,24 +29,29 @@ function SymbolTexture(id: number) {
  * Abstraction for Slot Symbol.
  * Take specify id to switch Symbol Texture.
  *
- * @param {number} id
+ * @param {number} icon
  * @return {PIXI.Sprite}
  */
-function SlotSymbol(id: number): Sprite {
-    const it = new Sprite(SymbolTexture(id));
+function SlotSymbol(icon: number): Sprite {
+    const it = new Sprite(SymbolTexture(icon));
 
     it.anchor.set(0.5, 0.5);
 
-    defineProperty(it, 'id', {
-        get() {
-            return id;
-        },
-        set(newId) {
-            id = newId;
-
-            it.texture = SymbolTexture(id);
+    defineProperties(it, {
+        icon: {
+            get() {
+                return icon;
+            },
+            set(newIcon) {
+                icon = newIcon;
+                it.texture = SymbolTexture(icon);
+            },
         },
     });
+
+    it.setY = (newY) => {
+        it.y = newY;
+    };
 
     return it;
 }
@@ -60,13 +66,17 @@ function SlotReel(symbols = []) {
     const it = new Container();
 
     const SYMBOL_HEIGHT = 160;
-    const OFFSET_HEIGHT = SYMBOL_HEIGHT / 2;
+    const OFFSET_HEIGHT = SYMBOL_HEIGHT / 2 - SYMBOL_HEIGHT;
 
     const getY =
         (value) => value * SYMBOL_HEIGHT + OFFSET_HEIGHT;
 
+    it.symbols = symbols;
+
     symbols.map(
-        (symbol, index) => symbol.y = getY(index));
+        (symbol, index) => {
+            symbol.setY(getY(index));
+        });
 
     it.addChild(...symbols);
 
@@ -77,26 +87,35 @@ function SlotReel(symbols = []) {
      */
 
     let reelPos = 0;
-    defineProperty(
-        it, 'reelPos', {
+    defineProperties(it, {
+        reelPos: {
             get() {
                 return reelPos;
             },
             set(newPos) {
-                update(newPos);
                 reelPos = newPos;
+                update(reelPos);
             },
-        });
+        },
+    });
 
     function update(position) {
         symbols.map((symbol, index) => {
             const displayPos = (index + position) % symbols.length;
 
-            symbol.y = getY(displayPos);
+            symbol.setY(getY(displayPos));
+
+            if (Math.trunc(displayPos) === 0) {
+                symbol.emit('ReadyToChange');
+            }
         });
     }
 
     return it;
+}
+
+function getRamdonInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
 }
 
 function SlotMachine(reelTable) {
@@ -110,7 +129,11 @@ function SlotMachine(reelTable) {
 
     //  Reels Initialize
     const reels = map(pipe(
-        map(SlotSymbol),
+        mapIndexed((icon, index) => {
+            const symbol = SlotSymbol(icon);
+
+            return symbol;
+        }),
         SlotReel,
     ))(reelTable);
 
@@ -123,23 +146,43 @@ function SlotMachine(reelTable) {
 
     return it;
 
-    function play() {
+    function play(result) {
         reels.map(function(reel, index) {
             const it = anime({
                 targets: reel,
-                reelPos: '+=' + 40,
+                reelPos: '+=' + 50,
                 easing: 'easeInOutQuad',
-                duration: 4000,
+                duration: 5000,
             });
 
             setTimeout(function() {
+                let counter = (reel.symbols.length - 1);
+
+                reel.symbols
+                    .map((symbol) => {
+                        symbol.once('ReadyToChange', function() {
+                            counter--;
+
+                            const icon = result[index][counter];
+
+                            symbol.icon = (icon === undefined) ?
+                                getRamdonInt(payTable.length) : icon;
+
+                            if (counter === -1) stop();
+                        });
+                    });
+            }, 2000 + index * 450);
+
+            function stop() {
                 it.pause();
+
                 anime({
                     targets: reel,
-                    reelPos: Math.round(reel.reelPos + 3),
-                    easing: 'easeOutElastic(1, .1)',
+                    reelPos: Math.trunc(reel.reelPos),
+                    easing: 'easeOutBack',
+                    duration: 250,
                 });
-            }, 2000 + index * 450);
+            }
         });
     }
 }
