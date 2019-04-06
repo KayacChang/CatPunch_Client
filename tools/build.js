@@ -4,17 +4,17 @@ const {mergeRight} = require('ramda');
 
 //  Exports
 module.exports = function(env) {
-  log('======Please Check Out Current Environment=========');
-  table({
-    'Node': process.env.NODE_ENV,
-    'Webpack': env.mode,
-  });
-  log('===================================================');
+    log('======Please Check Out Current Environment=========');
+    table({
+        'Node': process.env.NODE_ENV,
+        'Webpack': env.mode,
+    });
+    log('===================================================');
 
-  const commonConfig = require(`./common.config.js`)();
+    const commonConfig = require(`./common.config.js`)();
 
-  const environmentConfig = require(`./${env.mode}.config.js`)();
+    const environmentConfig = require(`./${env.mode}.config.js`)();
 
-  return mergeRight(commonConfig, environmentConfig);
+    return mergeRight(commonConfig, environmentConfig);
 };
 

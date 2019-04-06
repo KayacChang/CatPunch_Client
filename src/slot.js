@@ -12,6 +12,7 @@ const mapIndexed = addIndex(map);
 const {defineProperties} = Object;
 
 import payTable from './payTable';
+import reelTable from './reelTable';
 
 /**
  * Mapping id => texture using payTable.
@@ -118,7 +119,7 @@ function getRamdonInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
-function SlotMachine(reelTable) {
+function SlotMachine() {
     const it = new Container();
 
     const SYMBOL_WIDTH = 160;

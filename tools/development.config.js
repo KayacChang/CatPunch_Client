@@ -2,13 +2,11 @@
 
 //  Exports
 module.exports = function(...args) {
-  return {
+    return {
+        //  Mode    =========================================
+        mode: 'development',
 
-    //  Mode    =========================================
-    mode: 'development',
-
-    //  DevTool =========================================
-    devtool: 'inline-source-map',
-
-  };
+        //  DevTool =========================================
+        devtool: 'inline-source-map',
+    };
 };

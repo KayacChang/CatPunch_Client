@@ -2,10 +2,9 @@
 
 //  Exports
 module.exports = function(...args) {
-  return {
+    return {
+        //  Mode    ================================================
+        mode: 'production',
 
-    //  Mode    ================================================
-    mode: 'production',
-
-  };
+    };
 };

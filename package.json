@@ -1,10 +1,10 @@
 {
-  "name": "JSGame",
+  "name": "BaseSlot",
   "version": "1.0.0",
-  "description": "Game made by JavaScript",
+  "description": "Slot Game made by JavaScript",
   "scripts": {
     "dos2unix": "find src -type f -exec sed -i 's/^M$//' {} +",
-    "clean": "rm -rf dist & npm run dos2unix",
+    "clean": "rm -rf dist",
     "webpack": "webpack --config ./tools/build.js",
     "build": "npm run clean && NODE_ENV=production npm run webpack -- --env.mode=production",
     "watch": "npm run clean && NODE_ENV=development npm run webpack -- --env.mode=development --watch",
@@ -18,33 +18,36 @@
   "author": "Kayac",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.3.1",
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
     "@babel/preset-flow": "^7.0.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "copy-webpack-plugin": "^5.0.2",
     "csp-html-webpack-plugin": "^3.0.1",
+    "css-loader": "^2.1.1",
     "eslint": "^5.13.0",
     "eslint-config-google": "^0.12.0",
     "eslint-loader": "^2.1.2",
     "eslint-plugin-flowtype": "^3.2.1",
     "express": "^4.16.4",
+    "file-loader": "^3.0.1",
     "flow-bin": "^0.92.1",
     "html-webpack-plugin": "^4.0.0-beta.5",
     "minimist": "^1.2.0",
-    "ramda": "^0.26.1",
+    "style-loader": "^0.23.1",
     "url-loader": "^1.1.2",
-    "webpack": "^4.29.3",
+    "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
     "webpack-dev-middleware": "^3.5.2",
-    "webpack-dev-server": "^3.1.14",
+    "webpack-dev-server": "^3.2.1",
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
     "animejs": "^3.0.1",
-    "core-js": "^2.6.4",
-    "npm": "^6.9.0",
-    "pixi.js": "^4.8.7"
+    "core-js": "^2.6.5",
+    "pixi.js": "^4.8.7",
+    "ramda": "^0.26.1",
+    "regenerator-runtime": "^0.13.2"
   }
 }
