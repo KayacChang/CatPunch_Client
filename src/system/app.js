@@ -1,29 +1,31 @@
-import './system/app.css';
+import './app.css';
+
 import {Application} from 'pixi.js';
 import {addResizeListener} from './resize';
-import {load} from './load';
-
-import {create} from '../game/mainScene';
+import {load} from './loader';
 
 const DEFAULT_WIDTH = 1660;
 const DEFAULT_HEIGHT = 900;
 
-async function init() {
+function init() {
     global.app = new Application({
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
     });
 
-    document.querySelector('#app')
+    document.querySelector('#container')
         .appendChild(app.view);
 
     addResizeListener(app.view);
 }
 
-function main() {
-    init()
-        .then(load)
-        .then(create);
+async function main() {
+    init();
+
+    const mainScene = await import('../scenes/main/scene');
+
+    load(mainScene)
+        .then(mainScene.create);
 }
 
 main();

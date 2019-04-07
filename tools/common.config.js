@@ -4,6 +4,7 @@ const {ProgressPlugin, optimize} = require('webpack');
 const {ModuleConcatenationPlugin} = optimize;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CSPHtmlWebpackPlugin = require('csp-html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 //  Path
 const {
@@ -18,7 +19,9 @@ const {
 module.exports = function(...args) {
     return {
         //  Entry   ===========================================
-        entry: resolve(sourceDir, 'main.js'),
+        entry: [
+            resolve(sourceDir, 'system/app.js'),
+        ],
 
         //  Output  ===========================================
         output: {
@@ -34,8 +37,21 @@ module.exports = function(...args) {
 
             splitChunks: {
                 chunks: 'all',
-                minSize: 30000,
-                minChunks: 1,
+                minSize: 0,
+                maxInitialRequests: Infinity,
+                cacheGroups: {
+                    vendor: {
+                        test: /[\\/]node_modules[\\/]/,
+                        name(module) {
+                            const packageName =
+                                module.context.match(
+                                    /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
+                                )[1];
+
+                            return `${packageName.replace('@', '')}`;
+                        },
+                    },
+                },
             },
         },
 
@@ -63,7 +79,7 @@ module.exports = function(...args) {
                 {
                     test: /\.css$/,
                     use: [
-                        'style-loader',
+                        {loader: MiniCssExtractPlugin.loader},
                         'css-loader',
                     ],
                 },
@@ -74,7 +90,9 @@ module.exports = function(...args) {
                         {
                             loader: 'file-loader',
                             options: {
-                                name: '[path][hash].[ext]',
+                                name: '[hash].[ext]',
+                                publicPath: 'assets',
+                                outputPath: 'assets',
                             },
                         },
                     ],
@@ -99,10 +117,16 @@ module.exports = function(...args) {
 
             //  HTML
             new HtmlWebpackPlugin({
-                filename: 'index.html',
+                filename: 'scene.js.html',
                 favicon: resolve(baseDir, 'favicon.ico'),
-                template: resolve(baseDir, 'index.html'),
+                template: resolve(baseDir, 'scene.js.html'),
                 hash: true,
+            }),
+
+            //  StyleSheets
+            new MiniCssExtractPlugin({
+                filename: '[name].css',
+                chunkFilename: '[id].css',
             }),
 
             new CSPHtmlWebpackPlugin(),

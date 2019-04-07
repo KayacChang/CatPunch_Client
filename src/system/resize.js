@@ -13,7 +13,7 @@ function getScale({offsetWidth, offsetHeight}) {
 function scaleToWindow(target) {
     const scale = getScale(target);
 
-    target.app.transform = `scale(${scale})`;
+    target.style.transform = `scale(${scale})`;
 
     if (window.innerWidth >= 1600) {
         app.renderer.resize(
