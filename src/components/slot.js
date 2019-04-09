@@ -12,8 +12,8 @@ const random = new Random(MersenneTwister19937.autoSeed());
 
 export function Slot(config) {
     //  Data Preprocess
-    const symbolTextures = map((
-        {id, name}) => ({id, texture: getResource(name).texture}),
+    const symbolTextures = map(({id, name}) =>
+        ({id, texture: getResource(name).texture}),
     )(config.symbols);
 
     const reels = [];
@@ -23,7 +23,7 @@ export function Slot(config) {
         for (let row = 0; row < config.rows + 1; row++) {
             reel.push(SlotSymbol());
         }
-        reels.push(SlotReel(reel, config.reelTable[col]));
+        reels.push(SlotReel(reel, col, config.reelTable[col]));
     }
     return SlotMachine(reels);
 
@@ -67,14 +67,16 @@ export function Slot(config) {
         };
     }
 
-    function SlotReel(symbols = [], reelTable = []) {
+    function SlotReel(symbols = [], reelIndex, reelTable = []) {
         const view = new Container();
 
-        const SYMBOL_HEIGHT = config.symbolHeight;
-        const OFFSET_HEIGHT = SYMBOL_HEIGHT / 2 - SYMBOL_HEIGHT;
+        if (reelIndex === 4) window.reelTable = reelTable;
 
-        const position =
-            (value) => (value * SYMBOL_HEIGHT) + OFFSET_HEIGHT;
+        const SYMBOL_HEIGHT = config.symbolHeight;
+        const OFFSET_HEIGHT = SYMBOL_HEIGHT / 2 + SYMBOL_HEIGHT;
+
+        const position = (value) =>
+            ((symbols.length - value) * SYMBOL_HEIGHT) - OFFSET_HEIGHT;
 
         symbols.map((symbol, index) => symbol.y = position(index));
 
@@ -88,7 +90,12 @@ export function Slot(config) {
             map to all Symbols position in this reel.  */
         let reelPos = 0;
 
+        symbols.map(updateSymbolIcon);
+
         return {
+            get reelIndex() {
+                return reelIndex;
+            },
             get symbols() {
                 return symbols;
             },
@@ -99,8 +106,13 @@ export function Slot(config) {
                 return reelPos;
             },
             set reelPos(newPos) {
-                update(newPos);
-                reelPos = newPos;
+                const _pos = newPos % reelTable.length;
+
+                console.log(_pos);
+
+                update(_pos);
+
+                reelPos = _pos;
             },
             get x() {
                 return view.x;
@@ -110,13 +122,25 @@ export function Slot(config) {
             },
         };
 
+        function updateSymbolIcon(symbol, pos) {
+            const _pos = pos % reelTable.length;
+            symbol.icon = reelTable[_pos];
+        }
+
         function update(pos) {
-            const blurAmount = Math.max(0, (pos - reelPos) * 100);
-            motionBlur.velocity = [0, blurAmount];
-            motionBlur.kernelSize = blurAmount;
+            // const blurAmount = Math.max(0, (pos - reelPos) * 100);
+            // motionBlur.velocity = [0, blurAmount];
+            // motionBlur.kernelSize = blurAmount;
+            const position = (value) =>
+                ((value) * SYMBOL_HEIGHT) + SYMBOL_HEIGHT * 0.5;
 
             symbols.map((symbol, index) => {
-                const displayPos = (index + pos) % symbols.length;
+                const displayPos = ((index + pos) % symbols.length);
+
+                if (displayPos < 1) {
+                    updateSymbolIcon(symbol,
+                        Math.trunc(pos + symbols.length - 1));
+                }
 
                 symbol.y = position(displayPos);
             });
@@ -151,6 +175,9 @@ export function Slot(config) {
         view.height = config.height;
 
         return {
+            get reels() {
+                return reels;
+            },
             get view() {
                 return view;
             },
