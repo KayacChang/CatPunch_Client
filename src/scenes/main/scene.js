@@ -4,10 +4,13 @@ import {getResource} from '../../utils/resource';
 
 import BG_URL from './assets/background.jpeg';
 
+import {config} from './data';
+import {Slot} from '../../components/slot';
+
 export function reserve() {
     return [
         {name: 'background', url: BG_URL},
-        ...symbols,
+        ...(config.symbols),
     ];
 }
 
@@ -16,15 +19,12 @@ export function create() {
         getResource('background').texture,
     );
 
-    background.width = app.renderer.width;
-    background.height = app.renderer.height;
+    background.width = app.screen.width;
+    background.height = app.screen.height;
 
-    const symbols = symbols
-        .map((data) => {
-            data.texture =
-                getResource(data.name).texture;
-            return data;
-        });
+    const slot = new Slot(config);
 
-    app.stage.addChild(background);
+    window.slot = slot;
+
+    app.stage.addChild(background, slot.view);
 }

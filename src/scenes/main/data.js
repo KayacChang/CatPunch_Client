@@ -1,4 +1,3 @@
-
 import SYMBOL_SEVEN_URL from './assets/symbols/7.png';
 import SYMBOL_BAR_URL from './assets/symbols/bar.png';
 import SYMBOL_BLUE_URL from './assets/symbols/blue.png';
@@ -6,6 +5,9 @@ import SYMBOL_GREEN_URL from './assets/symbols/green.png';
 import SYMBOL_PURPLE_URL from './assets/symbols/purple.png';
 import SYMBOL_RED_URL from './assets/symbols/red.png';
 import SYMBOL_YELLOW_URL from './assets/symbols/yellow.png';
+import SYMBOL_STAR_URL from './assets/symbols/star.png';
+
+import reelTable from './assets/reelTable';
 
 const symbols = [
     {id: 0, name: 'seven', url: SYMBOL_SEVEN_URL},
@@ -15,12 +17,17 @@ const symbols = [
     {id: 4, name: 'purple', url: SYMBOL_PURPLE_URL},
     {id: 5, name: 'red', url: SYMBOL_RED_URL},
     {id: 6, name: 'yellow', url: SYMBOL_YELLOW_URL},
+    {id: 7, name: 'star', url: SYMBOL_STAR_URL},
 ];
 
-const config = {
-    symbolWidth: 180,
-    symbolHeight: 172,
-    rows: 3,
-    cols: 3,
-};
+export const config = {
+    symbols,
 
+    reelTable,
+
+    x: 243, y: 70,
+    width: 1200, height: 850,
+
+    rows: 3, cols: 5,
+    symbolWidth: 180, symbolHeight: 172,
+};

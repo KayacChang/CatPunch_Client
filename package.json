@@ -46,6 +46,7 @@
   "dependencies": {
     "animejs": "^3.0.1",
     "core-js": "^3.0.1",
+    "pixi-filters": "^2.7.1",
     "pixi.js": "^4.8.7",
     "ramda": "^0.26.1",
     "random-js": "^2.0.0"

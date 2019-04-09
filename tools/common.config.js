@@ -117,9 +117,9 @@ module.exports = function(...args) {
 
             //  HTML
             new HtmlWebpackPlugin({
-                filename: 'scene.js.html',
+                filename: 'index.html',
                 favicon: resolve(baseDir, 'favicon.ico'),
-                template: resolve(baseDir, 'scene.js.html'),
+                template: resolve(baseDir, 'index.html'),
                 hash: true,
             }),
 
