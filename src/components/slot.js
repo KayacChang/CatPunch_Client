@@ -70,13 +70,11 @@ export function Slot(config) {
     function SlotReel(symbols = [], reelIndex, reelTable = []) {
         const view = new Container();
 
-        if (reelIndex === 4) window.reelTable = reelTable;
-
         const SYMBOL_HEIGHT = config.symbolHeight;
-        const OFFSET_HEIGHT = SYMBOL_HEIGHT / 2 + SYMBOL_HEIGHT;
+        const OFFSET_HEIGHT = SYMBOL_HEIGHT / 2;
 
         const position = (value) =>
-            ((symbols.length - value) * SYMBOL_HEIGHT) - OFFSET_HEIGHT;
+            (value * SYMBOL_HEIGHT) - OFFSET_HEIGHT;
 
         symbols.map((symbol, index) => symbol.y = position(index));
 
@@ -90,7 +88,9 @@ export function Slot(config) {
             map to all Symbols position in this reel.  */
         let reelPos = 0;
 
-        symbols.map(updateSymbolIcon);
+        symbols
+            .slice(0).reverse()
+            .map(updateSymbolIcon);
 
         return {
             get reelIndex() {
@@ -106,13 +106,11 @@ export function Slot(config) {
                 return reelPos;
             },
             set reelPos(newPos) {
-                const _pos = newPos % reelTable.length;
+                newPos %= reelTable.length;
 
-                console.log(_pos);
+                update(newPos);
 
-                update(_pos);
-
-                reelPos = _pos;
+                reelPos = newPos;
             },
             get x() {
                 return view.x;
@@ -122,24 +120,23 @@ export function Slot(config) {
             },
         };
 
-        function updateSymbolIcon(symbol, pos) {
-            const _pos = pos % reelTable.length;
-            symbol.icon = reelTable[_pos];
+        function updateSymbolIcon(symbol, index) {
+            symbol.icon = reelTable[index];
         }
 
         function update(pos) {
-            // const blurAmount = Math.max(0, (pos - reelPos) * 100);
-            // motionBlur.velocity = [0, blurAmount];
-            // motionBlur.kernelSize = blurAmount;
-            const position = (value) =>
-                ((value) * SYMBOL_HEIGHT) + SYMBOL_HEIGHT * 0.5;
+            const blurAmount = Math.max(0, (pos - reelPos) * 100);
+            motionBlur.velocity = [0, blurAmount];
+            motionBlur.kernelSize = blurAmount;
 
             symbols.map((symbol, index) => {
-                const displayPos = ((index + pos) % symbols.length);
+                const displayPos = (index + pos) % symbols.length;
 
                 if (displayPos < 1) {
-                    updateSymbolIcon(symbol,
-                        Math.trunc(pos + symbols.length - 1));
+                    const iconNum =
+                        Math.trunc(pos + symbols.length - 1) % reelTable.length;
+
+                    updateSymbolIcon(symbol, iconNum);
                 }
 
                 symbol.y = position(displayPos);
