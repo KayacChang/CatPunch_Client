@@ -46,9 +46,13 @@
   "dependencies": {
     "animejs": "^3.0.1",
     "core-js": "^3.0.1",
+    "mathjs": "^5.9.0",
     "pixi-filters": "^2.7.1",
     "pixi.js": "^4.8.7",
+    "pixi_fairygui": "^0.1.9",
     "ramda": "^0.26.1",
-    "random-js": "^2.0.0"
+    "random-js": "^2.0.0",
+    "xml-js": "^1.6.11",
+    "zlibjs": "^0.3.1"
   }
 }

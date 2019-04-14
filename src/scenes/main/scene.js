@@ -1,30 +1,31 @@
-import {Sprite} from 'pixi.js';
-
-import {getResource} from '../../utils/resource';
-
-import BG_URL from './assets/background.jpeg';
+import MAIN_URL from './assets/main.fui';
+import MAIN_ATLAS0_URL from './assets/main@atlas0.png';
 
 import {config} from './data';
-import {Slot} from '../../components/slot';
+import {addPackage} from 'pixi_fairygui';
+
+import {SlotMachine} from '../../components/slot';
 
 export function reserve() {
     return [
-        {name: 'background', url: BG_URL},
-        ...(config.symbols),
+        {name: 'main.fui', url: MAIN_URL, xhrType: 'arraybuffer'},
+        {name: 'main@atlas0.png', url: MAIN_ATLAS0_URL},
+        ...(config.symbolConfig),
     ];
 }
 
 export function create() {
-    const background = new Sprite(
-        getResource('background').texture,
-    );
+    const create = addPackage(app, 'main');
+    const scene = create('MainScene');
 
-    background.width = app.screen.width;
-    background.height = app.screen.height;
+    scene.setWidth(app.screen.width);
+    scene.setHeight(app.screen.height);
 
-    const slot = new Slot(config);
+    const slotMachineView = scene.getChildByName('SlotMachine');
 
-    window.slot = slot;
+    const slotMachine = SlotMachine(slotMachineView, config);
 
-    app.stage.addChild(background, slot.view);
+    window.slotMachine = slotMachine;
+
+    app.stage.addChild(scene);
 }

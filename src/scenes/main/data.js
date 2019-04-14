@@ -9,7 +9,7 @@ import SYMBOL_STAR_URL from './assets/symbols/star.png';
 
 import reelTable from './assets/reelTable';
 
-const symbols = [
+const symbolConfig = [
     {id: 0, name: 'seven', url: SYMBOL_SEVEN_URL},
     {id: 1, name: 'bar', url: SYMBOL_BAR_URL},
     {id: 2, name: 'blue', url: SYMBOL_BLUE_URL},
@@ -21,13 +21,7 @@ const symbols = [
 ];
 
 export const config = {
-    symbols,
+    symbolConfig,
 
     reelTable,
-
-    x: 243, y: 70,
-    width: 1200, height: 850,
-
-    rows: 3, cols: 5,
-    symbolWidth: 180, symbolHeight: 172,
 };

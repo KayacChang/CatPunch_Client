@@ -61,7 +61,6 @@ module.exports = function(...args) {
                 //  JavaScript =============================================
                 {
                     test: /\.js$/,
-                    include: sourceDir,
                     sideEffects: false,
                     use: [
                         //  PreCompile ===================================
@@ -84,6 +83,19 @@ module.exports = function(...args) {
                     ],
                 },
                 //  Assets =============================================
+                {
+                    test: /\.(fui)$/,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: '[hash].[ext]',
+                                publicPath: 'assets',
+                                outputPath: 'assets',
+                            },
+                        },
+                    ],
+                },
                 {
                     test: /\.(png|jpe?g)$/,
                     use: [

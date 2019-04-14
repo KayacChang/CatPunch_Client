@@ -27,7 +27,7 @@ function SymbolTexture(icon: number) {
 }
 
 /**
- * Abstraction for Slot Symbol.
+ * Abstraction for Slot_0 Symbol.
  * Take specify id to switch Symbol Texture.
  *
  * @param {number} icon
@@ -58,7 +58,7 @@ function SlotSymbol(icon: number): Sprite {
 }
 
 /**
- * Abstraction for Slot Reel.
+ * Abstraction for Slot_0 Reel.
  *
  * @param {Sprite[]} symbols
  * @return {PIXI.Container|number}

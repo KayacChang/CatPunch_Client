@@ -1,62 +1,86 @@
-import {map, prop, isNil, propEq} from 'ramda';
+// import {MotionBlurFilter} from 'pixi-filters';
 
-import {Container, Sprite, Graphics} from 'pixi.js';
-import {MotionBlurFilter} from 'pixi-filters';
-
-import {Random, MersenneTwister19937} from 'random-js';
 import {getResource} from '../utils/resource';
 
 import anime from 'animejs';
 
-const random = new Random(MersenneTwister19937.autoSeed());
+export function SlotMachine(view, config) {
+    //  1. Get Symbol Textures
+    const symbolTextures =
+        config.symbolConfig
+            .map(({id, name}) => {
+                const {texture} = getResource(name);
+                return {id, texture};
+            });
 
-export function Slot(config) {
-    //  Data Preprocess
-    const symbolTextures = map(({id, name}) =>
-        ({id, texture: getResource(name).texture}),
-    )(config.symbols);
+    //  2. Init
+    const symbols =
+        view.children
+            .filter(({name}) => name.includes('symbol'))
+            .map(Symbol);
 
-    const reels = [];
+    const reels =
+        symbols
+            .reduce((arr, symbol) => {
+                const reelIdx = symbol.reelIdx;
 
-    for (let col = 0; col < config.cols; col++) {
-        const reel = [];
-        for (let row = 0; row < config.rows + 1; row++) {
-            reel.push(SlotSymbol());
-        }
-        reels.push(SlotReel(reel, col, config.reelTable[col]));
-    }
-    return SlotMachine(reels);
+                if (!arr[reelIdx]) arr[reelIdx] = [];
 
-    function SymbolTexture(icon) {
+                arr[reelIdx].push(symbol);
+
+                return arr;
+            }, [])
+            .map((symbols, index) =>
+                Reel(symbols, config.reelTable[index]));
+
+    //  3. Return
+    return {
+        play,
+    };
+
+    function getTexture(icon) {
         return symbolTextures
-            .find(propEq('id', icon))
+            .find((symbol) => symbol.id === icon)
             .texture;
     }
 
-    /**
-     * Abstraction for Slot Symbol.
-     * Take specify id to switch Symbol Texture.
-     *
-     * @param {number} icon
-     * @return {PIXI.Sprite}
-     */
-    function SlotSymbol(icon: number): Sprite {
-        if (isNil(icon)) icon = random.integer(0, symbolTextures.length - 1);
+    function getIcon(texture) {
+        return symbolTextures
+            .find((symbol) => symbol.texture === texture)
+            .id;
+    }
 
-        const view = new Sprite(SymbolTexture(icon));
-
-        view.anchor.set(0.5, 0.5);
+    function Symbol(view) {
+        const [reelIdx, colIdx] =
+            view.name
+                .split('@')[1]
+                .split('_')
+                .map(Number);
 
         return {
+            get name() {
+                return view.name;
+            },
+            get reelIdx() {
+                return reelIdx;
+            },
+            get colIdx() {
+                return colIdx;
+            },
+            get width() {
+                return view.width;
+            },
+            get height() {
+                return view.height;
+            },
             get view() {
                 return view;
             },
             get icon() {
-                return icon;
+                return getIcon(view.texture);
             },
             set icon(newIcon) {
-                icon = newIcon;
-                view.texture = SymbolTexture(icon);
+                view.texture = getTexture(newIcon);
             },
             get y() {
                 return view.y;
@@ -67,40 +91,18 @@ export function Slot(config) {
         };
     }
 
-    function SlotReel(symbols = [], reelIndex, reelTable = []) {
-        const view = new Container();
-
-        const SYMBOL_HEIGHT = config.symbolHeight;
-        const OFFSET_HEIGHT = SYMBOL_HEIGHT / 2;
-
-        const position = (value) =>
-            (value * SYMBOL_HEIGHT) - OFFSET_HEIGHT;
-
-        symbols.map((symbol, index) => symbol.y = position(index));
-
-        const motionBlur = new MotionBlurFilter();
-        view.filters = [motionBlur];
-
-        view.addChild(...(symbols.map(prop('view'))));
+    function Reel(symbols = [], reelTable) {
+        symbols
+            .forEach((symbol, index) => symbol.icon = reelTable[index]);
 
         /*  reelPos:
             Virtual Reel Position.
             map to all Symbols position in this reel.  */
         let reelPos = 0;
 
-        symbols
-            .slice(0).reverse()
-            .map(updateSymbolIcon);
-
         return {
-            get reelIndex() {
-                return reelIndex;
-            },
             get symbols() {
                 return symbols;
-            },
-            get view() {
-                return view;
             },
             get reelPos() {
                 return reelPos;
@@ -112,74 +114,26 @@ export function Slot(config) {
 
                 reelPos = newPos;
             },
-            get x() {
-                return view.x;
-            },
-            set x(newX) {
-                view.x = newX;
-            },
         };
 
-        function updateSymbolIcon(symbol, index) {
-            symbol.icon = reelTable[index];
+        function update(newPos) {
+            symbols
+                .forEach((symbol, index) => {
+                    const offsetPos = symbol.colIdx - index;
+                    const displayPos =
+                        (index + newPos) % symbols.length + offsetPos;
+
+                    if (displayPos < 0) {
+                        const iconNum =
+                            Math.trunc(newPos + symbols.length - 1)
+                            % reelTable.length;
+
+                        symbol.icon = reelTable[iconNum];
+                    }
+
+                    symbol.y = displayPos * symbol.height;
+                });
         }
-
-        function update(pos) {
-            const blurAmount = Math.max(0, (pos - reelPos) * 100);
-            motionBlur.velocity = [0, blurAmount];
-            motionBlur.kernelSize = blurAmount;
-
-            symbols.map((symbol, index) => {
-                const displayPos = (index + pos) % symbols.length;
-
-                if (displayPos < 1) {
-                    const iconNum =
-                        Math.trunc(pos + symbols.length - 1) % reelTable.length;
-
-                    updateSymbolIcon(symbol, iconNum);
-                }
-
-                symbol.y = position(displayPos);
-            });
-        }
-    }
-
-    function SlotMachine(reels) {
-        const view = new Container();
-
-        const SYMBOL_WIDTH = config.symbolWidth;
-        const OFFSET_WIDTH = SYMBOL_WIDTH / 2;
-
-        const position =
-            (value) => (value * SYMBOL_WIDTH) + OFFSET_WIDTH;
-
-        reels.map((reel, index) => reel.x = position(index));
-
-        view.addChild(...(reels.map(prop('view'))));
-
-        view.position.set(config.x, config.y);
-
-        const mask = new Graphics();
-        mask.beginFill();
-        mask.drawRect(
-            config.x, config.y,
-            config.width, config.symbolHeight * 3.75,
-        );
-
-        view.mask = mask;
-
-        view.width = config.width;
-        view.height = config.height;
-
-        return {
-            get reels() {
-                return reels;
-            },
-            get view() {
-                return view;
-            },
-            play,
-        };
     }
 
     function play() {
@@ -191,9 +145,7 @@ export function Slot(config) {
                 duration: 5000,
             });
 
-            setTimeout(() => {
-                stop();
-            }, 2000 + index * 450);
+            setTimeout(stop, 2000 + index * 450);
 
             function stop() {
                 spinAnimation.pause();
