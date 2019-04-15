@@ -86,14 +86,14 @@ export function SlotMachine(view, config) {
                 return view.y;
             },
             set y(newY) {
-                view.y = newY;
+                const offsetY = view.anchor.y * view.height;
+                view.y = newY + offsetY;
             },
         };
     }
 
-    function Reel(symbols = [], reelTable) {
-        symbols
-            .forEach((symbol, index) => symbol.icon = reelTable[index]);
+    function Reel(symbols, reelTable) {
+        init();
 
         /*  reelPos:
             Virtual Reel Position.
@@ -115,6 +115,12 @@ export function SlotMachine(view, config) {
                 reelPos = newPos;
             },
         };
+
+        function init() {
+            symbols
+                .slice(0).reverse()
+                .forEach((symbol, index) => symbol.icon = reelTable[index]);
+        }
 
         function update(newPos) {
             symbols

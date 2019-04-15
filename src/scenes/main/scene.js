@@ -23,9 +23,19 @@ export function create() {
 
     const slotMachineView = scene.getChildByName('SlotMachine');
 
-    const slotMachine = SlotMachine(slotMachineView, config);
+    const slot = SlotMachine(slotMachineView, config);
 
-    window.slotMachine = slotMachine;
+    const spinButton = scene
+        .getChildByName('GameBar')
+        .getChildByName('SpinButton');
+
+    console.log(spinButton);
+
+    spinButton.on('buttonUp', spin);
 
     app.stage.addChild(scene);
+
+    function spin() {
+        slot.play();
+    }
 }
