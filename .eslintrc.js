@@ -7,6 +7,7 @@ module.exports = {
     "rules": {
         "require-jsdoc": "off",
         "indent": ["error", 4],
-        "new-cap": "off"
+        "new-cap": "off",
+        "no-invalid-this": "off"
     }
 };
