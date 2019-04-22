@@ -1,11 +1,35 @@
+
 export function load(...scenes) {
-    const it = app.loader;
-
     const tasks = scenes
-        .map(({reserve}) => reserve())
-        .flat();
+        .map(({reserve}) => reserve());
 
-    it.add(tasks);
+    tasks.forEach(delegate);
 
-    return new Promise((resolve) => it.load(resolve));
+    const taskOfPixi = new Promise(
+        (resolve) => app.loader.load(resolve));
+
+    const taskOfHowler = new Promise(
+        (resolve) => app.sound.load(resolve));
+
+    return Promise.all([
+        taskOfPixi, taskOfHowler,
+    ]);
+}
+
+function delegate(task) {
+    for (const type in task) {
+        if (type === 'pixi') {
+            loadByPixi(task[type]);
+        } else if (type === 'howler') {
+            loadByHowler(task[type]);
+        }
+    }
+}
+
+function loadByPixi(task) {
+    app.loader.add(task);
+}
+
+function loadByHowler(task) {
+    app.sound.add(task);
 }

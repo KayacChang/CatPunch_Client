@@ -5,6 +5,7 @@ const {ModuleConcatenationPlugin} = optimize;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CSPHtmlWebpackPlugin = require('csp-html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const WorkboxPlugin = require('workbox-webpack-plugin');
 
 //  Path
 const {
@@ -109,6 +110,19 @@ module.exports = function(...args) {
                         },
                     ],
                 },
+                {
+                    test: /\.(wav)$/,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: '[hash].[ext]',
+                                publicPath: 'assets',
+                                outputPath: 'assets',
+                            },
+                        },
+                    ],
+                },
                 //  Favicon =============================================
                 {
                     test: /\.(ico)$/,
@@ -142,6 +156,12 @@ module.exports = function(...args) {
             }),
 
             new CSPHtmlWebpackPlugin(),
+
+            //  Service Worker
+            // new WorkboxPlugin.GenerateSW({
+            //     clientsClaim: true,
+            //     skipWaiting: true,
+            // }),
         ],
         //  END ============================================
     };

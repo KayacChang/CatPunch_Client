@@ -1,41 +1,36 @@
 import MAIN_URL from './assets/main.fui';
 import MAIN_ATLAS0_URL from './assets/main@atlas0.png';
+import MAIN_WAV_URL from './assets/sounds/main.wav';
 
 import {config} from './data';
 import {addPackage} from 'pixi_fairygui';
-
-import {SlotMachine} from '../../components/slot';
+import {MuteButton} from '../../components/sound/MuteButton';
 
 export function reserve() {
-    return [
-        {name: 'main.fui', url: MAIN_URL, xhrType: 'arraybuffer'},
-        {name: 'main@atlas0.png', url: MAIN_ATLAS0_URL},
-        ...(config.symbolConfig),
-    ];
+    return {
+        'pixi': [
+            {name: 'main.fui', url: MAIN_URL, xhrType: 'arraybuffer'},
+            {name: 'main@atlas0.png', url: MAIN_ATLAS0_URL},
+            ...(config.symbolConfig),
+        ],
+        'howler': [
+            {name: 'main', src: MAIN_WAV_URL},
+        ],
+    };
 }
 
 export function create() {
     const create = addPackage(app, 'main');
     const scene = create('MainScene');
 
-    scene.setWidth(app.screen.width);
-    scene.setHeight(app.screen.height);
-
-    const slotMachineView = scene.getChildByName('SlotMachine');
-
-    const slot = SlotMachine(slotMachineView, config);
-
-    const spinButton = scene
-        .getChildByName('GameBar')
-        .getChildByName('SpinButton');
-
-    console.log(spinButton);
-
-    spinButton.on('buttonUp', spin);
+    scene.width = app.screen.width;
+    scene.height = app.screen.height;
 
     app.stage.addChild(scene);
 
-    function spin() {
-        slot.play();
-    }
+    app.sound.resources['main'].play();
+
+    const soundBtn = scene.getChildByName('VolumeButton');
+
+    MuteButton(soundBtn);
 }
