@@ -32,5 +32,9 @@ export function create() {
 
     const controller = rangeInput.getChildByName('Controller');
 
-    RangeSlider(controller);
+    const rangeSlider = RangeSlider(controller);
+
+    rangeSlider.on('input', function(event) {
+        console.log(event.value);
+    });
 }

@@ -9,6 +9,8 @@ export function RangeSlider(it) {
         .on('pointerupoutside', onDragEnd)
         .on('pointermove', onDragMove);
 
+    const max = it.parent.width - it.width;
+
     let getPos = undefined;
 
     function onDragStart(event) {
@@ -24,15 +26,21 @@ export function RangeSlider(it) {
         if (getPos) {
             const {x} = getPos();
 
-            const pX = percent(x);
+            it.x = condition(x);
 
-            if (100 > pX && pX > 0) it.x = x;
+            it.emit('input', {value: percent(it.x)});
         }
     }
 
-    function percent(num) {
-        const max = it.parent.width - it.width;
+    function condition(x) {
+        return (
+            (x <= 0) ? 0 :
+                (x >= max) ? max :
+                    x
+        );
+    }
 
+    function percent(num) {
         return Math.floor((num / max) * 100);
     }
 
