@@ -1,16 +1,18 @@
 import MAIN_URL from './assets/main.fui';
-import MAIN_ATLAS0_URL from './assets/main@atlas0.jpg';
+import MAIN_ATLAS0_URL from './assets/main@atlas0.png';
+import MAIN_ATLAS0_1_URL from './assets/main@atlas0_1.png';
 import MAIN_WAV_URL from './assets/sounds/main.wav';
 
 import {config} from './data';
 import {addPackage} from 'pixi_fairygui';
-import {RangeSlider} from '../../components/form/RangeSlider';
+import {NumberPad} from '../../components/form/NumberPad';
 
 export function reserve() {
     return {
         'pixi': [
             {name: 'main.fui', url: MAIN_URL, xhrType: 'arraybuffer'},
-            {name: 'main@atlas0.jpg', url: MAIN_ATLAS0_URL},
+            {name: 'main@atlas0.png', url: MAIN_ATLAS0_URL},
+            {name: 'main@atlas0_1.png', url: MAIN_ATLAS0_1_URL},
             ...(config.symbolConfig),
         ],
         'howler': [
@@ -28,13 +30,10 @@ export function create() {
 
     app.stage.addChild(scene);
 
-    const rangeInput = scene.getChildByName('RangeInput');
+    const numberPad = scene.getChildByName('NumberPad');
 
-    const controller = rangeInput.getChildByName('Controller');
+    const pad = NumberPad(numberPad);
 
-    const rangeSlider = RangeSlider(controller);
-
-    rangeSlider.on('input', function(event) {
-        console.log(event.value);
-    });
+    pad.on('input',
+        (event) => console.log(event.value));
 }
