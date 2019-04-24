@@ -3,7 +3,6 @@ const {resolve} = require('path');
 const {ProgressPlugin, optimize} = require('webpack');
 const {ModuleConcatenationPlugin} = optimize;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CSPHtmlWebpackPlugin = require('csp-html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const WorkboxPlugin = require('workbox-webpack-plugin');
 
@@ -154,8 +153,6 @@ module.exports = function(...args) {
                 filename: '[name].css',
                 chunkFilename: '[id].css',
             }),
-
-            new CSPHtmlWebpackPlugin(),
 
             //  Service Worker
             // new WorkboxPlugin.GenerateSW({
