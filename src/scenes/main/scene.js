@@ -25,9 +25,6 @@ export function create() {
     const create = addPackage(app, 'main');
     const scene = create('MainScene');
 
-    scene.width = app.screen.width;
-    scene.height = app.screen.height;
-
     app.stage.addChild(scene);
 
     const numberPad = scene.getChildByName('NumberPad');

@@ -11,24 +11,40 @@ function getScale({offsetWidth, offsetHeight}) {
 }
 
 function scaleToWindow(target) {
-    const scale = getScale(target);
+    const {width, height} = getExpectSize();
+    app.renderer.resize(width, height);
 
-    target.style.transform = `scale(${scale})`;
+    const rootScene = app.stage.children[0];
+    rootScene.width = app.screen.width;
+    rootScene.height = app.screen.height;
 
-    if (window.innerWidth >= 1600) {
-        app.renderer.resize(
-            1660, 900,
-        );
+    target.style.marginTop = (-height / 2) + 'px';
+    target.style.marginLeft = (-width / 2) + 'px';
+
+    target.style.transform = `scale(${getScale(target)})`;
+}
+
+export function getExpectSize() {
+    const expectRadio = (16 / 9);
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    const currentRadio = width / height;
+
+    if (currentRadio > expectRadio) {
+        width = height * expectRadio;
     } else {
-        app.renderer.resize(
-            1440, 900,
-        );
+        height = width / expectRadio;
     }
+
+    return {width, height};
 }
 
 
 export function addResizeListener(target) {
     window.addEventListener('resize', resize);
+
+    resize();
 
     function resize() {
         scaleToWindow(target);
