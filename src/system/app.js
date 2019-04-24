@@ -1,27 +1,40 @@
 import './styles/reset.css';
 import './styles/app.css';
 
+import {getElement, getAllElement, remove} from '../utils/dom';
+
 import {Application} from 'pixi.js';
-import {addResizeListener, getExpectSize} from './resize';
+import {ResizeListener, getExpectSize} from './screen';
 import {load} from './loader';
 import {Sound} from './sound';
 import {Network} from './network';
 
+
 function init() {
-    const {width, height} = getExpectSize();
+    const view = getElement('#game');
+    const size = getExpectSize();
 
     global.app = new Application({
-        width, height,
-        view: document.querySelector('#game'),
+        view,
+        ...size,
+        autoResize: true,
     });
-
-    app.view.style.height = '100%';
-    app.view.style.width = '100%';
 
     //  Sound Engine
     app.sound = Sound();
     //  Network Engine
     app.network = Network();
+}
+
+function removeScript() {
+    return getAllElement('script')
+        .forEach(remove);
+}
+
+function setResizeListener() {
+    return ResizeListener(
+        getElement('#container'),
+    );
 }
 
 async function main() {
@@ -31,13 +44,8 @@ async function main() {
 
     load(mainScene)
         .then(mainScene.create)
-        .then(() =>
-            addResizeListener(document.querySelector('#container'))
-        )
-        .then(() => {
-            document.querySelectorAll('script')
-                .forEach((script) => script.remove());
-        });
+        .then(setResizeListener)
+        .then(removeScript);
 }
 
 main();

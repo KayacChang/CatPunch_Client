@@ -1,10 +1,9 @@
 import MobileDetect from 'mobile-detect';
 
 function getWindowSize() {
-    return {
-        width: window.innerWidth,
-        height: window.innerHeight,
-    };
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    return {width, height};
 }
 
 function resizeScene(scene) {
@@ -14,13 +13,18 @@ function resizeScene(scene) {
 }
 
 function adjustToCenter(target, {width, height}) {
-    target.style.marginLeft = (-width / 2) + 'px';
-    target.style.marginTop = (-height / 2) + 'px';
+    target.style.marginLeft = offset(width);
+    target.style.marginTop = offset(height);
     return target;
+
+    function offset(num) {
+        return (-num / 2) + 'px';
+    }
 }
 
 function resetResolution(target) {
     target.style.transform = scale(target);
+    return target;
 
     function scale({offsetWidth, offsetHeight}) {
         const {width, height} = getWindowSize();
@@ -31,18 +35,17 @@ function resetResolution(target) {
     }
 }
 
-function scaleToWindow(target) {
+function resize(target) {
     const size = getExpectSize();
-    app.renderer.resize(
-        size.width, size.height
-    );
+    app.renderer
+        .resize(size.width, size.height);
 
     adjustToCenter(target, size);
 
     resetResolution(target);
 
     const rootScene = app.stage.children[0];
-    resizeScene(rootScene);
+    if (rootScene) resizeScene(rootScene);
 }
 
 export function isMobile() {
@@ -76,12 +79,8 @@ export function getExpectSize() {
 }
 
 
-export function addResizeListener(target) {
-    window.addEventListener('resize', resize);
+export function ResizeListener(target) {
+    window.addEventListener('resize', () => resize(target));
 
-    resize();
-
-    function resize() {
-        scaleToWindow(target);
-    }
+    resize(target);
 }
