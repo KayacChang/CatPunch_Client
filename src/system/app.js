@@ -10,13 +10,13 @@ import {Network} from './network';
 function init() {
     const {width, height} = getExpectSize();
 
-    global.app = new Application({width, height});
+    global.app = new Application({
+        width, height,
+        view: document.querySelector('#game'),
+    });
 
     app.view.style.height = '100%';
     app.view.style.width = '100%';
-
-    document.querySelector('#container')
-        .appendChild(app.view);
 
     //  Sound Engine
     app.sound = Sound();
@@ -33,7 +33,11 @@ async function main() {
         .then(mainScene.create)
         .then(() =>
             addResizeListener(document.querySelector('#container'))
-        );
+        )
+        .then(() => {
+            document.querySelectorAll('script')
+                .forEach((script) => script.remove());
+        });
 }
 
 main();

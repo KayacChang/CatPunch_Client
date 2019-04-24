@@ -48,6 +48,7 @@
     "core-js": "^3.0.1",
     "howler": "^2.1.2",
     "mathjs": "^5.9.0",
+    "mobile-detect": "^1.4.3",
     "pixi-filters": "^2.7.1",
     "pixi.js": "^4.8.7",
     "pixi_fairygui": "^0.2.7",

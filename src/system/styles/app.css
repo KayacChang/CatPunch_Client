@@ -9,3 +9,18 @@ html, body {
     left: 50%;
     top: 50%;
 }
+
+#mask {
+    background: #010101;
+}
+
+@media all and (orientation: portrait) {
+    #container {
+        visibility: hidden;
+    }
+
+    #mask {
+        height: 100%;
+        width: 100%;
+    }
+}
