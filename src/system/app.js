@@ -4,6 +4,7 @@ import {Application} from 'pixi.js';
 import {addResizeListener} from './resize';
 import {load} from './loader';
 import {Sound} from './sound';
+import {Network} from './network';
 
 const DEFAULT_WIDTH = 1660;
 const DEFAULT_HEIGHT = 900;
@@ -19,8 +20,10 @@ function init() {
 
     addResizeListener(app.view);
 
-    //  Add Sound Engine
-    app.sound = new Sound();
+    //  Sound Engine
+    app.sound = Sound();
+    //  Network Engine
+    app.network = Network();
 }
 
 async function main() {

@@ -1,6 +1,6 @@
 // import {MotionBlurFilter} from 'pixi-filters';
 
-import {getResource} from '../utils/resource';
+import {getResource} from '../../utils/resource';
 
 import anime from 'animejs';
 

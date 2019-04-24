@@ -46,7 +46,6 @@
   "dependencies": {
     "animejs": "^3.0.1",
     "axios": "^0.18.0",
-    "canvasinput": "^1.2.7",
     "core-js": "^3.0.1",
     "howler": "^2.1.2",
     "mathjs": "^5.9.0",
