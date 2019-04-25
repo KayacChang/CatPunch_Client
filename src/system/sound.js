@@ -1,25 +1,9 @@
-import {Howl, Howler} from 'howler';
+import {Howler} from 'howler';
 
-export function Sound() {
-    const resources = {};
-    let tasks = [];
-
-    function add(_tasks) {
-        _tasks.forEach(({name, ...data}) => {
-            const task = new Howl(data);
-            resources[name] = task;
-            tasks.push(task);
-        });
-    }
-
-    function load(callback) {
-        const loadTasks =
-            tasks.map((task) =>
-                new Promise((resolve) => task.once('load', resolve)));
-
-        return Promise.all(loadTasks)
-            .then(() => tasks = [])
-            .then(callback);
+export function Sound({loader}) {
+    function play(name) {
+        const sound = loader.resources[name].data;
+        sound.play();
     }
 
     /**
@@ -31,8 +15,5 @@ export function Sound() {
         return Howler.mute(muted);
     }
 
-    return {
-        add, load, resources,
-        mute,
-    };
+    return {play, mute};
 }

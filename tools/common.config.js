@@ -20,7 +20,7 @@ module.exports = function(...args) {
     return {
         //  Entry   ===========================================
         entry: [
-            resolve(sourceDir, 'system/app.js'),
+            resolve(sourceDir, 'main.js'),
         ],
 
         //  Output  ===========================================

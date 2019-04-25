@@ -8,17 +8,13 @@ import {addPackage} from 'pixi_fairygui';
 import {NumberPad} from '../../components/form/NumberPad';
 
 export function reserve() {
-    return {
-        'pixi': [
-            {name: 'main.fui', url: MAIN_URL, xhrType: 'arraybuffer'},
-            {name: 'main@atlas0.png', url: MAIN_ATLAS0_URL},
-            {name: 'main@atlas0_1.png', url: MAIN_ATLAS0_1_URL},
-            ...(config.symbolConfig),
-        ],
-        'howler': [
-            {name: 'main', src: MAIN_WAV_URL},
-        ],
-    };
+    return [
+        {name: 'main.fui', url: MAIN_URL, xhrType: 'arraybuffer'},
+        {name: 'main@atlas0.png', url: MAIN_ATLAS0_URL},
+        {name: 'main@atlas0_1.png', url: MAIN_ATLAS0_1_URL},
+        {name: 'mainBGM', url: MAIN_WAV_URL},
+        ...(config.symbolConfig),
+    ];
 }
 
 export function create() {

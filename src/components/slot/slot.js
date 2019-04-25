@@ -1,7 +1,5 @@
 // import {MotionBlurFilter} from 'pixi-filters';
 
-import {getResource} from '../../utils/resource';
-
 import anime from 'animejs';
 import {divide} from 'mathjs';
 
@@ -22,7 +20,7 @@ export function SlotMachine(view, config) {
     const SYMBOL_TEXTURES =
         SYMBOL_CONFIG
             .map(({id, name}) =>
-                ({id, texture: getResource(name).texture}));
+                ({id, texture: app.resource.get(name).texture}));
 
     //  Initialization
     const symbols =

@@ -35,17 +35,18 @@ function resetResolution(target) {
     }
 }
 
-function resize(target) {
+export function resize(app) {
     const size = getExpectSize();
+
     app.renderer
         .resize(size.width, size.height);
 
-    adjustToCenter(target, size);
-
-    resetResolution(target);
-
     const rootScene = app.stage.children[0];
-    if (rootScene) resizeScene(rootScene);
+    resizeScene(rootScene);
+
+    const comp = app.view.parentNode;
+    adjustToCenter(comp, size);
+    resetResolution(comp);
 }
 
 export function isMobile() {
@@ -76,11 +77,4 @@ export function getExpectSize() {
     }
 
     return size;
-}
-
-
-export function ResizeListener(target) {
-    window.addEventListener('resize', () => resize(target));
-
-    resize(target);
 }
