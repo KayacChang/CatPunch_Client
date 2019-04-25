@@ -4,10 +4,23 @@ html, body {
     background: #010101;
 }
 
+#loading {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #container {
     position: absolute;
     left: 50%;
     top: 50%;
+
+    transition: opacity .5s ease;
+}
+
+.hidden {
+    opacity: 0;
 }
 
 #game {

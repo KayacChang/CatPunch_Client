@@ -2,9 +2,9 @@ import {getAllElement, getElement, remove} from './utils/dom';
 
 import {App} from './system/application';
 
-function removeScript() {
-    return getAllElement('script')
-        .forEach(remove);
+function clean() {
+    getAllElement('script').forEach(remove);
+    getElement('#container').classList.remove('hidden');
 }
 
 async function main() {
@@ -16,8 +16,8 @@ async function main() {
     app.resource
         .load(mainScene)
         .then(mainScene.create)
-        .then(app.resize)
-        .then(removeScript);
+        .then(clean)
+        .then(app.resize);
 }
 
 main();
