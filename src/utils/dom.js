@@ -11,3 +11,9 @@ export function getAllElement(queryString) {
 export function remove(element) {
     return element.remove();
 }
+
+export function print(msg) {
+    const log = document.createElement('p');
+    log.textContent = msg;
+    getElement('#dev-tool').append(log);
+}

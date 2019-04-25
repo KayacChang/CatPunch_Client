@@ -57,6 +57,7 @@ export function App(view) {
     });
 
     global.addEventListener('resize', app.resize);
+    global.addEventListener('orientationchange', app.resize);
 
     return freeze(app);
 }

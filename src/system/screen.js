@@ -1,9 +1,8 @@
 import MobileDetect from 'mobile-detect';
 
 function getWindowSize() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    return {width, height};
+    const {clientWidth, clientHeight} = document.documentElement;
+    return {width: clientWidth, height: clientHeight};
 }
 
 function resizeScene(scene) {
@@ -51,7 +50,7 @@ export function resize(app) {
 
 export function isMobile() {
     const detector =
-        new MobileDetect(window.navigator.userAgent);
+        new MobileDetect(navigator.userAgent);
 
     return detector.mobile();
 }
