@@ -16,7 +16,7 @@ export function App(view) {
     const app = new Application({
         view,
         ...size,
-        autoResize: true,
+        resolution: devicePixelRatio,
     });
 
     //  EventCore
