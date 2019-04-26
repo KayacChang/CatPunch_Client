@@ -9,11 +9,11 @@ export function getDNSLookupTime() {
     return pageNav.domainLookupEnd - pageNav.domainLookupStart;
 }
 
-function getConnectionTime() {
+export function getConnectionTime() {
     return pageNav.connectEnd - pageNav.connectStart;
 }
 
-function getTLSTime() {
+export function getTLSTime() {
     if (pageNav.secureConnectionStart <= 0) {
         return pageNav.secureConnectionStart;
     }
@@ -21,24 +21,58 @@ function getTLSTime() {
     return pageNav.connectEnd - pageNav.secureConnectionStart;
 }
 
-function getFetchTime() {
+export function getFetchTime() {
     return pageNav.responseEnd - pageNav.fetchStart;
 }
 
-function getWorkerTime() {
+export function getWorkerTime() {
     if (pageNav.workerStart <= 0) return pageNav.workerStart;
 
     return pageNav.responseEnd - pageNav.workerStart;
 }
 
-function getTotalRequestResponseTime() {
+export function getTotalRequestResponseTime() {
     return pageNav.responseEnd - pageNav.requestStart;
 }
 
-function getResponseTime() {
+export function getResponseTime() {
     return pageNav.responseEnd - pageNav.responseStart;
 }
 
-function getTTFB() {
+export function getTTFB() {
     return pageNav.responseStart - pageNav.requestStart;
+}
+
+export function getUnloadTime() {
+    return pageNav.unloadEventEnd - pageNav.unloadEventStart;
+}
+
+export function getRedirectTime() {
+    return pageNav.redirectEnd - pageNav.redirectStart;
+}
+
+export function getDOMContentLoadTime() {
+    return (
+        pageNav.domContentLoadedEventEnd - pageNav.domContentLoadedEventStart
+    );
+}
+
+export function getDOMCompleteTime() {
+    return pageNav.domComplete;
+}
+
+export function getDOMInteractiveTime() {
+    return pageNav.domInteractive;
+}
+
+export function getLoadEventTime() {
+    return pageNav.loadEventEnd - pageNav.loadEventStart;
+}
+
+export function getHeaderSize() {
+    return pageNav.transferSize - pageNav.encodedBodySize;
+}
+
+export function getCompressionRatio() {
+    return pageNav.decodedBodySize / pageNav.encodedBodySize;
 }
