@@ -76,10 +76,11 @@ module.exports = function(...args) {
                 },
                 //  StyleSheet =============================================
                 {
-                    test: /\.css$/,
+                    test: /\.(css|scss)$/,
                     use: [
                         {loader: MiniCssExtractPlugin.loader},
                         'css-loader',
+                        'sass-loader',
                     ],
                 },
                 //  Assets =============================================

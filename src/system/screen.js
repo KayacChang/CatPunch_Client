@@ -1,51 +1,33 @@
 import MobileDetect from 'mobile-detect';
 
-function getWindowSize() {
-    const {clientWidth, clientHeight} = document.documentElement;
+function getClientSize(target) {
+    const {clientWidth, clientHeight} = target;
     return {width: clientWidth, height: clientHeight};
 }
 
-function resizeScene(scene) {
-    scene.width = app.screen.width;
-    scene.height = app.screen.height;
-    return scene;
+function getWindowSize() {
+    return getClientSize(document.documentElement);
 }
 
-function adjustToCenter(target, {width, height}) {
-    target.style.marginLeft = offset(width);
-    target.style.marginTop = offset(height);
-    return target;
-
-    function offset(num) {
-        return (-num / 2) + 'px';
-    }
+function setSize(target, {width, height}) {
+    target.width = width;
+    target.height = height;
 }
 
-function resetResolution(target) {
-    target.style.transform = scale(target);
-    return target;
-
-    function scale({offsetWidth, offsetHeight}) {
-        const {width, height} = getWindowSize();
-        const scaleX = width / offsetWidth;
-        const scaleY = height / offsetHeight;
-
-        return `scale(${Math.min(scaleX, scaleY)})`;
-    }
+function setStyleSize(target, {width, height}) {
+    target.style.width = width + 'px';
+    target.style.height = height + 'px';
 }
 
 export function resize(app) {
     const size = getExpectSize();
 
-    app.renderer
-        .resize(size.width, size.height);
+    setStyleSize(app.view.parentNode, size);
+    setSize(app.view, size);
+    app.renderer.resize(size.width, size.height);
 
     const rootScene = app.stage.children[0];
-    resizeScene(rootScene);
-
-    const comp = app.view.parentNode;
-    adjustToCenter(comp, size);
-    resetResolution(comp);
+    if (rootScene) setSize(rootScene, size);
 }
 
 export function isMobile() {
@@ -60,19 +42,17 @@ export function isLandScape() {
 }
 
 export function getExpectSize() {
+    if (isMobile()) return getWindowSize();
+
     const size = getWindowSize();
 
-    if (isMobile()) return size;
-
-    const {width, height} = size;
-
     const expectRadio = (16 / 9);
-    const currentRadio = (width / height);
+    const currentRadio = (size.width / size.height);
 
     if (currentRadio > expectRadio) {
-        size.width = height * expectRadio;
+        size.width = size.height * expectRadio;
     } else {
-        size.height = width / expectRadio;
+        size.height = size.width / expectRadio;
     }
 
     return size;

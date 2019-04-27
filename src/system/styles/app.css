@@ -4,31 +4,11 @@ html, body {
     background: #010101;
 }
 
-#dev-tool {
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    height: 25%;
-    background: #010101;
-    opacity: 0.3;
-
-    color: white;
-}
-
-#loading {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 #container {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-
+    margin: auto;
     transition: opacity .5s ease;
+
+    background: no-repeat url("./loading.jpg") center/contain;
 }
 
 .hidden {

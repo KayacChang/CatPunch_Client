@@ -1,6 +1,7 @@
 import {loaders} from 'pixi.js';
 import {where} from '../utils/logic';
 import {Howl} from 'howler';
+// import {getElement} from '../utils/dom';
 
 export function Resource({loader}) {
     function get(name) {
@@ -19,8 +20,9 @@ export function Resource({loader}) {
         return new Promise((resolve) => loader.load(resolve));
     }
 
+    // const progressBar = getElement('.progress');
     function onLoading({progress}) {
-        console.log(progress);
+        // progressBar.style.width = progress + '%';
     }
 
     return {get, load};

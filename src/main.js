@@ -2,14 +2,15 @@ import {getAllElement, getElement, remove} from './utils/dom';
 
 import {App} from './system/application';
 
+const gameView = getElement('#game');
+
 function clean() {
     getAllElement('script').forEach(remove);
-    getElement('#container').classList.remove('hidden');
+    gameView.classList.remove('hidden');
 }
 
 async function main() {
-    const view = getElement('#game');
-    global.app = new App(view);
+    global.app = new App(gameView);
 
     const mainScene = await import('./scenes/main/scene');
 
