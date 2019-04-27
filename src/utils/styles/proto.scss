@@ -1,0 +1,17 @@
+//  Import
+@import "./reset";
+
+//  Variables ======================================
+$full: 100%;
+
+//  Prototype =====================================
+@mixin full-size {
+  width: $full;
+  height: $full;
+}
+
+//  Function =====================================
+.hidden {
+  opacity: 0;
+  display: none;
+}

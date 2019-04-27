@@ -6,7 +6,7 @@ const {log, error} = console;
 const {serviceWorker} = navigator;
 
 if (serviceWorker) {
-    window.addEventListener('load', onload);
+    window.addEventListener('Load.scss', onload);
 
     function onload() {
         serviceWorker

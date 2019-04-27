@@ -1,7 +1,4 @@
-import './styles/reset.css';
-import './styles/app.css';
-
-import './styles/progressbar.scss';
+import './styles/App.scss';
 
 import {Application, utils} from 'pixi.js';
 import {Sound} from './sound';
@@ -12,9 +9,9 @@ import {resize} from './screen';
 
 const {defineProperties, assign, freeze} = Object;
 
-export function App(view) {
+export function App() {
     const app =
-        new Application({view, resolution: devicePixelRatio});
+        new Application({resolution: devicePixelRatio});
 
     //  EventCore
     const eventCore = new utils.EventEmitter();
@@ -35,7 +32,6 @@ export function App(view) {
         network: {
             get: () => network,
         },
-
     });
 
     assign(app, {
@@ -55,8 +51,6 @@ export function App(view) {
 
     global.addEventListener('resize', app.resize);
     global.addEventListener('orientationchange', app.resize);
-
-    app.resize();
 
     return freeze(app);
 }

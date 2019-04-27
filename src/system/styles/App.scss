@@ -1,0 +1,37 @@
+@import "../../utils/styles/proto";
+
+//  Variables ======================================
+$black: #010101;
+
+//  Background =====================================
+html, body {
+  @include full-size;
+
+  overflow: hidden;
+  background: $black;
+}
+
+//  Application =====================================
+#app {
+  margin: auto;
+  transition: opacity .5s ease;
+
+  canvas {
+    @include full-size;
+  }
+
+  #mask {
+    background: $black;
+  }
+}
+
+//  When Portrait ======================================
+@media all and (orientation: portrait) {
+  #container {
+    visibility: hidden;
+  }
+
+  #mask {
+    @include full-size;
+  }
+}
