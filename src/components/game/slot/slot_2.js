@@ -68,11 +68,6 @@ export function SlotMachine(view, config) {
 
         const colIdx = _colIdx * STOP_PER_SYMBOL;
 
-        const anchorOffset = view.anchor.y * view.height;
-        let offset = 0;
-
-        let margin = 0;
-
         /*  displayPos:
             the current symbol's position on the reels */
         let displayPos = colIdx;
@@ -101,25 +96,12 @@ export function SlotMachine(view, config) {
             set icon(newIcon) {
                 view.texture = getTexture(newIcon);
             },
-            get offset() {
-                return offset;
-            },
-            set offset(newOffset) {
-                offset = newOffset;
-            },
-            get margin() {
-                return margin;
-            },
-            set margin(newMargin) {
-                margin = newMargin;
-            },
         };
 
         //  Update Symbol Position
         function update(newPos) {
-            const offsetY = anchorOffset + offset;
-            const disY =
-                divide(newPos, STOP_PER_SYMBOL) * (view.height + margin);
+            const offsetY = view.anchor.y * view.height;
+            const disY = divide(newPos, STOP_PER_SYMBOL) * view.height;
 
             view.y = disY + offsetY;
         }
@@ -149,12 +131,6 @@ export function SlotMachine(view, config) {
         };
 
         function init() {
-            //  Sort by symbol colIdx Incrementally
-            symbols
-                .sort((symbolA, symbolB) => {
-                    return symbolA.colIdx - symbolB.colIdx;
-                });
-
             //  From bottom to top
             symbols
                 .slice(0).reverse()
@@ -162,19 +138,6 @@ export function SlotMachine(view, config) {
                     const stops = index * STOP_PER_SYMBOL;
                     symbol.icon = reelTable[stops];
                 });
-
-            //  Set offset for each symbols
-            const offset =
-                symbols[1].view.y;
-
-            symbols.forEach((symbol) => symbol.offset = offset);
-
-            //  Set margin for each symbols
-            const margin =
-                (symbols[2].view.y - symbols[1].view.y)
-                - symbols[1].view.height;
-
-            symbols.forEach((symbol) => symbol.margin = margin);
 
             //  Init Reel Positions
             const maxIdx = (symbols.length - 1);
