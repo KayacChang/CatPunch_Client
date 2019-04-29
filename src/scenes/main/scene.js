@@ -6,6 +6,7 @@ import {config} from './data';
 import {addPackage} from 'pixi_fairygui';
 
 import {SlotMachine} from '../../components/game/slot/slot';
+import {Button} from '../../components/game/common/Button';
 
 export function reserve() {
     return [
@@ -30,5 +31,18 @@ export function create() {
 
     const slot = SlotMachine(slotBaseView, config);
 
+    const {spinButton} = UserInterface(scene.getChildByName('UserInterface'));
+
+    spinButton.on('spin', slot.play);
+
     window.play = slot.play;
+}
+
+function UserInterface(view) {
+    const spinButton =
+        Button(view.getChildByName('SpinButton'));
+
+    spinButton.on('pointerdown', () => spinButton.emit('spin'));
+
+    return {spinButton};
 }

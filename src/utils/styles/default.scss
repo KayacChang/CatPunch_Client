@@ -18,6 +18,13 @@ $black: #010101;
   display: none;
 }
 
+.v-center {
+  @include full-size;
+
+  display: flex;
+  align-items: center;
+}
+
 //  Default =====================================
 html, body {
   @include full-size;
