@@ -1,9 +1,20 @@
 import {loaders} from 'pixi.js';
 import {where} from '../utils/logic';
 import {Howl} from 'howler';
-// import {getElement} from '../utils/dom';
 
 export function Resource({loader}) {
+    //  For Sound Loading
+    loader.pre(HowlerLoader);
+
+    //  For Loading Progress
+    loader.on('progress', onLoading);
+
+    function onLoading({progress}) {
+        // progressBar.style.width = progress + '%';
+    }
+
+    return {get, load, reset};
+
     function get(name) {
         return loader.resources[name];
     }
@@ -13,25 +24,17 @@ export function Resource({loader}) {
             .map(({reserve}) => reserve())
             .forEach((task) => loader.add(task));
 
-        loader.pre(HowlerLoader);
-
-        loader.on('progress', onLoading);
-
         return new Promise((resolve) => loader.load(resolve));
     }
 
-    // const progressBar = getElement('.progress');
-    function onLoading({progress}) {
-        // progressBar.style.width = progress + '%';
+    function reset() {
+        loader.reset();
     }
-
-    return {get, load};
 }
 
 function HowlerLoader(resource, next) {
     if (check()) return next();
 
-    // onLoading...
     const {LOADING} = loaders.Resource.STATUS_FLAGS;
     resource._setFlag(LOADING, true);
 

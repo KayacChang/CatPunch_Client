@@ -7,6 +7,10 @@ const MEDIA_TYPE = {
 
 const UTF8 = 'charset=utf-8';
 
+function whenError(err) {
+    console.error(`Network error: ${err}`);
+}
+
 export function Network() {
     const proxy = axios.create({
         baseURL: 'http://192.168.1.15:8000',
@@ -30,8 +34,3 @@ export function Network() {
 
     return {get, post};
 }
-
-function whenError(err) {
-    console.error(`Network error: ${err}`);
-}
-

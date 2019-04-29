@@ -1,15 +1,4 @@
-@import "../../utils/styles/proto";
-
-//  Variables ======================================
-$black: #010101;
-
-//  Background =====================================
-html, body {
-  @include full-size;
-
-  overflow: hidden;
-  background: $black;
-}
+@import "../../utils/styles/default";
 
 //  Application =====================================
 #app {

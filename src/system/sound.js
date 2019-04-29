@@ -6,13 +6,8 @@ export function Sound({loader}) {
         sound.play();
     }
 
-    /**
-     * Handle muting and unmute globally.
-     * @param  {Boolean} muted Is muted or not.
-     * @return {Howler}
-     */
-    function mute(muted) {
-        return Howler.mute(muted);
+    function mute(isMuted) {
+        return Howler.mute(isMuted);
     }
 
     return {play, mute};

@@ -20,11 +20,13 @@ export function create() {
     const create = addPackage(app, 'main');
     const scene = create('MainScene');
 
-    app.stage.addChild(scene);
+    app.stage
+        .addChild(scene);
 
-    const slotBaseView = scene
-        .getChildByName('SlotMachine')
-        .getChildByName('SlotBase');
+    const slotBaseView =
+        scene
+            .getChildByName('SlotMachine')
+            .getChildByName('SlotBase');
 
     const slot = SlotMachine(slotBaseView, config);
 

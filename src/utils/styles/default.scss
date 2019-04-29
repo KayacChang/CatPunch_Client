@@ -4,6 +4,8 @@
 //  Variables ======================================
 $full: 100%;
 
+$black: #010101;
+
 //  Prototype =====================================
 @mixin full-size {
   width: $full;
@@ -14,4 +16,12 @@ $full: 100%;
 .hidden {
   opacity: 0;
   display: none;
+}
+
+//  Default =====================================
+html, body {
+  @include full-size;
+
+  overflow: hidden;
+  background: $black;
 }
