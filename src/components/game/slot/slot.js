@@ -1,35 +1,24 @@
-// import {MotionBlurFilter} from 'pixi-filters';
+import {log} from '../../../utils/dev';
 
+import {nth} from 'ramda';
+import {abs, floor, divide} from 'mathjs';
 import anime from 'animejs';
-import {divide} from 'mathjs';
 
 export function SlotMachine(view, config) {
-    //  Constant
     const {
-        SYMBOL_CONFIG,
-
-        REEL_TABLE,
-
         STOP_PER_SYMBOL,
-
-        SPIN_DURATION,
-
-        TIME_INTERVAL_PER_REEL,
+        REEL_TABLE,
+        SYMBOL_CONFIG,
     } = config;
 
     const SYMBOL_TEXTURES =
-        SYMBOL_CONFIG
-            .map(({id, name}) =>
-                ({id, texture: app.resource.get(name).texture}));
+        SYMBOL_CONFIG.map(({id, name}) =>
+            ({id, texture: app.resource.get(name).texture}));
 
-    //  Initialization
-    const symbols =
+    const symbolTable =
         view.children
             .filter(({name}) => name.includes('symbol'))
-            .map(Symbol);
-
-    const reels =
-        symbols
+            .map(Symbol)
             .reduce((arr, symbol) => {
                 const reelIdx = symbol.reelIdx;
 
@@ -38,14 +27,38 @@ export function SlotMachine(view, config) {
                 arr[reelIdx].push(symbol);
 
                 return arr;
-            }, [])
-            .map((symbols, index) =>
-                Reel(symbols, REEL_TABLE[index]));
+            }, []);
 
-    //  3. Return
-    return {
-        play,
-    };
+    const reels =
+        symbolTable.map((symbols, index) => {
+            symbols.sort((a, b) => a.colIdx - b.colIdx);
+
+            return Reel(symbols, REEL_TABLE[index]);
+        });
+
+    return {play, moveToPos};
+
+    function play() {
+        reels.forEach((reel) => {
+            anime({
+                targets: reel,
+                axis: '+=' + 77,
+                easing: 'easeInOutQuad',
+                duration: 5000,
+            });
+        });
+    }
+
+    function moveToPos(pos) {
+        const reel = reels[0];
+        const maxLength = reel.reelTable.length;
+
+        const targetAxis = (maxLength - pos) % maxLength;
+
+        while (reel.axis !== targetAxis) {
+            reel.axis += 1;
+        }
+    }
 
     function getTexture(icon) {
         return SYMBOL_TEXTURES
@@ -53,29 +66,14 @@ export function SlotMachine(view, config) {
             .texture;
     }
 
-    function getIcon(_texture) {
-        return SYMBOL_TEXTURES
-            .find(({texture}) => texture === _texture)
-            .id;
-    }
-
     function Symbol(view) {
-        const [reelIdx, _colIdx] =
+        const [reelIdx, colIdx] =
             view.name
                 .replace('symbol@', '')
                 .split('_')
                 .map(Number);
 
-        const colIdx = _colIdx * STOP_PER_SYMBOL;
-
-        const anchorOffset = view.anchor.y * view.height;
-        let offset = 0;
-
-        let margin = 0;
-
-        /*  displayPos:
-            the current symbol's position on the reels */
-        let displayPos = colIdx;
+        let icon = 0;
 
         return {
             get reelIdx() {
@@ -84,150 +82,136 @@ export function SlotMachine(view, config) {
             get colIdx() {
                 return colIdx;
             },
-            get displayPos() {
-                return displayPos;
-            },
-            set displayPos(newPos) {
-                update(newPos);
-
-                displayPos = newPos;
-            },
             get view() {
                 return view;
             },
+
+            stepSize:
+                divide(Number(view.height), STOP_PER_SYMBOL),
+
+            readyToChange: false,
+
+            displayPos: 0,
+
             get icon() {
-                return getIcon(view.texture);
+                return icon;
             },
             set icon(newIcon) {
                 view.texture = getTexture(newIcon);
-            },
-            get offset() {
-                return offset;
-            },
-            set offset(newOffset) {
-                offset = newOffset;
-            },
-            get margin() {
-                return margin;
-            },
-            set margin(newMargin) {
-                margin = newMargin;
+
+                icon = newIcon;
             },
         };
-
-        //  Update Symbol Position
-        function update(newPos) {
-            const offsetY = anchorOffset + offset;
-            const disY =
-                divide(newPos, STOP_PER_SYMBOL) * (view.height + margin);
-
-            view.y = disY + offsetY;
-        }
     }
 
     function Reel(symbols, reelTable) {
-        /*  reelPos:
-            the current reel's position */
-        let reelPos = 0;
+        let axis = 0;
 
-        init();
+        const DISPLAY_ORIGIN_POS = symbols[0].colIdx * STOP_PER_SYMBOL;
+        const DISPLAY_ORIGIN_POINT = symbols[0].view.y;
 
-        const DISPLAY_CYCLE = symbols.length * STOP_PER_SYMBOL;
+        const stepSize = divide(
+            abs(symbols[0].view.y - symbols[1].view.y),
+            STOP_PER_SYMBOL,
+        );
+
+        symbols.forEach((symbol) => {
+            symbol.stepSize = stepSize;
+
+            const initPos = axis + (symbol.colIdx * STOP_PER_SYMBOL);
+
+            symbol.icon = nth(initPos, reelTable);
+        });
+
+        const updateAxis = (newAxis) =>
+            update(
+                reelTable,
+                symbols,
+                newAxis,
+                {
+                    DISPLAY_ORIGIN_POS,
+                    DISPLAY_ORIGIN_POINT,
+                },
+            );
+
+        updateAxis(axis);
 
         return {
-            get reelPos() {
-                return reelPos;
+            get axis() {
+                return axis;
             },
-            set reelPos(newPos) {
-                //  cycle by reelTable
-                newPos %= reelTable.length;
-
-                update(newPos);
-
-                reelPos = newPos;
+            set axis(newAxis) {
+                axis = updateAxis(newAxis);
+            },
+            get reelTable() {
+                return reelTable;
             },
         };
-
-        function init() {
-            //  Sort by symbol colIdx Incrementally
-            symbols
-                .sort((symbolA, symbolB) => {
-                    return symbolA.colIdx - symbolB.colIdx;
-                });
-
-            //  From bottom to top
-            symbols
-                .slice(0).reverse()
-                .forEach((symbol, index) => {
-                    const stops = index * STOP_PER_SYMBOL;
-                    symbol.icon = reelTable[stops];
-                });
-
-            //  Set offset for each symbols
-            const offset =
-                symbols[1].view.y;
-
-            symbols.forEach((symbol) => symbol.offset = offset);
-
-            //  Set margin for each symbols
-            const margin =
-                (symbols[2].view.y - symbols[1].view.y)
-                - symbols[1].view.height;
-
-            symbols.forEach((symbol) => symbol.margin = margin);
-
-            //  Init Reel Positions
-            const maxIdx = (symbols.length - 1);
-            reelPos = maxIdx * STOP_PER_SYMBOL;
-        }
-
-        function update(newPos) {
-            symbols
-                .forEach((symbol, index) => {
-                    const stops = index * STOP_PER_SYMBOL;
-
-                    const offsetPos = symbol.colIdx - stops;
-                    const displayPos =
-                        (stops + newPos) % DISPLAY_CYCLE
-                        + offsetPos;
-
-                    //  Update Symbol Icon
-                    if (Math.abs(displayPos - offsetPos) < 0.5) {
-                        const iconNum = Math.trunc(newPos);
-                        symbol.icon = reelTable[iconNum];
-                    }
-
-                    //  Update Symbol Position
-                    symbol.displayPos = displayPos;
-                });
-        }
     }
 
-    function play() {
-        reels.map((reel, index) => {
-            const spinAnimation = anime({
-                targets: reel,
-                reelPos: '+=' + 77,
-                easing: 'easeInOutQuad',
-                duration: 5000,
+    function update(reelTable, symbols, newAxis, options) {
+        const DISPLAY_ORIGIN_POS = options.DISPLAY_ORIGIN_POS || 0;
+        const DISPLAY_ORIGIN_POINT = options.DISPLAY_ORIGIN_POINT || 0;
+
+        const MAX_LENGTH = reelTable.length;
+
+        const axis = newAxis % MAX_LENGTH;
+
+        log(`Axis: ${axis}`);
+
+        updateDisplayPos(axis);
+
+        log(`========================`);
+
+        return axis;
+
+        function updateDisplayPos(axis) {
+            const DISPLAY_CYCLE = symbols.length * STOP_PER_SYMBOL;
+
+            const reelPos =
+                (MAX_LENGTH - floor(axis)) % MAX_LENGTH;
+
+            log(`ReelPos: ${reelPos}`);
+
+            symbols.forEach((symbol, index) => {
+                const initialPos = index * STOP_PER_SYMBOL;
+                const displayPos = (axis + initialPos) % DISPLAY_CYCLE;
+
+                log(`DisplayPos ${index}: ${displayPos}`);
+
+                updateSymbolPos(symbol, displayPos);
+
+                const stop = floor(displayPos);
+
+                if (stop > 0 && stop < DISPLAY_CYCLE) {
+                    symbol.readyToChange = true;
+                }
+
+                if (symbol.readyToChange && stop === 0) {
+                    updateIcon(symbol, reelPos);
+                    symbol.readyToChange = false;
+                }
             });
+        }
 
-            setTimeout(stop,
-                SPIN_DURATION +
-                index * TIME_INTERVAL_PER_REEL);
+        function updateSymbolPos(symbol, pos) {
+            symbol.view.y =
+                DISPLAY_ORIGIN_POINT + (pos * symbol.stepSize);
+            symbol.displayPos = pos;
+        }
 
-            function stop() {
-                spinAnimation.pause();
+        function updateIcon(symbol, reelPos) {
+            if (symbol === undefined) return;
 
-                reel.reelPos = Math.trunc(reel.reelPos) + 0.2;
+            const icon = nth(reelPos + DISPLAY_ORIGIN_POS, reelTable);
 
-                anime({
-                    targets: reel,
-                    reelPos: Math.trunc(reel.reelPos),
-                    easing: 'easeOutElastic(1, .5)',
-                    duration: 150,
-                });
-            }
-        });
+            log('*********** Change Icon ************* \n' +
+                `Symbol: ${symbol.view.name} \n` +
+                `Icon: ${icon} \n` +
+                '*************************************');
+
+            symbol.icon = icon;
+        }
     }
 }
+

@@ -13,7 +13,7 @@ function whenError(err) {
 
 export function Network() {
     const proxy = axios.create({
-        baseURL: 'http://192.168.1.15:8000',
+        baseURL: process.env.SERVICE_URL,
         headers: {
             'Content-Type': MEDIA_TYPE.JSON + '; ' + UTF8,
         },

@@ -1,6 +1,6 @@
 //  Imports
 const {resolve} = require('path');
-const {ProgressPlugin, optimize} = require('webpack');
+const {ProgressPlugin, DefinePlugin, optimize} = require('webpack');
 const {ModuleConcatenationPlugin} = optimize;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -14,6 +14,11 @@ const {
     toolDir,
     publicPath,
 } = require('../constant');
+
+//  Environment Variables
+const env = {
+    SERVICE_URL: 'https://stage.ucoin.club:20000',
+};
 
 //  Exports
 module.exports = function(...args) {
@@ -160,6 +165,10 @@ module.exports = function(...args) {
             //     clientsClaim: true,
             //     skipWaiting: true,
             // }),
+
+            new DefinePlugin({
+                'process.env': JSON.stringify(env),
+            }),
         ],
         //  END ============================================
     };

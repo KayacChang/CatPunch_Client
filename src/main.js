@@ -3,7 +3,7 @@ import {
     addClass, removeClass, render,
 } from './utils/dom';
 
-import * as loadScene from './scenes/load/scene';
+import * as loadScene from './game/scenes/load/scene';
 
 import {App} from './system/application';
 
@@ -26,7 +26,7 @@ async function main() {
     app.resize();
 
     //  Import Main Scene
-    const mainScene = await import('./scenes/main/scene');
+    const mainScene = await import('./game/scenes/main/scene');
     app.resource
         .load(mainScene)
         .then(mainScene.create)

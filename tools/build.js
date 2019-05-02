@@ -9,6 +9,7 @@ module.exports = function(env) {
         'Node': process.env.NODE_ENV,
         'Webpack': env.mode,
     });
+    log(env);
     log('===================================================');
 
     const commonConfig = require(`./common.config.js`)();
