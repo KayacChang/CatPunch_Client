@@ -1,44 +1,57 @@
 import {
-    getAllElements, getElement, removeElement,
-    addClass, removeClass, render,
-} from './utils/dom';
-
-import * as loadScene from './game/scenes/load/scene';
+    select,
+    clear,
+} from './utils/web/dom';
 
 import {App} from './system/application';
+import {Service} from './service/01/';
+import {log} from './utils/dev';
 
-function removeAllScript() {
-    return getAllElements('script')
-        .forEach(removeElement);
+function startLoading(scene) {
+    const comp = select('#app');
+    clear(comp);
+    comp.appendChild(app.view);
+
+    scene.create();
+    app.resize();
+}
+
+function loadComplete(scene) {
+    app.stage.removeChildren();
+
+    scene.create();
+    app.resize();
 }
 
 async function main() {
-    //  Loading
-    const load = loadScene.create();
-    render(load, getElement('#app'));
+    try {
+        //  Init App
+        global.app = new App(Service);
 
-    //  Init App
-    global.app = new App();
-    render(app.view, getElement('#app'));
+        // Import Load Scene
+        const loadScene = await import('./game/scenes/load/scene');
 
-    //  Hide App Screen
-    addClass(app.view, 'hidden');
-    app.resize();
+        await app.resource.load(loadScene);
 
-    //  Import Main Scene
-    const mainScene = await import('./game/scenes/main/scene');
-    app.resource
-        .load(mainScene)
-        .then(mainScene.create)
-        .then(init);
+        startLoading(loadScene);
 
-    function init() {
-        removeAllScript();
+        app.service.sendLogin();
 
-        //  Show App Screen
-        addClass(load, 'hidden');
-        removeClass(app.view, 'hidden');
-        app.resize();
+        //  Import Main Scene
+        const mainScene = await import('./game/scenes/main/scene');
+
+        app.on('loading', ({progress}, {name}) => {
+            const msg =
+                `Progress: ${progress} % \n` +
+                `Resource: ${name}`;
+            log(msg);
+        });
+
+        await app.resource.load(mainScene);
+
+        loadComplete(mainScene);
+    } catch (e) {
+        throw new Error(e);
     }
 }
 

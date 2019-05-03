@@ -12,9 +12,9 @@ module.exports = function(env) {
     log(env);
     log('===================================================');
 
-    const commonConfig = require(`./common.config.js`)();
+    const commonConfig = require(`./common.config.js`)(env);
 
-    const environmentConfig = require(`./${env.mode}.config.js`)();
+    const environmentConfig = require(`./${env.mode}.config.js`)(env);
 
     return mergeRight(commonConfig, environmentConfig);
 };

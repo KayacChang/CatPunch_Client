@@ -32,18 +32,4 @@ export function create() {
 
     window.play = slot.play;
     window.moveToPos = slot.moveToPos;
-
-    // const {spinButton} =
-    // UserInterface(scene.getChildByName('UserInterface'));
-    // spinButton.on('spin', slot.play);
-    // window.play = slot.play;
 }
-
-// function UserInterface(view) {
-//     const spinButton =
-//         Button(view.getChildByName('SpinButton'));
-//
-//     spinButton.on('pointerdown', () => spinButton.emit('spin'));
-//
-//     return {spinButton};
-// }

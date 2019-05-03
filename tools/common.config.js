@@ -15,13 +15,10 @@ const {
     publicPath,
 } = require('../constant');
 
-//  Environment Variables
-const env = {
-    SERVICE_URL: 'https://stage.ucoin.club:20000',
-};
-
 //  Exports
-module.exports = function(...args) {
+module.exports = function(env) {
+    env = {...env, SERVICE_URL: 'https://stage.ucoin.club:20000'};
+
     return {
         //  Entry   ===========================================
         entry: [

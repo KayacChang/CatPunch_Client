@@ -8,11 +8,7 @@ import {resize} from './screen';
 
 const {defineProperties, assign, freeze} = Object;
 
-/**
- *
- * @return {Readonly<PIXI.Application>}
- */
-export function App() {
+export function App(Service) {
     const app =
         new Application({resolution: devicePixelRatio});
 
@@ -22,6 +18,8 @@ export function App() {
     const sound = Sound(app);
     //  Network
     const network = Network();
+    //  Service
+    const service = Service(network);
 
     //  Modules
     defineProperties(app, {
@@ -33,6 +31,9 @@ export function App() {
         },
         network: {
             get: () => network,
+        },
+        service: {
+            get: () => service,
         },
     });
 

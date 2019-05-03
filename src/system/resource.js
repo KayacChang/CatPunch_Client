@@ -7,11 +7,9 @@ export function Resource({loader}) {
     loader.pre(HowlerLoader);
 
     //  For Loading Progress
-    loader.on('progress', onLoading);
-
-    function onLoading({progress}) {
-        // progressBar.style.width = progress + '%';
-    }
+    loader.on('progress', (...args) => {
+        app.emit('loading', ...args);
+    });
 
     return {get, load, reset};
 

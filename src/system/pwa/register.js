@@ -1,12 +1,9 @@
-/*
-    **Important**
-    Make sure you have already setup the workbox-webpack-plugin.
- */
+
 const {log, error} = console;
 const {serviceWorker} = navigator;
 
 if (serviceWorker) {
-    window.addEventListener('Load.scss', onload);
+    window.addEventListener('load', onload);
 
     function onload() {
         serviceWorker

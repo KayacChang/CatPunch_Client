@@ -7,10 +7,6 @@ const MEDIA_TYPE = {
 
 const UTF8 = 'charset=utf-8';
 
-function whenError(err) {
-    console.error(`Network error: ${err}`);
-}
-
 export function Network() {
     const proxy = axios.create({
         baseURL: process.env.SERVICE_URL,
@@ -20,16 +16,16 @@ export function Network() {
         timeout: 1500,
     });
 
-    function get(url) {
-        return proxy
-            .get(url)
-            .catch(whenError);
+    function fetchData(promise) {
+        return promise.then(({data}) => data);
     }
 
-    function post(url, data) {
-        return proxy
-            .post(url, data)
-            .catch(whenError);
+    function get(url) {
+        return fetchData(proxy.get(url));
+    }
+
+    function post(url, payload) {
+        return fetchData(proxy.post(url, payload));
     }
 
     return {get, post};
