@@ -4,7 +4,7 @@ import {
 } from './utils/web/dom';
 
 import {App} from './system/application';
-import {Service} from './service/01/';
+// import {Service} from './service/01/';
 import {log} from './utils/dev';
 
 function startLoading(scene) {
@@ -26,7 +26,8 @@ function loadComplete(scene) {
 async function main() {
     try {
         //  Init App
-        global.app = new App(Service);
+        // global.app = new App(Service);
+        global.app = new App();
 
         // Import Load Scene
         const loadScene = await import('./game/scenes/load/scene');
@@ -34,8 +35,6 @@ async function main() {
         await app.resource.load(loadScene);
 
         startLoading(loadScene);
-
-        app.service.sendLogin();
 
         //  Import Main Scene
         const mainScene = await import('./game/scenes/main/scene');
@@ -47,7 +46,10 @@ async function main() {
             log(msg);
         });
 
-        await app.resource.load(mainScene);
+        await Promise.all([
+            // app.service.sendLogin(),
+            app.resource.load(mainScene),
+        ]);
 
         loadComplete(mainScene);
     } catch (e) {

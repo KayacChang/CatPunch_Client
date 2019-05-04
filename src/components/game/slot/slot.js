@@ -1,14 +1,15 @@
-import {log} from '../../../utils/dev';
-
 import {nth} from 'ramda';
 import {abs, floor, divide} from 'mathjs';
 import anime from 'animejs';
+import {wait} from '../../../utils/time';
 
 export function SlotMachine(view, config) {
     const {
         STOP_PER_SYMBOL,
         REEL_TABLE,
         SYMBOL_CONFIG,
+        SPIN_DURATION,
+        TIME_INTERVAL_PER_REEL,
     } = config;
 
     const SYMBOL_TEXTURES =
@@ -36,28 +37,34 @@ export function SlotMachine(view, config) {
             return Reel(symbols, REEL_TABLE[index]);
         });
 
-    return {play, moveToPos};
+    return {play};
 
-    function play() {
-        reels.forEach((reel) => {
-            anime({
+    function play(result) {
+        reels.forEach(async (reel, reelIdx) => {
+            const maxLength = reel.reelTable.length;
+
+            const targetAxis = (maxLength - result[reelIdx]) % maxLength;
+
+            const spinAnimation = anime({
                 targets: reel,
                 axis: '+=' + 77,
                 easing: 'easeInOutQuad',
                 duration: 5000,
             });
+
+            await wait(SPIN_DURATION + reelIdx * TIME_INTERVAL_PER_REEL);
+
+            reel.axis = targetAxis - (reel.symbols.length * STOP_PER_SYMBOL);
+
+            anime({
+                targets: reel,
+                axis: targetAxis,
+                easing: 'easeOutElastic(1, .2)',
+                duration: 500,
+            });
+
+            spinAnimation.pause();
         });
-    }
-
-    function moveToPos(pos) {
-        const reel = reels[0];
-        const maxLength = reel.reelTable.length;
-
-        const targetAxis = (maxLength - pos) % maxLength;
-
-        while (reel.axis !== targetAxis) {
-            reel.axis += 1;
-        }
     }
 
     function getTexture(icon) {
@@ -146,6 +153,9 @@ export function SlotMachine(view, config) {
             get reelTable() {
                 return reelTable;
             },
+            get symbols() {
+                return symbols;
+            },
         };
     }
 
@@ -157,11 +167,7 @@ export function SlotMachine(view, config) {
 
         const axis = newAxis % MAX_LENGTH;
 
-        log(`Axis: ${axis}`);
-
         updateDisplayPos(axis);
-
-        log(`========================`);
 
         return axis;
 
@@ -171,13 +177,9 @@ export function SlotMachine(view, config) {
             const reelPos =
                 (MAX_LENGTH - floor(axis)) % MAX_LENGTH;
 
-            log(`ReelPos: ${reelPos}`);
-
             symbols.forEach((symbol, index) => {
                 const initialPos = index * STOP_PER_SYMBOL;
                 const displayPos = (axis + initialPos) % DISPLAY_CYCLE;
-
-                log(`DisplayPos ${index}: ${displayPos}`);
 
                 updateSymbolPos(symbol, displayPos);
 
@@ -204,11 +206,6 @@ export function SlotMachine(view, config) {
             if (symbol === undefined) return;
 
             const icon = nth(reelPos + DISPLAY_ORIGIN_POS, reelTable);
-
-            log('*********** Change Icon ************* \n' +
-                `Symbol: ${symbol.view.name} \n` +
-                `Icon: ${icon} \n` +
-                '*************************************');
 
             symbol.icon = icon;
         }

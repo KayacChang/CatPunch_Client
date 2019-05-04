@@ -19,7 +19,7 @@ export function App(Service) {
     //  Network
     const network = Network();
     //  Service
-    const service = Service(network);
+    const service = Service && Service(network);
 
     //  Modules
     defineProperties(app, {
