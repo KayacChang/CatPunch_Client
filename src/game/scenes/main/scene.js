@@ -1,6 +1,7 @@
 import MAIN_URL from './assets/main.fui';
 import MAIN_ATLAS0_URL from './assets/main@atlas0.png';
 import MAIN_ATLAS0_1_URL from './assets/main@atlas0_1.png';
+import MAIN_WAV from './assets/sounds/main.wav';
 
 import {config} from './data';
 import {addPackage} from 'pixi_fairygui';
@@ -12,6 +13,7 @@ export function reserve() {
         {name: 'main.fui', url: MAIN_URL, xhrType: 'arraybuffer'},
         {name: 'main@atlas0.png', url: MAIN_ATLAS0_URL},
         {name: 'main@atlas0_1.png', url: MAIN_ATLAS0_1_URL},
+        {name: 'mainBGM', url: MAIN_WAV, metadata: {loop: true}},
         ...(config.SYMBOL_CONFIG),
     ];
 }
@@ -30,6 +32,7 @@ export function create() {
 
     const slot = SlotMachine(slotBaseView, config);
 
+    app.sound.play('mainBGM');
+
     window.play = slot.play;
-    window.moveToPos = slot.moveToPos;
 }
