@@ -1,3 +1,5 @@
+import {multiply, divide, pi} from 'mathjs';
+
 export function where(element) {
     function isIn(set) {
         return set.includes(element);
@@ -8,4 +10,10 @@ export function where(element) {
     }
 
     return {isIn, isNotIn};
+}
+
+//  1° × π/180 = 0.01745rad
+export function degreeToRadian(degree) {
+    const unit = divide(pi, 180);
+    return multiply(degree, unit);
 }

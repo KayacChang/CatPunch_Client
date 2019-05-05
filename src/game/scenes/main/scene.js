@@ -1,19 +1,19 @@
 import MAIN_URL from './assets/main.fui';
 import MAIN_ATLAS0_URL from './assets/main@atlas0.png';
 import MAIN_ATLAS0_1_URL from './assets/main@atlas0_1.png';
-import MAIN_WAV from './assets/sounds/main.wav';
 
 import {config} from './data';
 import {addPackage} from 'pixi_fairygui';
 
 import {SlotMachine} from '../../../components/game/slot/slot';
 
+import * as filter from 'pixi-filters';
+
 export function reserve() {
     return [
         {name: 'main.fui', url: MAIN_URL, xhrType: 'arraybuffer'},
         {name: 'main@atlas0.png', url: MAIN_ATLAS0_URL},
         {name: 'main@atlas0_1.png', url: MAIN_ATLAS0_1_URL},
-        {name: 'mainBGM', url: MAIN_WAV, metadata: {loop: true}},
         ...(config.SYMBOL_CONFIG),
     ];
 }
@@ -25,14 +25,20 @@ export function create() {
     app.stage
         .addChild(scene);
 
-    const slotBaseView =
+    const slotContainer =
         scene
-            .getChildByName('SlotMachine')
+            .getChildByName('SlotMachine');
+
+    const slotBaseView =
+        slotContainer
             .getChildByName('SlotBase');
 
     const slot = SlotMachine(slotBaseView, config);
 
-    app.sound.play('mainBGM');
+    const bulgeFilter =
+        new filter.BulgePinchFilter([0.5, 0.5], 700, 0.1);
+
+    slotBaseView.filters = [bulgeFilter];
 
     window.play = slot.play;
 }
