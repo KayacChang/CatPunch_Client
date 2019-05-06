@@ -7,8 +7,6 @@ import {addPackage} from 'pixi_fairygui';
 
 import {SlotMachine} from '../../../components/game/slot/slot';
 
-import * as filter from 'pixi-filters';
-
 export function reserve() {
     return [
         {name: 'main.fui', url: MAIN_URL, xhrType: 'arraybuffer'},
@@ -34,11 +32,6 @@ export function create() {
             .getChildByName('SlotBase');
 
     const slot = SlotMachine(slotBaseView, config);
-
-    const bulgeFilter =
-        new filter.BulgePinchFilter([0.5, 0.5], 700, 0.1);
-
-    slotBaseView.filters = [bulgeFilter];
 
     window.play = slot.play;
 }

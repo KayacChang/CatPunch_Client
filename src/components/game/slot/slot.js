@@ -1,9 +1,11 @@
-import {nth} from 'ramda';
-import {abs, floor, divide} from 'mathjs';
+import {floor, divide} from 'mathjs';
 import anime from 'animejs';
 import {wait} from '../../../utils/time';
+import {
+    MotionBlurFilter, BulgePinchFilter, DropShadowFilter,
+} from '../plugin/filter';
 
-export function SlotMachine(view, config) {
+export function SlotMachine(machine, config) {
     const {
         STOP_PER_SYMBOL,
         REEL_TABLE,
@@ -16,35 +18,17 @@ export function SlotMachine(view, config) {
         SYMBOL_CONFIG.map(({id, name}) =>
             ({id, texture: app.resource.get(name).texture}));
 
-    const symbolTable =
-        view.children
-            .filter(({name}) => name.includes('symbol'))
-            .map(Symbol)
-            .reduce((arr, symbol) => {
-                const reelIdx = symbol.reelIdx;
-
-                if (!arr[reelIdx]) arr[reelIdx] = [];
-
-                arr[reelIdx].push(symbol);
-
-                return arr;
-            }, []);
-
     const reels =
-        symbolTable.map((symbols, index) => {
-            symbols.sort((a, b) => a.colIdx - b.colIdx);
-
-            return Reel(symbols, REEL_TABLE[index]);
-        });
+        machine.children
+            .filter(isReel)
+            .map(Reel);
 
     return {play};
 
     function play(result) {
-        reels.forEach(async (reel, reelIdx) => {
-            const maxLength = reel.reelTable.length;
+        reels.forEach(playSpinAnimation);
 
-            const targetAxis = (maxLength - result[reelIdx]) % maxLength;
-
+        async function playSpinAnimation(reel, reelIdx) {
             const spinAnimation = anime({
                 targets: reel,
                 axis: '+=' + 77,
@@ -52,9 +36,11 @@ export function SlotMachine(view, config) {
                 duration: 5000,
             });
 
-            await wait(SPIN_DURATION + reelIdx * TIME_INTERVAL_PER_REEL);
+            await wait(SPIN_DURATION + (reelIdx * TIME_INTERVAL_PER_REEL));
 
-            reel.axis = targetAxis - (reel.symbols.length * STOP_PER_SYMBOL);
+            const targetAxis = toAxis(reelIdx, result[reelIdx]);
+
+            reel.axis = targetAxis - reel.displayLength;
 
             anime({
                 targets: reel,
@@ -64,7 +50,81 @@ export function SlotMachine(view, config) {
             });
 
             spinAnimation.pause();
-        });
+        }
+    }
+
+    function Symbol(view, symbolIdx) {
+        let displayPos = 0;
+
+        let icon = 0;
+
+        let readyToChange = false;
+
+        let distancePerStop =
+            divide(Number(view.height), STOP_PER_SYMBOL);
+
+        return {
+            get readyToChange() {
+                return readyToChange;
+            },
+
+            get symbolIdx() {
+                return symbolIdx;
+            },
+
+            get distancePerStop() {
+                return distancePerStop;
+            },
+            set distancePerStop(newDistance) {
+                distancePerStop = newDistance;
+            },
+
+            get displayPos() {
+                return displayPos;
+            },
+            set displayPos(newPos) {
+                view.y = newPos * distancePerStop;
+
+                displayPos = floor(newPos);
+
+                if (displayPos > 0) readyToChange = true;
+            },
+
+            get y() {
+                return Number(view.y);
+            },
+
+            get icon() {
+                return icon;
+            },
+            set icon(iconId) {
+                view.texture = getTexture(iconId);
+                icon = iconId;
+                readyToChange = false;
+            },
+        };
+    }
+
+    function isReel({name}) {
+        return name.includes('reel');
+    }
+
+    function isSymbol({name}) {
+        return name.includes('symbol');
+    }
+
+    function reelLength(reelIdx) {
+        return REEL_TABLE[reelIdx].length;
+    }
+
+    function toReelPos(reelIdx, axis) {
+        const maxLength = reelLength(reelIdx);
+        return (maxLength - floor(axis)) % maxLength;
+    }
+
+    function toAxis(reelIdx, reelPos) {
+        const maxLength = reelLength(reelIdx);
+        return (maxLength - reelPos) % maxLength;
     }
 
     function getTexture(icon) {
@@ -73,141 +133,88 @@ export function SlotMachine(view, config) {
             .texture;
     }
 
-    function Symbol(view) {
-        const [reelIdx, colIdx] =
-            view.name
-                .replace('symbol@', '')
-                .split('_')
-                .map(Number);
+    function Reel(view, reelIdx) {
+        let axis = 0;
 
-        let icon = 0;
+        let reelPos = toReelPos(reelIdx, axis);
+
+        const symbols =
+            view.children
+                .filter(isSymbol)
+                .map(Symbol);
+
+        const distancePerSymbol = symbols[1].y;
+
+        const distancePerStop = divide(distancePerSymbol, STOP_PER_SYMBOL);
+
+        symbols.forEach((symbol) => {
+            symbol.distancePerStop = distancePerStop;
+        });
+
+        const motionBlurFilter = MotionBlurFilter(view);
+
+        BulgePinchFilter(view, {
+            center: [1 - (reelIdx / 2), 0.5],
+            radius: 700,
+            strength: 0.05,
+        });
+
+        DropShadowFilter(view, {
+            blur: 3.2,
+            quality: 3,
+            alpha: 0.58,
+            distance: 15,
+            rotation: [45, 90, 135][reelIdx],
+        });
 
         return {
             get reelIdx() {
                 return reelIdx;
             },
-            get colIdx() {
-                return colIdx;
-            },
-            get view() {
-                return view;
-            },
-
-            stepSize:
-                divide(Number(view.height), STOP_PER_SYMBOL),
-
-            readyToChange: false,
-
-            displayPos: 0,
-
-            get icon() {
-                return icon;
-            },
-            set icon(newIcon) {
-                view.texture = getTexture(newIcon);
-
-                icon = newIcon;
-            },
-        };
-    }
-
-    function Reel(symbols, reelTable) {
-        let axis = 0;
-
-        const DISPLAY_ORIGIN_POS = symbols[0].colIdx * STOP_PER_SYMBOL;
-        const DISPLAY_ORIGIN_POINT = symbols[0].view.y;
-
-        const stepSize = divide(
-            abs(symbols[0].view.y - symbols[1].view.y),
-            STOP_PER_SYMBOL,
-        );
-
-        symbols.forEach((symbol) => {
-            symbol.stepSize = stepSize;
-
-            const initPos = axis + (symbol.colIdx * STOP_PER_SYMBOL);
-
-            symbol.icon = nth(initPos, reelTable);
-        });
-
-        const updateAxis = (newAxis) =>
-            update(
-                reelTable,
-                symbols,
-                newAxis,
-                {
-                    DISPLAY_ORIGIN_POS,
-                    DISPLAY_ORIGIN_POINT,
-                },
-            );
-
-        updateAxis(axis);
-
-        return {
-            get axis() {
-                return axis;
-            },
-            set axis(newAxis) {
-                axis = updateAxis(newAxis);
-            },
             get reelTable() {
-                return reelTable;
+                return REEL_TABLE[reelIdx];
             },
             get symbols() {
                 return symbols;
             },
+            get displayLength() {
+                return symbols.length * STOP_PER_SYMBOL;
+            },
+            get reelPos() {
+                return reelPos;
+            },
+            get axis() {
+                return axis;
+            },
+            set axis(newAxis) {
+                axis = newAxis % reelLength(reelIdx);
+
+                reelPos = toReelPos(reelIdx, axis);
+
+                motionBlurFilter.update(axis);
+
+                update(this, axis);
+            },
         };
     }
 
-    function update(reelTable, symbols, newAxis, options) {
-        const DISPLAY_ORIGIN_POS = options.DISPLAY_ORIGIN_POS || 0;
-        const DISPLAY_ORIGIN_POINT = options.DISPLAY_ORIGIN_POINT || 0;
-
-        const MAX_LENGTH = reelTable.length;
-
-        const axis = newAxis % MAX_LENGTH;
-
-        updateDisplayPos(axis);
-
-        return axis;
-
-        function updateDisplayPos(axis) {
-            const DISPLAY_CYCLE = symbols.length * STOP_PER_SYMBOL;
-
-            const reelPos =
-                (MAX_LENGTH - floor(axis)) % MAX_LENGTH;
-
-            symbols.forEach((symbol, index) => {
-                const initialPos = index * STOP_PER_SYMBOL;
-                const displayPos = (axis + initialPos) % DISPLAY_CYCLE;
-
-                updateSymbolPos(symbol, displayPos);
-
-                const stop = floor(displayPos);
-
-                if (stop > 0 && stop < DISPLAY_CYCLE) {
-                    symbol.readyToChange = true;
-                }
-
-                if (symbol.readyToChange && stop === 0) {
-                    updateIcon(symbol, reelPos);
-                    symbol.readyToChange = false;
-                }
+    function update(reel, axis) {
+        reel.symbols
+            .forEach((symbol) => {
+                updatePos(symbol);
+                updateIcon(symbol);
             });
+
+        function updatePos(symbol) {
+            const initialPos = symbol.symbolIdx * STOP_PER_SYMBOL;
+
+            symbol.displayPos = (axis + initialPos) % reel.displayLength;
         }
 
-        function updateSymbolPos(symbol, pos) {
-            symbol.view.y =
-                DISPLAY_ORIGIN_POINT + (pos * symbol.stepSize);
-            symbol.displayPos = pos;
-        }
-
-        function updateIcon(symbol, reelPos) {
-            if (symbol === undefined) return;
-
-            const icon = nth(reelPos + DISPLAY_ORIGIN_POS, reelTable);
-
-            symbol.icon = icon;
+        function updateIcon(symbol) {
+            if (symbol.readyToChange && symbol.displayPos === 0) {
+                symbol.icon = reel.reelTable[reel.reelPos];
+            }
         }
     }
 }
