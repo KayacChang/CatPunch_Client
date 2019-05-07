@@ -1,6 +1,7 @@
 import './styles/App.scss';
 
-import {Application, utils} from 'pixi.js';
+import {Application} from 'pixi.js';
+import EventEmitter from 'eventemitter3';
 import {Sound} from './sound';
 import {Network} from './network';
 import {Resource} from './resource';
@@ -38,7 +39,7 @@ export function App(Service) {
     });
 
     //  EventCore
-    const eventCore = new utils.EventEmitter();
+    const eventCore = new EventEmitter();
 
     //  Functions
     assign(app, {

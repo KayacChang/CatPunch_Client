@@ -1,57 +1,32 @@
 import {floor, divide} from 'mathjs';
-import anime from 'animejs';
-import {wait} from '../../../utils/time';
 import {
-    MotionBlurFilter, BulgePinchFilter, DropShadowFilter,
+    MotionBlurFilter,
+    DropShadowFilter,
 } from '../plugin/filter';
+
+import {
+    TextureManager,
+    isReel,
+    isSymbol,
+    toReelPos,
+    update,
+} from './util';
 
 export function SlotMachine(machine, config) {
     const {
         STOP_PER_SYMBOL,
         REEL_TABLE,
         SYMBOL_CONFIG,
-        SPIN_DURATION,
-        TIME_INTERVAL_PER_REEL,
     } = config;
 
-    const SYMBOL_TEXTURES =
-        SYMBOL_CONFIG.map(({id, name}) =>
-            ({id, texture: app.resource.get(name).texture}));
+    const {getTexture} = TextureManager(SYMBOL_CONFIG);
 
     const reels =
         machine.children
             .filter(isReel)
             .map(Reel);
 
-    return {play};
-
-    function play(result) {
-        reels.forEach(playSpinAnimation);
-
-        async function playSpinAnimation(reel, reelIdx) {
-            const spinAnimation = anime({
-                targets: reel,
-                axis: '+=' + 77,
-                easing: 'easeInOutQuad',
-                duration: 5000,
-            });
-
-            await wait(SPIN_DURATION + (reelIdx * TIME_INTERVAL_PER_REEL));
-
-            const targetAxis = toAxis(reelIdx, result[reelIdx]);
-
-            reel.axis = targetAxis - reel.displayLength;
-
-            anime({
-                targets: reel,
-                axis: targetAxis,
-                easing: 'easeOutElastic(1, .2)',
-                duration: 500,
-            });
-
-            spinAnimation.pause();
-        }
-    }
+    return {reels};
 
     function Symbol(view, symbolIdx) {
         let displayPos = 0;
@@ -72,6 +47,10 @@ export function SlotMachine(machine, config) {
                 return symbolIdx;
             },
 
+            get stopPerSymbol() {
+                return STOP_PER_SYMBOL;
+            },
+
             get distancePerStop() {
                 return distancePerStop;
             },
@@ -83,7 +62,7 @@ export function SlotMachine(machine, config) {
                 return displayPos;
             },
             set displayPos(newPos) {
-                view.y = newPos * distancePerStop;
+                view.y = (newPos * distancePerStop);
 
                 displayPos = floor(newPos);
 
@@ -105,38 +84,10 @@ export function SlotMachine(machine, config) {
         };
     }
 
-    function isReel({name}) {
-        return name.includes('reel');
-    }
-
-    function isSymbol({name}) {
-        return name.includes('symbol');
-    }
-
-    function reelLength(reelIdx) {
-        return REEL_TABLE[reelIdx].length;
-    }
-
-    function toReelPos(reelIdx, axis) {
-        const maxLength = reelLength(reelIdx);
-        return (maxLength - floor(axis)) % maxLength;
-    }
-
-    function toAxis(reelIdx, reelPos) {
-        const maxLength = reelLength(reelIdx);
-        return (maxLength - reelPos) % maxLength;
-    }
-
-    function getTexture(icon) {
-        return SYMBOL_TEXTURES
-            .find(({id}) => id === icon)
-            .texture;
-    }
-
     function Reel(view, reelIdx) {
         let axis = 0;
 
-        let reelPos = toReelPos(reelIdx, axis);
+        let reelPos = toReelPos(REEL_TABLE[reelIdx], axis);
 
         const symbols =
             view.children
@@ -147,17 +98,10 @@ export function SlotMachine(machine, config) {
 
         const distancePerStop = divide(distancePerSymbol, STOP_PER_SYMBOL);
 
-        symbols.forEach((symbol) => {
-            symbol.distancePerStop = distancePerStop;
-        });
+        symbols
+            .forEach((symbol) => symbol.distancePerStop = distancePerStop);
 
         const motionBlurFilter = MotionBlurFilter(view);
-
-        BulgePinchFilter(view, {
-            center: [1 - (reelIdx / 2), 0.5],
-            radius: 700,
-            strength: 0.05,
-        });
 
         DropShadowFilter(view, {
             blur: 3.2,
@@ -187,7 +131,7 @@ export function SlotMachine(machine, config) {
                 return axis;
             },
             set axis(newAxis) {
-                axis = newAxis % reelLength(reelIdx);
+                axis = newAxis % (REEL_TABLE[reelIdx].length);
 
                 reelPos = toReelPos(reelIdx, axis);
 
@@ -196,26 +140,6 @@ export function SlotMachine(machine, config) {
                 update(this, axis);
             },
         };
-    }
-
-    function update(reel, axis) {
-        reel.symbols
-            .forEach((symbol) => {
-                updatePos(symbol);
-                updateIcon(symbol);
-            });
-
-        function updatePos(symbol) {
-            const initialPos = symbol.symbolIdx * STOP_PER_SYMBOL;
-
-            symbol.displayPos = (axis + initialPos) % reel.displayLength;
-        }
-
-        function updateIcon(symbol) {
-            if (symbol.readyToChange && symbol.displayPos === 0) {
-                symbol.icon = reel.reelTable[reel.reelPos];
-            }
-        }
     }
 }
 

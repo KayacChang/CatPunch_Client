@@ -1,4 +1,4 @@
-import {loaders} from 'pixi.js';
+import {LoaderResource} from 'pixi.js';
 import {where} from '../utils/logic';
 import {Howl} from 'howler';
 
@@ -33,7 +33,7 @@ export function Resource({loader}) {
 function HowlerLoader(resource, next) {
     if (check()) return next();
 
-    const {LOADING} = loaders.Resource.STATUS_FLAGS;
+    const {LOADING} = LoaderResource.STATUS_FLAGS;
     resource._setFlag(LOADING, true);
 
     resource.data = new Howl({
