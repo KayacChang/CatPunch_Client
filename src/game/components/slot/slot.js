@@ -12,21 +12,27 @@ import {
     update,
 } from './util';
 
-export function SlotMachine(machine, config) {
-    const {
-        STOP_PER_SYMBOL,
-        REEL_TABLE,
-        SYMBOL_CONFIG,
-    } = config;
+export function SlotMachine(
+    {
+        view,
+        stopPerSymbol,
+        reelTables,
+        symbolConfig,
+        distancePerStop,
+        spin,
+    },
+) {
+    const slotBaseView =
+        view.getChildByName('SlotBase');
 
-    const {getTexture} = TextureManager(SYMBOL_CONFIG);
+    const {getTexture} = TextureManager(symbolConfig);
 
     const reels =
-        machine.children
+        slotBaseView.children
             .filter(isReel)
             .map(Reel);
 
-    return {reels};
+    return {view, reels, spin};
 
     function Symbol(view, symbolIdx) {
         let displayPos = 0;
@@ -35,12 +41,15 @@ export function SlotMachine(machine, config) {
 
         let readyToChange = false;
 
-        let distancePerStop =
-            divide(Number(view.height), STOP_PER_SYMBOL);
+        const defaultDistance =
+            divide(Number(view.height), stopPerSymbol);
 
         return {
             get readyToChange() {
                 return readyToChange;
+            },
+            set readyToChange(flag) {
+                readyToChange = flag;
             },
 
             get symbolIdx() {
@@ -48,14 +57,11 @@ export function SlotMachine(machine, config) {
             },
 
             get stopPerSymbol() {
-                return STOP_PER_SYMBOL;
+                return stopPerSymbol;
             },
 
             get distancePerStop() {
-                return distancePerStop;
-            },
-            set distancePerStop(newDistance) {
-                distancePerStop = newDistance;
+                return distancePerStop || defaultDistance;
             },
 
             get displayPos() {
@@ -65,10 +71,14 @@ export function SlotMachine(machine, config) {
                 view.y = (newPos * distancePerStop);
 
                 displayPos = floor(newPos);
-
-                if (displayPos > 0) readyToChange = true;
             },
 
+            get view() {
+                return view;
+            },
+            get x() {
+                return Number(view.x);
+            },
             get y() {
                 return Number(view.y);
             },
@@ -79,7 +89,6 @@ export function SlotMachine(machine, config) {
             set icon(iconId) {
                 view.texture = getTexture(iconId);
                 icon = iconId;
-                readyToChange = false;
             },
         };
     }
@@ -87,19 +96,12 @@ export function SlotMachine(machine, config) {
     function Reel(view, reelIdx) {
         let axis = 0;
 
-        let reelPos = toReelPos(REEL_TABLE[reelIdx], axis);
+        let reelTable = reelTables[reelIdx];
 
         const symbols =
             view.children
                 .filter(isSymbol)
                 .map(Symbol);
-
-        const distancePerSymbol = symbols[1].y;
-
-        const distancePerStop = divide(distancePerSymbol, STOP_PER_SYMBOL);
-
-        symbols
-            .forEach((symbol) => symbol.distancePerStop = distancePerStop);
 
         const motionBlurFilter = MotionBlurFilter(view);
 
@@ -116,24 +118,25 @@ export function SlotMachine(machine, config) {
                 return reelIdx;
             },
             get reelTable() {
-                return REEL_TABLE[reelIdx];
+                return reelTable;
+            },
+            set reelTable(newTable) {
+                reelTable = newTable;
             },
             get symbols() {
                 return symbols;
             },
             get displayLength() {
-                return symbols.length * STOP_PER_SYMBOL;
+                return symbols.length * stopPerSymbol;
             },
             get reelPos() {
-                return reelPos;
+                return toReelPos(this, axis);
             },
             get axis() {
                 return axis;
             },
             set axis(newAxis) {
-                axis = newAxis % (REEL_TABLE[reelIdx].length);
-
-                reelPos = toReelPos(reelIdx, axis);
+                axis = newAxis % (reelTable.length);
 
                 motionBlurFilter.update(axis);
 

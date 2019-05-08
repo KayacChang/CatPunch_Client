@@ -1,9 +1,9 @@
 import {map, prop, isNil, propEq} from 'ramda';
 
 import {Container, Sprite, Graphics} from 'pixi.js';
-import {MotionBlurFilter} from 'pixi-filters';
+import {MotionBlurFilter} from 'pixi-filters/types';
 
-import {Random, MersenneTwister19937} from 'random-js';
+import {Random, MersenneTwister19937} from 'random-js/dist';
 import {getResource} from '../utils/resource';
 
 import anime from 'animejs';

@@ -1,5 +1,5 @@
 import {LoaderResource} from 'pixi.js';
-import {where} from '../utils/logic';
+import {where} from '../general/utils/logic';
 import {Howl} from 'howler';
 
 export function Resource({loader}) {

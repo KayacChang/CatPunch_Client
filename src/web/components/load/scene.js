@@ -1,4 +1,4 @@
-import {createElement} from '../../../utils/web/dom';
+import {createElement} from '../../utils/dom';
 
 import './styles/Load.scss';
 

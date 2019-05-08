@@ -1,29 +1,29 @@
-import MAIN_URL from './assets/main.fui';
-import MAIN_ATLAS0_URL from './assets/main@atlas0.png';
-import MAIN_ATLAS0_1_URL from './assets/main@atlas0_1.png';
-import MAIN_ATLAS0_2_URL from './assets/main@atlas0_2.png';
-import MAIN_ATLAS0_3_URL from './assets/main@atlas0_3.png';
-import MAIN_ATLAS0_4_URL from './assets/main@atlas0_4.png';
-import MAIN_ATLAS0_5_URL from './assets/main@atlas0_5.png';
-import MAIN_ATLAS0_6_URL from './assets/main@atlas0_6.png';
-import MAIN_ATLAS0_7_URL from './assets/main@atlas0_7.png';
-import MAIN_ATLAS0_8_URL from './assets/main@atlas0_8.png';
-import MAIN_ATLAS0_9_URL from './assets/main@atlas0_9.png';
-import MAIN_ATLAS0_10_URL from './assets/main@atlas0_10.png';
-import MAIN_ATLAS0_11_URL from './assets/main@atlas0_11.png';
-import MAIN_ATLAS0_12_URL from './assets/main@atlas0_12.png';
-import MAIN_ATLAS0_13_URL from './assets/main@atlas0_13.png';
-import MAIN_ATLAS0_14_URL from './assets/main@atlas0_14.png';
-import MAIN_ATLAS0_15_URL from './assets/main@atlas0_15.png';
-import MAIN_ATLAS0_16_URL from './assets/main@atlas0_16.png';
-import MAIN_ATLAS0_17_URL from './assets/main@atlas0_17.png';
+import MAIN_URL from './assets/sprite_sheets/main.fui';
+import MAIN_ATLAS0_URL from './assets/sprite_sheets/main@atlas0.png';
+import MAIN_ATLAS0_1_URL from './assets/sprite_sheets/main@atlas0_1.png';
+import MAIN_ATLAS0_2_URL from './assets/sprite_sheets/main@atlas0_2.png';
+import MAIN_ATLAS0_3_URL from './assets/sprite_sheets/main@atlas0_3.png';
+import MAIN_ATLAS0_4_URL from './assets/sprite_sheets/main@atlas0_4.png';
+import MAIN_ATLAS0_5_URL from './assets/sprite_sheets/main@atlas0_5.png';
+import MAIN_ATLAS0_6_URL from './assets/sprite_sheets/main@atlas0_6.png';
+import MAIN_ATLAS0_7_URL from './assets/sprite_sheets/main@atlas0_7.png';
+import MAIN_ATLAS0_8_URL from './assets/sprite_sheets/main@atlas0_8.png';
+import MAIN_ATLAS0_9_URL from './assets/sprite_sheets/main@atlas0_9.png';
+import MAIN_ATLAS0_10_URL from './assets/sprite_sheets/main@atlas0_10.png';
+import MAIN_ATLAS0_11_URL from './assets/sprite_sheets/main@atlas0_11.png';
+import MAIN_ATLAS0_12_URL from './assets/sprite_sheets/main@atlas0_12.png';
+import MAIN_ATLAS0_13_URL from './assets/sprite_sheets/main@atlas0_13.png';
+import MAIN_ATLAS0_14_URL from './assets/sprite_sheets/main@atlas0_14.png';
+import MAIN_ATLAS0_15_URL from './assets/sprite_sheets/main@atlas0_15.png';
+import MAIN_ATLAS0_16_URL from './assets/sprite_sheets/main@atlas0_16.png';
+import MAIN_ATLAS0_17_URL from './assets/sprite_sheets/main@atlas0_17.png';
 
-import {config} from './data';
 import {addPackage} from 'pixi_fairygui';
 
-import {SlotMachine} from '../../../components/game/slot/slot';
-import anime from 'animejs';
-import {wait} from '../../../utils/time';
+import {SlotMachine} from '../../components/slot';
+
+import {symbolConfig, stopPerSymbol, reelTables, distancePerStop} from './data';
+import {spin} from './spin';
 
 export function reserve() {
     return [
@@ -46,32 +46,8 @@ export function reserve() {
         {name: 'main@atlas0_15.png', url: MAIN_ATLAS0_15_URL},
         {name: 'main@atlas0_16.png', url: MAIN_ATLAS0_16_URL},
         {name: 'main@atlas0_17.png', url: MAIN_ATLAS0_17_URL},
-        ...(config.SYMBOL_CONFIG),
+        ...(symbolConfig),
     ];
-}
-
-async function playSpinAnimation(reel) {
-    const spinAnimation = anime({
-        targets: reel,
-        axis: '+=' + 77,
-        easing: 'easeInOutQuad',
-        duration: 5000,
-    });
-
-    await wait(SPIN_DURATION + (reel.reelIdx * TIME_INTERVAL_PER_REEL));
-
-    const targetAxis = toAxis(reel.reelIdx);
-
-    reel.axis = targetAxis - reel.displayLength;
-
-    anime({
-        targets: reel,
-        axis: targetAxis,
-        easing: 'easeOutElastic(1, .2)',
-        duration: 500,
-    });
-
-    spinAnimation.pause();
 }
 
 export function create() {
@@ -81,13 +57,22 @@ export function create() {
     app.stage
         .addChild(scene);
 
-    const slotContainer =
-        scene
-            .getChildByName('SlotMachine');
+    const view = scene.getChildByName('SlotMachine');
 
-    const slotBaseView =
-        slotContainer
-            .getChildByName('SlotBase');
+    const slot = SlotMachine({
+        view,
+        stopPerSymbol,
+        reelTables,
+        symbolConfig,
+        distancePerStop,
+        spin,
+    });
 
-    SlotMachine(slotBaseView, config);
+    window.play = function(result) {
+        slot.spin({
+            'indexOfEachWheel': result,
+            'enum_SymboTableForTable':
+                result.map((pos, index) => reelTables[index][pos]),
+        });
+    };
 }

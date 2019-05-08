@@ -63,6 +63,5 @@ export function App(Service) {
     global.addEventListener('resize', app.resize);
     global.addEventListener('orientationchange', app.resize);
 
-    //  Unchangeable
     return freeze(app);
 }

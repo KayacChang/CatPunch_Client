@@ -1,11 +1,11 @@
 import {
     select,
     clear,
-} from './utils/web/dom';
+} from './web/utils/dom';
 
 import {App} from './system/application';
 // import {Service} from './service/01/';
-import {log} from './utils/dev';
+import {log} from './general/utils/dev';
 
 function startLoading(scene) {
     const comp = select('#app');
