@@ -36,14 +36,13 @@ async function main() {
     startLoading(loadScene);
 
     //  Import Main Scene
-    const mainScene = await import('./game/scenes/main/scene');
+    const mainScene = await import('./game/scenes/main');
 
-    app.on('loading', ({progress}, {name}) => {
-        const msg =
+    app.on('loading', ({progress}, {name}) =>
+        log(
             `Progress: ${progress} % \n` +
-            `Resource: ${name}`;
-        log(msg);
-    });
+            `Resource: ${name}`,
+        ));
 
     await Promise.all([
         // app.service.sendLogin(),

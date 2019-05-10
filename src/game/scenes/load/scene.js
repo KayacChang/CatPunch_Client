@@ -1,7 +1,7 @@
-import LOAD_URL from './assets/load.fui';
-import LOAD_ATLAS0_URL from './assets/load@atlas0.png';
-import LOAD_ATLAS0_1_URL from './assets/load@atlas0_1.png';
-import LOAD_ATLAS0_2_URL from './assets/load@atlas0_2.png';
+import LOAD_URL from './assets/sprite_sheets/load.fui';
+import LOAD_ATLAS0_URL from './assets/sprite_sheets/load@atlas0.png';
+import LOAD_ATLAS0_1_URL from './assets/sprite_sheets/load@atlas0_1.png';
+import LOAD_ATLAS0_2_URL from './assets/sprite_sheets/load@atlas0_2.png';
 
 import {addPackage} from 'pixi_fairygui';
 

@@ -2,10 +2,10 @@ import './styles/App.scss';
 
 import {Application} from 'pixi.js';
 import EventEmitter from 'eventemitter3';
-import {Sound} from './sound';
-import {Network} from './network';
-import {Resource} from './resource';
-import {resize} from './screen';
+import {Sound} from './modules/sound';
+import {Network} from './modules/network';
+import {Resource} from './modules/resource';
+import {resize} from './modules/screen';
 
 const {defineProperties, assign, freeze} = Object;
 
@@ -56,6 +56,7 @@ export function App(Service) {
         //  Screen Management ==================
         resize() {
             resize(app);
+            app.emit('resize');
         },
     });
 

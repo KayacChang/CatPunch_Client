@@ -33,27 +33,4 @@ export function TextureManager(symbolConfig) {
     }
 }
 
-export function update(reel, axis) {
-    reel.symbols
-        .forEach((symbol) => {
-            updatePos(symbol);
-            updateIcon(symbol);
-        });
 
-    function updatePos(symbol) {
-        const initialPos = symbol.symbolIdx * symbol.stopPerSymbol;
-
-        symbol.displayPos = (axis + initialPos) % reel.displayLength;
-
-        if (symbol.displayPos >= reel.displayLength - 1) {
-            symbol.readyToChange = true;
-        }
-    }
-
-    function updateIcon(symbol) {
-        if (symbol.readyToChange && symbol.displayPos < 1) {
-            symbol.icon = reel.reelTable[reel.reelPos];
-            symbol.readyToChange = false;
-        }
-    }
-}

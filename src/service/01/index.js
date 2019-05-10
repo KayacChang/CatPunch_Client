@@ -5,37 +5,85 @@ function fetchTokenFromURL() {
 }
 
 export function Service(network) {
-    const token =
-        fetchTokenFromURL() || sessionStorage.getItem('token');
+    const tokens = {
+        'token': construct(),
+        'sso_token': '',
+    };
 
-    if (!token) {
-        // @TODO Maybe Popup an Alert before redirect to game hall.
+    const env = {
+        agent_id: 0,
+        game_id: 5,
+    };
 
-        history.back();
+    return {sendLogin, sendInit, sendOneRound};
 
-        throw new Error(`User Access Tokens is empty. Redirect to Game Hall`);
+    function construct() {
+        const token =
+            fetchTokenFromURL() || sessionStorage.getItem('token');
+
+        if (!token) {
+            // @TODO Maybe Popup an Alert before redirect to game hall.
+
+            history.back();
+
+            throw new Error(
+                `User Access Tokens is empty. Redirect to Game Hall`,
+            );
+        }
+
+        history.pushState(undefined, undefined, location.origin);
+
+        global.addEventListener('popstate', () => history.back());
+
+        sessionStorage.setItem('token', token);
+
+        return token;
     }
 
-    history.pushState(undefined, undefined, location.origin);
-
-    global.addEventListener('popstate', () => history.back());
-
-    sessionStorage.setItem('token', token);
-
-    return {sendLogin};
-
     function sendLogin() {
-        const payLoad = {
-            token,
-            sso_token: '',
-            agent_id: 0,
-            game_id: 5,
+        const requestBody = {
+            ...tokens,
+            ...env,
             packet_id: 0,
             Payload: '',
         };
 
         return network
-            .post('api/entry', payLoad)
+            .post('api/entry', requestBody)
+            .then(({payload}) => JSON.parse(payload))
+            .then((result) => {
+                tokens['sso_token'] = result['sso_token'];
+                return result;
+            });
+    }
+
+    function sendInit() {
+        const requestBody = {
+            ...tokens,
+            ...env,
+            packet_id: 4,
+            Payload: '',
+        };
+
+        return network
+            .post('api/entry', requestBody)
+            .then(({payload}) => JSON.parse(payload));
+    }
+
+    function sendOneRound(userBet) {
+        const requestBody = {
+            ...tokens,
+            ...env,
+            packet_id: 5,
+            Payload: {
+                enumOperationType: 2,
+                // enumBetBaseType: 0,
+                // enumBetMultiply: 0,
+                ...userBet,
+            },
+        };
+        return network
+            .post('api/entry', requestBody)
             .then(({payload}) => JSON.parse(payload));
     }
 }
