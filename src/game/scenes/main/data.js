@@ -7,7 +7,7 @@ import SYMBOL_BAR_03 from './assets/symbols/bar03.png';
 import SYMBOL_SEVEN_01 from './assets/symbols/seven01.png';
 import SYMBOL_SEVEN_02 from './assets/symbols/seven02.png';
 
-import REEL_TABLES from './assets/reelTable';
+import REEL_TABLES_URL from './assets/reelTable.json';
 import MAIN_URL from './assets/sprite_sheets/main.fui';
 import MAIN_ATLAS0_URL from './assets/sprite_sheets/main@atlas0.png';
 import MAIN_ATLAS0_1_URL from './assets/sprite_sheets/main@atlas0_1.png';
@@ -26,6 +26,8 @@ import MAIN_ATLAS0_13_URL from './assets/sprite_sheets/main@atlas0_13.png';
 import MAIN_ATLAS0_14_URL from './assets/sprite_sheets/main@atlas0_14.png';
 import MAIN_ATLAS0_15_URL from './assets/sprite_sheets/main@atlas0_15.png';
 import MAIN_ATLAS0_16_URL from './assets/sprite_sheets/main@atlas0_16.png';
+
+import * as coin from '../../components/coin';
 
 export const symbolConfig = [
     {id: 7, name: 'bar01', url: SYMBOL_BAR_01},
@@ -60,11 +62,12 @@ export function reserve() {
         {name: 'main@atlas0_14.png', url: MAIN_ATLAS0_14_URL},
         {name: 'main@atlas0_15.png', url: MAIN_ATLAS0_15_URL},
         {name: 'main@atlas0_16.png', url: MAIN_ATLAS0_16_URL},
+        {name: 'reelTable.json', url: REEL_TABLES_URL},
         ...(symbolConfig),
+        ...coin.reserve(),
     ];
 }
 
-export const reelTables = REEL_TABLES;
 export const stopPerSymbol = 2;
 export const spinDuration = 2500;
 export const timeIntervalPerReel = 450;

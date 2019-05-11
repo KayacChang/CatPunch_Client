@@ -87,12 +87,26 @@ module.exports = function(env) {
                 },
                 //  Assets =============================================
                 {
+                    type: 'javascript/auto',
+                    test: /\.json$/,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: '[name].[ext]',
+                                publicPath: 'assets',
+                                outputPath: 'assets',
+                            },
+                        },
+                    ],
+                },
+                {
                     test: /\.(fui)$/,
                     use: [
                         {
                             loader: 'file-loader',
                             options: {
-                                name: '[hash].[ext]',
+                                name: '[name].[ext]',
                                 publicPath: 'assets',
                                 outputPath: 'assets',
                             },
@@ -105,7 +119,7 @@ module.exports = function(env) {
                         {
                             loader: 'file-loader',
                             options: {
-                                name: '[hash].[ext]',
+                                name: '[name].[ext]',
                                 publicPath: 'assets',
                                 outputPath: 'assets',
                             },
@@ -118,7 +132,7 @@ module.exports = function(env) {
                         {
                             loader: 'file-loader',
                             options: {
-                                name: '[hash].[ext]',
+                                name: '[name].[ext]',
                                 publicPath: 'assets',
                                 outputPath: 'assets',
                             },

@@ -1,7 +1,6 @@
 import {wait} from '../../../general/utils/time';
 import anime from 'animejs';
 
-
 export function Neko(scene) {
     const neko = scene.getChildByName('anim@neko');
 
@@ -11,16 +10,16 @@ export function Neko(scene) {
     neko.anim.loop = false;
     neko.visible = false;
 
-    neko.anim.onComplete = async function() {
+    neko.anim.on('complete', async () => {
         await wait(500);
-        neko.gotoAndStop(0);
-    };
+        neko.anim.gotoAndStop(0);
+    });
 
     return {appear, disappear, hit};
 
     function appear() {
         neko.visible = true;
-        neko.gotoAndStop(0);
+        neko.anim.gotoAndStop(0);
 
         appearAnim.play();
         return appearAnim.finished;
@@ -32,9 +31,9 @@ export function Neko(scene) {
     }
 
     function hit() {
-        neko.play();
+        neko.anim.play();
 
-        neko.on('frameChange', (frameIdx) => {
+        neko.anim.on('change', (frameIdx) => {
             if (frameIdx !== 10) return;
 
             scene.y = 2;
@@ -44,10 +43,10 @@ export function Neko(scene) {
                 easing: 'easeOutElastic(10, .1)',
                 duration: 750,
             });
-            neko.emit('hitComplete');
+            neko.anim.emit('hitComplete');
         });
 
         return new Promise((resolve) =>
-            neko.on('hitComplete', resolve));
+            neko.anim.on('hitComplete', resolve));
     }
 }

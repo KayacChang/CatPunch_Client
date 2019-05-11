@@ -1,8 +1,5 @@
 import {floor, divide} from 'mathjs';
-import {
-    MotionBlurFilter,
-    DropShadowFilter,
-} from '../plugin/filter';
+import {setMotionBlur} from '../../plugin/filter';
 
 import {
     TextureManager,
@@ -11,16 +8,13 @@ import {
     toReelPos,
 } from './util';
 
-export function SlotMachine(
-    {
-        view,
-        stopPerSymbol,
-        reelTables,
-        symbolConfig,
-        distancePerStop,
-        spin,
-    },
-) {
+export function SlotMachine({
+    view,
+    stopPerSymbol,
+    reelTables,
+    symbolConfig,
+    distancePerStop,
+}) {
     const slotBaseView =
         view.getChildByName('SlotBase');
 
@@ -31,9 +25,9 @@ export function SlotMachine(
             .filter(isReel)
             .map(Reel);
 
-    return {view, reels, spin};
+    return {view, reels};
 
-    function Symbol(view, symbolIdx) {
+    function Symbol(view, symbolIdx, reel) {
         let displayPos = 0;
 
         let icon = 0;
@@ -44,6 +38,12 @@ export function SlotMachine(
             divide(Number(view.height), stopPerSymbol);
 
         return {
+            get reel() {
+                return reel;
+            },
+            set reel(newReel) {
+                reel = newReel;
+            },
             get readyToChange() {
                 return readyToChange;
             },
@@ -70,8 +70,6 @@ export function SlotMachine(
                 view.y = (newPos * distancePerStop);
 
                 displayPos = floor(newPos);
-
-                view.emit('displayPosChange', displayPos);
             },
 
             get view() {
@@ -83,7 +81,6 @@ export function SlotMachine(
             get y() {
                 return Number(view.y);
             },
-
             get icon() {
                 return icon;
             },
@@ -99,22 +96,11 @@ export function SlotMachine(
 
         let reelTable = reelTables[reelIdx];
 
-        const symbols =
-            view.children
-                .filter(isSymbol)
-                .map(Symbol);
+        const motionBlur = setMotionBlur(view);
 
-        const motionBlurFilter = MotionBlurFilter(view);
+        let symbols = [];
 
-        DropShadowFilter(view, {
-            blur: 3.2,
-            quality: 3,
-            alpha: 0.58,
-            distance: 15,
-            rotation: [45, 90, 135][reelIdx],
-        });
-
-        return {
+        const it = {
             get reelIdx() {
                 return reelIdx;
             },
@@ -124,14 +110,18 @@ export function SlotMachine(
             set reelTable(newTable) {
                 reelTable = newTable;
             },
+
             get symbols() {
                 return symbols;
             },
+            set symbols(newSymbols) {
+                symbols = newSymbols;
+            },
             get displayLength() {
-                return symbols.length * stopPerSymbol;
+                return it.symbols.length * stopPerSymbol;
             },
             get reelPos() {
-                return toReelPos(this, axis);
+                return toReelPos(it, axis);
             },
             get axis() {
                 return axis;
@@ -139,36 +129,52 @@ export function SlotMachine(
             set axis(newAxis) {
                 axis = newAxis % (reelTable.length);
 
-                motionBlurFilter.update(axis);
+                motionBlur.update(axis);
 
-                update(this, axis);
+                update(it, axis);
             },
         };
+
+        it.symbols =
+            view.children
+                .filter(isSymbol)
+                .map((view, index) => Symbol(view, index, it));
+
+        return it;
     }
+}
+
+function isOutSideOfTheViewPort(symbol) {
+    return symbol.displayPos >= symbol.reel.displayLength - 1;
 }
 
 function update(reel, axis) {
     reel.symbols
         .forEach((symbol) => {
-            updatePos(symbol);
+            updatePos(symbol, axis);
             updateIcon(symbol);
         });
+}
 
-    function updatePos(symbol) {
-        const initialPos = symbol.symbolIdx * symbol.stopPerSymbol;
+function updatePos(symbol, axis) {
+    const initialPos = symbol.symbolIdx * symbol.stopPerSymbol;
 
-        symbol.displayPos = (axis + initialPos) % reel.displayLength;
+    symbol.displayPos =
+        (axis + initialPos) % symbol.reel.displayLength;
 
-        if (symbol.displayPos >= reel.displayLength - 1) {
-            symbol.readyToChange = true;
-        }
+    if (isOutSideOfTheViewPort(symbol)) {
+        symbol.readyToChange = true;
+
+        symbol.view.emit('outside');
     }
+}
 
-    function updateIcon(symbol) {
-        if (symbol.readyToChange && symbol.displayPos < 1) {
-            symbol.icon = reel.reelTable[reel.reelPos];
-            symbol.readyToChange = false;
-        }
-    }
+function updateIcon(symbol) {
+    if (!(symbol.readyToChange && symbol.displayPos < 1)) return;
+
+    const reel = symbol.reel;
+
+    symbol.icon = reel.reelTable[reel.reelPos];
+    symbol.readyToChange = false;
 }
 

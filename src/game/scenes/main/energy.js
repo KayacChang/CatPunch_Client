@@ -1,11 +1,13 @@
-import {AdvancedBloomFilter} from 'pixi-filters';
+import {setAdvancedBloom} from '../../plugin/filter';
 
 import anime from 'animejs';
 
 export function EnergyBar(view) {
     let scale = 0;
 
-    const glow = new AdvancedBloomFilter({
+    const energyBarView = view.getChildByName('view').anim;
+
+    setAdvancedBloom(energyBarView, {
         threshold: 0.5,
         bloomScale: 0.7,
         brightness: 0.9,
@@ -14,9 +16,6 @@ export function EnergyBar(view) {
         kernels: undefined,
         pixelSize: 1,
     });
-
-    view.getChildByName('view').anim
-        .filters = [glow];
 
     const maskWidth = [
         905,

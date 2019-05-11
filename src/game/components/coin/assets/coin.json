@@ -1,0 +1,142 @@
+{"frames": {
+
+"金幣原始檔.psd":
+{
+	"frame": {"x":0,"y":0,"w":184,"h":184},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":184,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0000_coin-(15).png":
+{
+	"frame": {"x":552,"y":184,"w":156,"h":184},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":18,"y":0,"w":156,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0001_coin-(14).png":
+{
+	"frame": {"x":184,"y":358,"w":132,"h":184},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":30,"y":0,"w":132,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0002_coin-(13).png":
+{
+	"frame": {"x":734,"y":0,"w":104,"h":184},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":44,"y":0,"w":104,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0003_coin-(12).png":
+{
+	"frame": {"x":708,"y":184,"w":70,"h":184},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":60,"y":0,"w":70,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0004_coin-(11).png":
+{
+	"frame": {"x":552,"y":458,"w":35,"h":184},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":76,"y":0,"w":35,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0005_coin-(10).png":
+{
+	"frame": {"x":778,"y":184,"w":55,"h":184},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":63,"y":0,"w":55,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0006_coin-(9).png":
+{
+	"frame": {"x":552,"y":368,"w":90,"h":184},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":44,"y":0,"w":90,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0007_coin-(8).png":
+{
+	"frame": {"x":0,"y":364,"w":121,"h":184},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":28,"y":0,"w":121,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0008_coin-(7).png":
+{
+	"frame": {"x":368,"y":351,"w":147,"h":184},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":15,"y":0,"w":147,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0009_coin-(6).png":
+{
+	"frame": {"x":368,"y":184,"w":167,"h":184},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":0,"w":167,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0010_coin-(5).png":
+{
+	"frame": {"x":0,"y":184,"w":180,"h":184},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0011_coin-(4).png":
+{
+	"frame": {"x":184,"y":0,"w":184,"h":184},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":184,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0012_coin-(3).png":
+{
+	"frame": {"x":368,"y":0,"w":184,"h":184},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":184,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0013_coin-(2).png":
+{
+	"frame": {"x":552,"y":0,"w":182,"h":184},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":0,"w":182,"h":184},
+	"sourceSize": {"w":184,"h":184}
+},
+"金幣原始檔_0014_圖層-0.png":
+{
+	"frame": {"x":184,"y":184,"w":174,"h":184},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":0,"w":174,"h":184},
+	"sourceSize": {"w":184,"h":184}
+}},
+"animations": {
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "coin.png",
+	"format": "RGBA8888",
+	"size": {"w":838,"h":498},
+	"scale": "0.5",
+	"smartupdate": "$TexturePacker:SmartUpdate:e35a9cfa0ee0893db6dad27ac0cf0ecc:5ea4b921fdb3d22134b4a89a9ce8a1af:37dcde439de7f7292f96409a4c62c08e$"
+}
+}

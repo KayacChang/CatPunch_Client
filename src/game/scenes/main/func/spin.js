@@ -8,56 +8,31 @@ import {
     maybeBonusFXDuration,
 } from '../data';
 
-import * as filters from 'pixi-filters';
+import {setBevel, setGlow} from '../../../plugin/filter';
 
 const maybeBonusIcon =
     symbolConfig.find(({maybeBonus}) => maybeBonus).id;
 
 const emptyIcon = symbolConfig.length;
 
-export async function spin(result) {
-    const it = this;
-
-    it.view.children
-        .filter(({name}) => name.includes('Effect'))
-        .forEach((effect) => {
-            effect.children
-                .forEach((anim) => anim.visible = false);
-            effect.visible = false;
-        });
-    it.reels.forEach(({symbols}) =>
-        symbols.forEach((symbol) => {
-            symbol.view.visible = true;
-            symbol.readyToChange = false;
-        }));
-
-    const mask = it.view.getChildByName('SlotBaseMask');
-
-    anime({
-        targets: mask,
-        alpha: 0,
-        easing: 'linear',
-        duration: 500,
-    });
-
-    onSpinStart(it);
+export async function spin(it, result) {
+    spinStart(it);
 
     await wait(spinDuration);
 
-    await onSpinStop(it, result);
+    await spinStop(it, result);
 
     await wait(500);
 
-    return onSpinComplete(it, result);
+    return spinComplete(it, result);
 }
 
-function onSpinStart(it) {
+function spinStart(it) {
     console.log('Spin Start...');
-
-    const reels = it.reels;
+    it.view.emit('spinStart');
 
     return anime({
-        targets: reels,
+        targets: it.reels,
         axis: '+=' + 300,
         easing: 'easeInOutQuad',
         duration: 10000,
@@ -65,12 +40,11 @@ function onSpinStart(it) {
     });
 }
 
-function onSpinStop(it, result) {
+function spinStop(it, result) {
     console.log('Spin Stop...');
 
     const reels = it.reels;
-
-    const fxReelRight = it.view.getChildByName('FXReel_R');
+    const fxReelRight = it.view.getChildByName('FXReel_R').anim;
 
     const thisRoundReelPos = result['indexOfEachWheel'];
     const thisRoundShowHand = result['enum_SymboTableForTable'];
@@ -122,32 +96,91 @@ function onSpinStop(it, result) {
             duration: 500,
             complete() {
                 fxReelRight.visible = reel.reelIdx === 1 && isMaybeBonus();
+
+                reel.symbols
+                    .forEach((symbol) => symbol.readyToChange = false);
             },
         }).finished;
     }
 }
 
-function GlowFilter(
-    {
-        distance = 10,
-        outerStrength = 1,
-        innerStrength = 2,
-        color = 0xffffff,
-    },
-) {
-    const filter = new filters.GlowFilter(
-        distance,
-        outerStrength,
-        innerStrength,
-        color,
-    );
-
-    return filter;
-}
-
-function onSpinComplete(it, result) {
+function spinComplete(it, result) {
     console.log('Spin Complete...');
 
+    it.view.children
+        .filter(({name}) => name.includes('FXReel'))
+        .forEach(({anim}) => anim.visible = false);
+
+    setEffectMask(it);
+
+    result['enum_SymboTableForTable']
+        .forEach((iconId, idx) => {
+            const symbolName = getSymbolName(iconId);
+
+            const reel = it.reels[idx];
+
+            if (isNormalSymbol(symbolName)) {
+                normalEffect(reel);
+            }
+
+            if (isSpecialSymbol(symbolName)) {
+                specialEffect(it, idx, symbolName);
+            }
+        });
+}
+
+function setSymbolsVisiblePerReel({symbols}, flag) {
+    symbols.forEach(({view}) => view.visible = flag);
+}
+
+function normalEffect(reel) {
+    const symbol =
+        getDisplaySymbol(reel).view;
+
+    anime({
+        targets: symbol.scale,
+        x: [{value: 1.1, duration: 1000}],
+        y: [{value: 1.1, duration: 1000, delay: 120}],
+        easing: 'easeOutElastic(5, .2)',
+    });
+
+    setGlow(symbol, {
+        distance: 15,
+        outerStrength: 1,
+        innerStrength: 5,
+        color: 0xFCFFA3,
+    });
+
+    setBevel(symbol);
+
+    symbol.once('outside', () => {
+        symbol.filters = [];
+        symbol.scale.set(1);
+    });
+}
+
+function isNormalSymbol(name) {
+    return ['bar01', 'bar02', 'bar03', 'seven01', 'seven02'].includes(name);
+}
+
+function isSpecialSymbol(name) {
+    return ['koi', 'neko', 'taiko_7', 'taiko_10'].includes(name);
+}
+
+function getDisplaySymbol(reel) {
+    return reel.symbols.find(
+        (symbol) => symbol.displayPos === 2);
+}
+
+function getSymbolName(icon) {
+    if (icon === emptyIcon) return 'empty';
+
+    return symbolConfig
+        .find(({id}) => id === icon)
+        .name;
+}
+
+function setEffectMask(it) {
     const mask = it.view.getChildByName('SlotBaseMask');
 
     anime({
@@ -157,66 +190,36 @@ function onSpinComplete(it, result) {
         duration: 500,
     });
 
-    result['enum_SymboTableForTable']
-        .forEach((symbol, idx) => {
-            const symbolName = (symbol === emptyIcon) ?
-                'empty' : symbolConfig.find(({id}) => id === symbol).name;
-
-            console.log(symbolName);
-            if (['bar01', 'bar02', 'bar03', 'seven01', 'seven02']
-                .includes(symbolName)) {
-                const displaySymbol =
-                    it.reels[idx].symbols
-                        .find((symbol) => symbol.displayPos === 2);
-
-                anime({
-                    targets: displaySymbol.view.scale,
-                    x: [{value: 1.1, duration: 1000}],
-                    y: [{value: 1.1, duration: 1000, delay: 120}],
-                    easing: 'easeOutElastic(5, .2)',
-                });
-
-                const glow = GlowFilter({
-                    distance: 15,
-                    outerStrength: 1,
-                    innerStrength: 5,
-                    color: 0xFCFFA3,
-                });
-
-                const bevel = new filters.BevelFilter();
-
-                displaySymbol.view.filters = [glow, bevel];
-
-                displaySymbol.view.on('displayPosChange', function reset(pos) {
-                    if (pos >= it.reels[idx].displayLength - 1) {
-                        displaySymbol.view.filters = [];
-                        displaySymbol.view.scale.set(1);
-
-                        displaySymbol.view.off('displayPosChange', reset);
-                    }
-                });
-            }
-
-            if (['koi', 'neko', 'taiko_7', 'taiko_10'].includes(symbolName)) {
-                it.reels[idx].symbols
-                    .forEach((symbol) => symbol.view.visible = false);
-
-                const effect =
-                    it.view
-                        .getChildByName(`Effect_${idx}`);
-
-                effect.visible = true;
-
-                const anim =
-                    effect
-                        .getChildByName(`anim@${symbolName}`);
-
-                const bevel = new filters.BevelFilter();
-
-                anim.filters = [bevel];
-
-                anim.visible = true;
-                anim.gotoAndPlay(0);
-            }
+    it.view.once('spinStart', () => {
+        anime({
+            targets: mask,
+            alpha: 0,
+            easing: 'linear',
+            duration: 500,
         });
+    });
+}
+
+function specialEffect(it, idx, symbolName) {
+    setSymbolsVisiblePerReel(it.reels[idx], false);
+
+    const effect =
+        it.view.getChildByName(`Effect_${idx}`);
+
+    effect.visible = true;
+
+    const anim =
+        effect.getChildByName(`anim@${symbolName}`).anim;
+
+    setBevel(anim);
+
+    anim.visible = true;
+    anim.gotoAndPlay(0);
+
+    it.view.once('spinStart', () => {
+        setSymbolsVisiblePerReel(it.reels[idx], true);
+
+        anim.visible = false;
+        effect.visible = false;
+    });
 }
