@@ -211,7 +211,7 @@ function specialEffect(it, idx, symbolName) {
     const anim =
         effect.getChildByName(`anim@${symbolName}`).anim;
 
-    setBevel(anim);
+    setBevel(anim, {thickness: 1, lightAlpha: 0.4});
 
     anim.visible = true;
     anim.gotoAndPlay(0);

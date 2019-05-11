@@ -11,5 +11,10 @@ export function reserve() {
 
 export function create() {
     const spriteSheet = app.resource.get('coin').spritesheet;
-    return new extras.AnimatedSprite(spriteSheet);
+
+    const it = new extras.AnimatedSprite(spriteSheet.animations['coin']);
+
+    it.play();
+
+    return it;
 }
