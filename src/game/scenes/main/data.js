@@ -26,6 +26,9 @@ import MAIN_ATLAS0_13_URL from './assets/sprite_sheets/main@atlas0_13.png';
 import MAIN_ATLAS0_14_URL from './assets/sprite_sheets/main@atlas0_14.png';
 import MAIN_ATLAS0_15_URL from './assets/sprite_sheets/main@atlas0_15.png';
 import MAIN_ATLAS0_16_URL from './assets/sprite_sheets/main@atlas0_16.png';
+import MAIN_ATLAS0_17_URL from './assets/sprite_sheets/main@atlas0_17.png';
+
+import MAIN_BGM from './assets/sounds/MainBGM.mp3';
 
 import * as coin from '../../components/coin';
 
@@ -41,6 +44,16 @@ export const symbolConfig = [
     {id: 8, name: 'taiko_7', url: SYMBOL_WILD_TAIKO},
     {id: 9, name: 'taiko_10', url: SYMBOL_WILD_TAIKO},
 ];
+
+const fontsConfig = {
+    name: 'font',
+    url: '',
+    metadata: {
+        google: {
+            families: ['Candal'],
+        },
+    },
+};
 
 export function reserve() {
     return [
@@ -62,7 +75,10 @@ export function reserve() {
         {name: 'main@atlas0_14.png', url: MAIN_ATLAS0_14_URL},
         {name: 'main@atlas0_15.png', url: MAIN_ATLAS0_15_URL},
         {name: 'main@atlas0_16.png', url: MAIN_ATLAS0_16_URL},
+        {name: 'main@atlas0_17.png', url: MAIN_ATLAS0_17_URL},
         {name: 'reelTable.json', url: REEL_TABLES_URL},
+        {name: 'mainBGM', url: MAIN_BGM, metadata: {html5: true, loop: true}},
+        (fontsConfig),
         ...(symbolConfig),
         ...coin.reserve(),
     ];

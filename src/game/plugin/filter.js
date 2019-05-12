@@ -1,6 +1,7 @@
 import {
     GlowFilter, BevelFilter, DropShadowFilter,
     BulgePinchFilter, MotionBlurFilter, AdvancedBloomFilter,
+    OutlineFilter,
 } from 'pixi-filters';
 
 function setFilter(view, filter) {
@@ -9,6 +10,14 @@ function setFilter(view, filter) {
     view.filters = [filter, ...view.filters];
 
     return view;
+}
+
+export function setOutline(view, options) {
+    const it = new OutlineFilter(options);
+
+    setFilter(view, it);
+
+    return it;
 }
 
 export function setAdvancedBloom(view, options) {

@@ -10,6 +10,8 @@ import {EnergyBar} from './energy';
 
 import {setBevel, setDropShadow} from '../../plugin/filter';
 
+const {assign} = Object;
+
 function initSlotMachine(scene, reelTables) {
     const slot =
         SlotMachine({
@@ -22,7 +24,7 @@ function initSlotMachine(scene, reelTables) {
 
     slot.reels
         .forEach((reel) =>
-            setDropShadow(reel, {
+            setDropShadow(reel.view, {
                 blur: 3.2,
                 quality: 3,
                 alpha: 0.58,
@@ -55,7 +57,6 @@ function initSlotMachine(scene, reelTables) {
                 });
         });
 
-
     return slot;
 }
 
@@ -65,11 +66,45 @@ export function create() {
 
     app.stage.addChild(scene);
 
+    const userInterface =
+        scene.getChildByName('UserInterface');
+
+    setDropShadow(userInterface, {
+        rotation: 45,
+        distance: 12,
+        quality: 3,
+        blur: 3.6,
+        alpha: 0.9,
+    });
+
+    const labelCash =
+        userInterface.getChildByName('label@cash').content;
+
+    assign(labelCash.style, {
+        fontFamily: 'Candal',
+    });
+
+    const labelTotalWin =
+        userInterface.getChildByName('label@total_win').content;
+
+    assign(labelTotalWin.style, {
+        fontFamily: 'Candal',
+    });
+
+    const labelBet =
+        userInterface.getChildByName('label@bet').content;
+
+    assign(labelBet.style, {
+        fontFamily: 'Candal',
+    });
+
     const reelTables = app.resource.get('reelTable.json').data;
 
     const slot = initSlotMachine(scene, reelTables);
 
     const neko = Neko(scene);
+
+    app.sound.play('mainBGM');
 
     window.play = function(res) {
         const result = {

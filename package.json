@@ -35,14 +35,14 @@
     "html-webpack-plugin": "^4.0.0-beta.5",
     "mini-css-extract-plugin": "^0.5.0",
     "minimist": "^1.2.0",
+    "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
     "url-loader": "^1.1.2",
     "webpack": "^4.30.0",
     "webpack-cli": "^3.2.3",
     "webpack-dev-middleware": "^3.5.2",
     "webpack-dev-server": "^3.2.1",
-    "webpack-merge": "^4.2.1",
-    "node-sass": "^4.12.0"
+    "webpack-merge": "^4.2.1"
   },
   "dependencies": {
     "animejs": "^3.0.1",
@@ -56,9 +56,10 @@
     "mobile-detect": "^1.4.3",
     "pixi-filters": "^2.7.1",
     "pixi.js": "^4.8.7",
-    "pixi_fairygui": "^0.3.36",
+    "pixi_fairygui": "^0.3.39",
     "ramda": "^0.26.1",
     "random-js": "^2.0.0",
+    "webfontloader": "^1.6.28",
     "xml-js": "^1.6.11",
     "zlibjs": "^0.3.1"
   }

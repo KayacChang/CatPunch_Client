@@ -1,10 +1,15 @@
-import {LoaderResource} from 'pixi.js';
+import {loaders} from 'pixi.js';
 import {where} from '../../general/utils/logic';
 import {Howl} from 'howler';
 
+import {load as loadFont} from 'webfontloader';
+
 export function Resource({loader}) {
+    loader
     //  For Sound Loading
-    loader.pre(HowlerLoader);
+        .pre(HowlerLoader)
+        //  For Font Loading
+        .pre(WebFontLoader);
 
     //  For Loading Progress
     loader.on('progress', (...args) => {
@@ -31,9 +36,9 @@ export function Resource({loader}) {
 }
 
 function HowlerLoader(resource, next) {
-    if (check()) return next();
+    if (check(resource)) return next();
 
-    const {LOADING} = LoaderResource.STATUS_FLAGS;
+    const {LOADING} = loaders.Resource.STATUS_FLAGS;
     resource._setFlag(LOADING, true);
 
     resource.data = new Howl({
@@ -43,7 +48,7 @@ function HowlerLoader(resource, next) {
         onloaderror,
     });
 
-    function check() {
+    function check(resource) {
         return (
             !resource ||
             where(resource.extension)
@@ -62,3 +67,31 @@ function HowlerLoader(resource, next) {
         next();
     }
 }
+
+function WebFontLoader(resource, next) {
+    if (check()) return next();
+
+    loadFont({
+        ...(resource.metadata),
+        active,
+        inactive,
+    });
+
+    function check() {
+        return (
+            !resource || resource.name !== 'font'
+        );
+    }
+
+    function active() {
+        resource.complete();
+        next();
+    }
+
+    function inactive() {
+        console.error(resource);
+        resource.abort(message);
+        next();
+    }
+}
+

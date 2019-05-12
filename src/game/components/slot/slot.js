@@ -101,6 +101,9 @@ export function SlotMachine({
         let symbols = [];
 
         const it = {
+            get view() {
+                return view;
+            },
             get reelIdx() {
                 return reelIdx;
             },
