@@ -1,5 +1,5 @@
 import {Button} from '../../components/common/Button';
-import {NumberPad} from './components/NumberPad';
+import {Exchange} from './sections/exchange';
 
 export function Menu(parent) {
     const menu = parent.getChildByName('menu');
@@ -75,21 +75,4 @@ function close(it) {
     return () => {
         it.visible = false;
     };
-}
-
-function Section(it) {
-    it.open = open;
-    return it;
-
-    function open() {
-        it.visible = true;
-    }
-}
-
-function Exchange(it) {
-    it = Section(it);
-
-    NumberPad(it);
-
-    return it;
 }
