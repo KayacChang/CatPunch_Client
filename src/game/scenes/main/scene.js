@@ -1,3 +1,4 @@
+
 import {addPackage} from 'pixi_fairygui';
 
 import {SlotMachine} from '../../components/slot';
@@ -9,8 +10,6 @@ import {Neko} from './neko';
 import {EnergyBar} from './energy';
 
 import {setBevel, setDropShadow} from '../../plugin/filter';
-
-const {assign} = Object;
 
 function initSlotMachine(scene, reelTables) {
     const slot =
@@ -66,45 +65,11 @@ export function create() {
 
     app.stage.addChild(scene);
 
-    const userInterface =
-        scene.getChildByName('UserInterface');
-
-    setDropShadow(userInterface, {
-        rotation: 45,
-        distance: 12,
-        quality: 3,
-        blur: 3.6,
-        alpha: 0.9,
-    });
-
-    const labelCash =
-        userInterface.getChildByName('label@cash').content;
-
-    assign(labelCash.style, {
-        fontFamily: 'Candal',
-    });
-
-    const labelTotalWin =
-        userInterface.getChildByName('label@total_win').content;
-
-    assign(labelTotalWin.style, {
-        fontFamily: 'Candal',
-    });
-
-    const labelBet =
-        userInterface.getChildByName('label@bet').content;
-
-    assign(labelBet.style, {
-        fontFamily: 'Candal',
-    });
-
     const reelTables = app.resource.get('reelTable.json').data;
 
     const slot = initSlotMachine(scene, reelTables);
 
     const neko = Neko(scene);
-
-    app.sound.play('mainBGM');
 
     window.play = function(res) {
         const result = {

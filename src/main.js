@@ -36,7 +36,8 @@ async function main() {
     startLoading(loadScene);
 
     //  Import Main Scene
-    const mainScene = await import('./game/scenes/main');
+    // const mainScene = await import('./game/scenes/main');
+    const userInterface = await import('./game/interface/slot');
 
     app.on('loading', ({progress}, {name}) =>
         log(
@@ -46,10 +47,11 @@ async function main() {
 
     await Promise.all([
         // app.service.sendLogin(),
-        app.resource.load(mainScene),
+        // app.resource.load(mainScene),
+        app.resource.load(userInterface),
     ]);
 
-    loadComplete(mainScene);
+    loadComplete(userInterface);
 }
 
 main();

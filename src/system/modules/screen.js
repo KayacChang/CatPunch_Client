@@ -55,9 +55,9 @@ export function resize(app) {
     app.renderer
         .resize(size.width, size.height);
 
-    const expectStageSize = {width: 1920, height: 1080};
     const rootScene = app.stage.children[0];
     if (rootScene) {
+        const expectStageSize = {width: 1920, height: 1080};
         rootScene.scale.x = size.width / expectStageSize.width;
         rootScene.scale.y = size.height / expectStageSize.height;
     }

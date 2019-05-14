@@ -11,7 +11,9 @@ const {defineProperties, assign, freeze} = Object;
 
 export function App(Service) {
     const app =
-        new Application({resolution: devicePixelRatio});
+        new Application({
+            resolution: devicePixelRatio,
+        });
 
     //  Resource
     const resource = Resource(app);
@@ -21,6 +23,8 @@ export function App(Service) {
     const network = Network();
     //  Service
     const service = Service && Service(network);
+    //  User
+    const user = new Map();
 
     //  Modules
     defineProperties(app, {
@@ -35,6 +39,9 @@ export function App(Service) {
         },
         service: {
             get: () => service,
+        },
+        user: {
+            get: () => user,
         },
     });
 
