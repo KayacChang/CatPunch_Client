@@ -1,10 +1,10 @@
-import {Button} from '../../../components/common/Button';
-import {Section} from './section';
+import {Button} from '../../components/Button';
+import {Openable} from './openable';
 
 const {trunc} = Math;
 
 export function Exchange(exchange) {
-    exchange = Section(exchange);
+    exchange = Openable(exchange);
 
     const pad =
         exchange.getChildByName('NumberPad');
@@ -25,7 +25,76 @@ export function Exchange(exchange) {
         exchange.getChildByName('input@credit'),
     );
 
+    Currencies(exchange);
+
+    RefreshButton(
+        exchange.getChildByName('btn@refresh'),
+    );
+
     return exchange;
+
+    function Currencies(exchange) {
+        const typeOfCurrencies = [
+            'Gold', 'Entertain',
+            'Bonus', 'Gift',
+        ];
+
+        const {content} = exchange.getChildByName('input@currencies');
+        content.text = typeOfCurrencies[0];
+
+        const list =
+            DropDown(exchange.getChildByName('ul@dropdown'));
+
+        DropDownButton(exchange.getChildByName('btn@dropdown'));
+
+        return {get};
+
+        function get() {
+            return content.text;
+        }
+
+        function DropDown(it) {
+            it = Openable(it);
+
+            it.children
+                .filter(({name}) => name.includes('btn'))
+                .forEach(Item);
+
+            it.children
+                .filter(({name}) => name.includes('text'))
+                .forEach(setText);
+
+            return it;
+
+            function Item(it) {
+                it = Button(it);
+
+                const [, id] = it.name.split('@');
+                it.on('pointerdown', () => {
+                    content.text = typeOfCurrencies[id];
+                    list.close();
+                });
+            }
+
+            function setText({name, content}) {
+                const [, id] = name.split('@');
+                content.text = typeOfCurrencies[id];
+            }
+        }
+
+        function DropDownButton(btn) {
+            btn = Button(btn);
+
+            btn.on('pointerdown', click);
+            return btn;
+
+            function click() {
+                list.visible ?
+                    list.close() : list.open();
+            }
+        }
+    }
+
 
     function Credit({content}) {
         let credit = 0;
@@ -49,6 +118,17 @@ export function Exchange(exchange) {
 
         function pop() {
             set(trunc(credit / 10));
+        }
+    }
+
+    function RefreshButton(btn) {
+        btn = Button(btn);
+        btn.on('pointerdown', click);
+        return btn;
+
+        function click() {
+            console.log('Send Refresh...');
+            // @TODO Send Refresh to server and sync result to coin groups
         }
     }
 

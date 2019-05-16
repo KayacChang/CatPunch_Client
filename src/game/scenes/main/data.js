@@ -66,7 +66,11 @@ export function reserve() {
         {name: 'main@atlas0_15.png', url: MAIN_ATLAS0_15_URL},
         {name: 'main@atlas0_16.png', url: MAIN_ATLAS0_16_URL},
         {name: 'reelTable.json', url: REEL_TABLES_URL},
-        {name: 'mainBGM', url: MAIN_BGM, metadata: {html5: true, loop: true}},
+        {
+            name: 'mainBGM',
+            url: MAIN_BGM,
+            metadata: {html5: true, loop: true},
+        },
         ...(symbolConfig),
         ...coin.reserve(),
     ];

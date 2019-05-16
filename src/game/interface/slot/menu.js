@@ -1,27 +1,32 @@
-import {Button} from '../../components/common/Button';
+import {Button} from '../components/Button';
 import {Exchange} from './sections/exchange';
+import {Setting} from './sections/setting';
+import {Openable} from './sections/openable';
+
+const {entries} = Object;
 
 export function Menu(parent) {
-    const menu = parent.getChildByName('menu');
+    const menu = Openable(
+        parent.getChildByName('menu'),
+    );
 
-    menu.exchange = Exchange(
+    const exchange = Exchange(
         menu.getChildByName('exchange'),
     );
 
-    Nav(menu);
+    const setting = Setting(
+        menu.getChildByName('setting'),
+    );
 
-    menu.open = open;
-    menu.close = close(menu);
+    const sections =
+        new Map(entries({exchange, setting}));
+
+    Nav(menu, sections);
 
     return menu;
-
-    function open() {
-        menu.visible = true;
-        menu.exchange.open();
-    }
 }
 
-function Nav(menu) {
+function Nav(menu, sections) {
     const nav = menu.getChildByName('nav');
 
     BackButton(
@@ -46,33 +51,22 @@ function Nav(menu) {
         return it;
 
         function click() {
-            // menu[name].open();
+            sections.forEach((section) => section.close());
+            if (sections.has(name)) sections.get(name).open();
+
             navBtns.forEach((btn) =>
-                (btn.name === it.name) ?
-                    light(btn) : dark(btn),
+                btn.icon.alpha =
+                    (btn.name === it.name) ?
+                        0.9 : 0.5,
             );
         }
     }
 
-    function light(btn) {
-        btn.alpha = 1;
-        btn.icon.alpha = 1;
-    }
-
-    function dark(btn) {
-        btn.alpha = 0.7;
-        btn.icon.alpha = 0.7;
+    function BackButton(btn, menu) {
+        btn = Button(btn);
+        btn.on('pointerdown', () => menu.close());
+        return btn;
     }
 }
 
-function BackButton(btn, menu) {
-    btn = Button(btn);
-    btn.on('pointerdown', close(menu));
-    return btn;
-}
 
-function close(it) {
-    return () => {
-        it.visible = false;
-    };
-}

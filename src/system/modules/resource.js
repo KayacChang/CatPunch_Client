@@ -41,12 +41,16 @@ function HowlerLoader(resource, next) {
     const {LOADING} = loaders.Resource.STATUS_FLAGS;
     resource._setFlag(LOADING, true);
 
-    resource.data = new Howl({
+    const sound = new Howl({
         ...resource.metadata,
         src: [resource.url],
         onload,
         onloaderror,
     });
+
+    resource.type = loaders.Resource.TYPE.AUDIO;
+
+    resource.data = sound;
 
     function check(resource) {
         return (

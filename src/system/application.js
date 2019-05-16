@@ -13,6 +13,7 @@ export function App(Service) {
     const app =
         new Application({
             resolution: devicePixelRatio,
+            antialias: true,
         });
 
     //  Resource
