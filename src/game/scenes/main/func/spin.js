@@ -1,6 +1,6 @@
 import anime from 'animejs';
 import {wait} from '../../../../general/utils/time';
-import {toAxis} from '../../../components/slot';
+import {toAxis} from '../components/slot';
 import {
     spinDuration,
     timeIntervalPerReel,
@@ -40,27 +40,24 @@ function spinStart(it) {
     });
 }
 
-function spinStop(it, result) {
+function spinStop(it, {positions, symbols}) {
     console.log('Spin Stop...');
 
     const reels = it.reels;
     const fxReelRight = it.view.getChildByName('FXReel_R').anim;
 
-    const thisRoundReelPos = result['indexOfEachWheel'];
-    const thisRoundShowHand = result['enum_SymboTableForTable'];
-
     return Promise.all(reels.map(stop));
 
     function isMaybeBonus() {
         return (
-            thisRoundShowHand[0] !== emptyIcon &&
-            thisRoundShowHand[1] === maybeBonusIcon
+            symbols[0] !== emptyIcon &&
+            symbols[1] === maybeBonusIcon
         );
     }
 
     async function stop(reel) {
-        const pos = thisRoundReelPos[reel.reelIdx];
-        const icon = thisRoundShowHand[reel.reelIdx];
+        const pos = positions[reel.reelIdx];
+        const icon = symbols[reel.reelIdx];
 
         let time = reel.reelIdx * timeIntervalPerReel;
 
@@ -84,18 +81,26 @@ function spinStop(it, result) {
             const symbol =
                 reel.symbols.find((symbol) => symbol.displayPos === 2);
 
-            if (symbol === undefined) debugger;
-
             symbol.icon = icon;
         }
 
         return anime({
             targets: reel,
-            axis: targetAxis,
-            easing: 'easeOutElastic(1, .2)',
+            //  @TODO Current Algorithm must be fix in future...
+            axis: '+=' + (reel.displayLength),
+            easing: 'easeOutElastic(1, .3)',
             duration: 500,
             complete() {
                 fxReelRight.visible = reel.reelIdx === 1 && isMaybeBonus();
+
+                const table = reel.symbols
+                    .map(({icon, displayPos}) => {
+                        const name = getSymbolName(icon);
+                        return {displayPos, icon, name};
+                    })
+                    .sort((a, b) => a.displayPos - b.displayPos);
+
+                console.table(table);
 
                 reel.symbols
                     .forEach((symbol) => symbol.readyToChange = false);
@@ -104,8 +109,13 @@ function spinStop(it, result) {
     }
 }
 
-function spinComplete(it, result) {
+async function spinComplete(it, {hasLink, symbols}) {
     console.log('Spin Complete...');
+
+    if (!hasLink) {
+        await wait(500);
+        return;
+    }
 
     it.view.children
         .filter(({name}) => name.includes('FXReel'))
@@ -113,7 +123,7 @@ function spinComplete(it, result) {
 
     setEffectMask(it);
 
-    result['enum_SymboTableForTable']
+    symbols
         .forEach((iconId, idx) => {
             const symbolName = getSymbolName(iconId);
 
@@ -127,6 +137,8 @@ function spinComplete(it, result) {
                 specialEffect(it, idx, symbolName);
             }
         });
+
+    await wait(1500);
 }
 
 function setSymbolsVisiblePerReel({symbols}, flag) {
@@ -160,11 +172,13 @@ function normalEffect(reel) {
 }
 
 function isNormalSymbol(name) {
-    return ['bar01', 'bar02', 'bar03', 'seven01', 'seven02'].includes(name);
+    return name.includes('bar') || name.includes('seven');
 }
 
 function isSpecialSymbol(name) {
-    return ['koi', 'neko', 'taiko_7', 'taiko_10'].includes(name);
+    return name.includes('koi') ||
+        name.includes('neko') ||
+        name.includes('taiko');
 }
 
 function getDisplaySymbol(reel) {

@@ -7,7 +7,7 @@ if (serviceWorker) {
 
     function onload() {
         serviceWorker
-            .register('/service-worker.js')
+            .register('/service-test.worker.js')
             .then((register) => {
                 log('SW registered: ', register);
                 // @TODO...

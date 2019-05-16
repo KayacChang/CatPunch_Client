@@ -1,15 +1,25 @@
-
 import {addPackage} from 'pixi_fairygui';
 
-import {SlotMachine} from '../../components/slot';
+import {SlotMachine} from './components/slot';
 
 import * as data from './data';
 import {spin} from './func/spin';
 
-import {Neko} from './neko';
-import {EnergyBar} from './energy';
+// import {Neko} from './components/neko';
+import {EnergyBar} from './components/energy';
 
 import {setBevel, setDropShadow} from '../../plugin/filter';
+import {
+    __,
+    all,
+    any,
+    equals,
+    filter,
+    head,
+    includes,
+    range,
+    reject,
+} from 'ramda';
 
 function initSlotMachine(scene, reelTables) {
     const slot =
@@ -31,63 +41,90 @@ function initSlotMachine(scene, reelTables) {
                 rotation: [45, 90, 135][reel.reelIdx],
             }));
 
-    EnergyBar(slot.view.getChildByName('EnergyBar'));
 
-    slot.view.children
-        .filter(({name}) => name.includes('FXReel'))
-        .forEach((fx) => {
-            fx.anim.gotoAndPlay(0);
-            fx.anim.once('complete', function onComplete() {
-                fx.anim.visible = false;
-                fx.anim.off('complete', onComplete);
-            });
-        });
+    const tasks =
+        slot.view.children
+            .map((target) => {
+                if (target.name.includes('FXReel')) {
+                    return whenAnimComplete(target);
+                } else if (target.name.includes('Effect')) {
+                    return target.children.map(whenAnimComplete);
+                }
+                return Promise.resolve();
+            })
+            .flat();
 
-    slot.view.children
-        .filter(({name}) => name.includes('Effect'))
-        .forEach((effect) => {
-            effect.children
-                .forEach((it) => {
-                    it.anim.gotoAndPlay(0);
-                    it.anim.once('complete', function onComplete() {
-                        it.anim.visible = false;
-                        it.anim.off('complete', onComplete);
-                    });
-                });
-        });
+    Promise.all(tasks)
+        .then(() => slot.view.emit('Ready'));
 
     return slot;
+
+    function whenAnimComplete(fx) {
+        fx.anim.gotoAndPlay(0);
+
+        return new Promise((resolve) =>
+            fx.anim.once('complete', resolve),
+        ).then(() => {
+            fx.anim.visible = false;
+        });
+    }
 }
 
-export function create() {
+export function create({reelTables}) {
     const create = addPackage(app, 'main');
     const scene = create('MainScene');
 
-    app.stage.addChild(scene);
-
-    const reelTables = app.resource.get('reelTable.json').data;
-
     const slot = initSlotMachine(scene, reelTables);
 
-    const neko = Neko(scene);
+    const energy = EnergyBar(slot.view.getChildByName('EnergyBar'));
 
-    window.play = function(res) {
-        const result = {
-            'indexOfEachWheel': res,
-            'enum_SymboTableForTable':
-                res.map((pos, index) => reelTables[index][pos]),
-        };
+    // const neko = Neko(scene);
 
-        spin(slot, result);
+    app.on('GameResult', (result) => {
+        console.log('Result =============');
+        console.table(result);
+
+        spin(slot, result)
+            .then(() => energy.scale = result.earnPoints)
+            .then(() => console.log('One Round Complete...'));
+    });
+
+    global.play = function(symbols) {
+        const positions =
+            reelTables.map((reel, index) => reel.indexOf(symbols[index]));
+        const hasLink = checkHasLink(symbols);
+
+        let earnPoints = energy.scale;
+
+        if (hasBonusSymbol(symbols)) earnPoints += 1;
+
+        app.emit('GameResult', {positions, symbols, hasLink, earnPoints});
     };
 
-    window.appear = function() {
-        neko.appear();
-    };
-    window.disappear = function() {
-        neko.disappear();
-    };
-    window.hit = function() {
-        neko.hit();
-    };
+    slot.view.once('Ready', () => app.emit('GameReady'));
+
+    return scene;
+}
+
+function hasBonusSymbol(symbols) {
+    return symbols[1] === 1;
+}
+
+function checkHasLink(symbols) {
+    const wildSet = range(0, 4 + 1);
+
+    const isWild = includes(__, wildSet);
+    const isEmpty = equals(10);
+
+    if (any(isEmpty, symbols)) return false;
+
+    if (filter(isWild, symbols).length >= 2) return true;
+
+    if (filter(isWild, symbols).length >= 1) {
+        const lastSymbol = reject(isWild, symbols);
+
+        return all(equals(head(lastSymbol)), lastSymbol);
+    }
+
+    return all(equals(head(symbols)), symbols);
 }

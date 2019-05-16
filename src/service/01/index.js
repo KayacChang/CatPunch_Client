@@ -1,8 +1,4 @@
-function fetchTokenFromURL() {
-    const url = new URL(location);
-
-    return url.searchParams.get('token');
-}
+import {getSearchParams} from '../utils';
 
 export function Service(network) {
     const tokens = {
@@ -19,7 +15,7 @@ export function Service(network) {
 
     function construct() {
         const token =
-            fetchTokenFromURL() || sessionStorage.getItem('token');
+            getSearchParams('token') || sessionStorage.getItem('token');
 
         if (!token) {
             // @TODO Maybe Popup an Alert before redirect to game hall.

@@ -1,4 +1,4 @@
-import {setAdvancedBloom} from '../../plugin/filter';
+import {setAdvancedBloom} from '../../../plugin/filter';
 
 import anime from 'animejs';
 

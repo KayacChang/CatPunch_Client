@@ -1,7 +1,7 @@
-import {Button} from '../components/Button';
-import {Exchange} from './sections/exchange';
-import {Setting} from './sections/setting';
-import {Openable} from './sections/openable';
+import {Button} from '../../components/Button';
+import {Exchange} from './exchange';
+import {Setting} from './setting';
+import {Openable} from '../../components/Openable';
 
 const {entries} = Object;
 

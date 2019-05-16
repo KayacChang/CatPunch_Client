@@ -1,5 +1,5 @@
 import {Button} from '../../components/Button';
-import {Openable} from './openable';
+import {Openable} from '../../components/Openable';
 
 const {trunc} = Math;
 

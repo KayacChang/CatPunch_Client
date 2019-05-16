@@ -1,4 +1,4 @@
-import {Button} from '../components/Button';
+import {Button, ToggleButton} from '../components';
 
 const {assign, fromEntries} = Object;
 
@@ -37,16 +37,18 @@ function MenuButton(view, menu) {
 }
 
 function AudioButton(view) {
-    const it = Button(view);
+    const it = ToggleButton(view);
     const openView = it.getChildByName('open');
 
-    let flag = true;
+    it.on('Change', onChange);
 
-    it.on('pointerdown', () => {
-        flag = !flag;
-        openView.visible = flag;
-    });
+    onChange(it.checked);
+
     return it;
+
+    function onChange(checked) {
+        openView.visible = checked;
+    }
 }
 
 function FunctionMenu(view) {
@@ -126,7 +128,11 @@ function FunctionMenu(view) {
 
 function SpinButton(view) {
     const it = Button(view);
-    it.on('pointerdown', () => console.log('spin...'));
+    it.on('pointerdown', () => {
+        console.log('spin...');
+        app.service.getOneRound(10)
+            .then((result) => app.emit('GameResult', result));
+    });
     return it;
 }
 

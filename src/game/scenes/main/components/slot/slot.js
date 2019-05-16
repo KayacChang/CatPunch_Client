@@ -1,5 +1,5 @@
 import {floor, divide} from 'mathjs';
-import {setMotionBlur} from '../../plugin/filter';
+import {setMotionBlur} from '../../../../plugin/filter';
 
 import {
     TextureManager,
@@ -8,13 +8,15 @@ import {
     toReelPos,
 } from './util';
 
-export function SlotMachine({
-    view,
-    stopPerSymbol,
-    reelTables,
-    symbolConfig,
-    distancePerStop,
-}) {
+export function SlotMachine(
+    {
+        view,
+        stopPerSymbol,
+        reelTables,
+        symbolConfig,
+        distancePerStop,
+    },
+) {
     const slotBaseView =
         view.getChildByName('SlotBase');
 
@@ -148,7 +150,7 @@ export function SlotMachine({
 }
 
 function isOutSideOfTheViewPort(symbol) {
-    return symbol.displayPos >= symbol.reel.displayLength - 1;
+    return symbol.displayPos >= symbol.reel.displayLength - 2;
 }
 
 function update(reel, axis) {

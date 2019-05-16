@@ -1,4 +1,4 @@
-import {Openable} from './openable';
+import {Openable} from '../../components/Openable';
 import {Button, ToggleButton, RangeSlider} from '../../components';
 
 import {range} from 'ramda';

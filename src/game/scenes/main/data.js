@@ -7,7 +7,6 @@ import SYMBOL_BAR_03 from './assets/symbols/bar03.png';
 import SYMBOL_SEVEN_01 from './assets/symbols/seven01.png';
 import SYMBOL_SEVEN_02 from './assets/symbols/seven02.png';
 
-import REEL_TABLES_URL from './assets/reelTable.json';
 import MAIN_URL from './assets/sprite_sheets/main.fui';
 import MAIN_ATLAS0_URL from './assets/sprite_sheets/main@atlas0.png';
 import MAIN_ATLAS0_1_URL from './assets/sprite_sheets/main@atlas0_1.png';
@@ -29,19 +28,19 @@ import MAIN_ATLAS0_16_URL from './assets/sprite_sheets/main@atlas0_16.png';
 
 import MAIN_BGM from './assets/sounds/MainBGM.mp3';
 
-import * as coin from '../../components/coin';
+import * as coin from '../../interface/components/coin';
 
 export const symbolConfig = [
-    {id: 7, name: 'bar01', url: SYMBOL_BAR_01},
-    {id: 1, name: 'bar02', url: SYMBOL_BAR_02},
-    {id: 2, name: 'bar03', url: SYMBOL_BAR_03},
-    {id: 3, name: 'seven01', url: SYMBOL_SEVEN_01},
-    {id: 4, name: 'seven02', url: SYMBOL_SEVEN_02},
-    {id: 5, name: 'koi', url: SYMBOL_WILD_KOI},
-    {id: 6, name: 'neko', url: SYMBOL_WILD_NEKO, maybeBonus: true},
-    {id: 0, name: 'taiko_5', url: SYMBOL_WILD_TAIKO},
-    {id: 8, name: 'taiko_7', url: SYMBOL_WILD_TAIKO},
-    {id: 9, name: 'taiko_10', url: SYMBOL_WILD_TAIKO},
+    {id: 0, name: 'koi', url: SYMBOL_WILD_KOI},
+    {id: 1, name: 'neko', url: SYMBOL_WILD_NEKO, maybeBonus: true},
+    {id: 2, name: 'taiko@5x', url: SYMBOL_WILD_TAIKO},
+    {id: 3, name: 'taiko@7x', url: SYMBOL_WILD_TAIKO},
+    {id: 4, name: 'taiko@10x', url: SYMBOL_WILD_TAIKO},
+    {id: 5, name: 'seven', url: SYMBOL_SEVEN_01},
+    {id: 6, name: 'seven@bar', url: SYMBOL_SEVEN_02},
+    {id: 7, name: 'bar@3', url: SYMBOL_BAR_03},
+    {id: 8, name: 'bar@2', url: SYMBOL_BAR_02},
+    {id: 9, name: 'bar@1', url: SYMBOL_BAR_01},
 ];
 
 
@@ -65,7 +64,6 @@ export function reserve() {
         {name: 'main@atlas0_14.png', url: MAIN_ATLAS0_14_URL},
         {name: 'main@atlas0_15.png', url: MAIN_ATLAS0_15_URL},
         {name: 'main@atlas0_16.png', url: MAIN_ATLAS0_16_URL},
-        {name: 'reelTable.json', url: REEL_TABLES_URL},
         {
             name: 'mainBGM',
             url: MAIN_BGM,
@@ -77,7 +75,7 @@ export function reserve() {
 }
 
 export const stopPerSymbol = 2;
-export const spinDuration = 2500;
+export const spinDuration = 3000;
 export const timeIntervalPerReel = 450;
 export const maybeBonusFXDuration = 1000;
 export const distancePerStop = 813 / 2;

@@ -16,8 +16,5 @@ export function reserve() {
 
 export function create() {
     const create = addPackage(app, 'load');
-    const scene = create('LoadScene');
-
-    app.stage
-        .addChild(scene);
+    return create('LoadScene');
 }

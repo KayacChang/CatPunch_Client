@@ -6,8 +6,6 @@ import {addPackage} from 'pixi_fairygui';
 import {Main} from './main';
 import {Menu} from './menu';
 
-import MAIN_BGM from '../../scenes/main/assets/sounds/MainBGM.mp3';
-
 const fontsConfig = {
     google: {
         families: ['Candal'],
@@ -19,11 +17,6 @@ export function reserve() {
         {name: 'interface.fui', url: INTERFACE_URL, xhrType: 'arraybuffer'},
         {name: 'interface@atlas0.png', url: INTERFACE_ATLAS0_URL},
         {name: 'font', url: '', metadata: fontsConfig},
-        {
-            name: 'bgm@main',
-            url: MAIN_BGM,
-            metadata: {html5: true, loop: true},
-        },
     ];
 }
 
@@ -35,6 +28,6 @@ export function create() {
 
     Menu(it);
 
-    app.stage.addChild(it);
+    return it;
 }
 

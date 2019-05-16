@@ -1,4 +1,4 @@
-import {wait} from '../../../general/utils/time';
+import {wait} from '../../../../general/utils/time';
 import anime from 'animejs';
 
 export function Neko(scene) {

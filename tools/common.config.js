@@ -4,7 +4,6 @@ const {ProgressPlugin, DefinePlugin, optimize} = require('webpack');
 const {ModuleConcatenationPlugin} = optimize;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-// const WorkboxPlugin = require('workbox-webpack-plugin');
 
 //  Path
 const {
@@ -28,7 +27,7 @@ module.exports = function(env) {
         //  Output  ===========================================
         output: {
             path: productDir,
-            filename: 'bundle.js',
+            filename: 'js/bundle.js',
             publicPath: publicPath,
         },
 
@@ -60,6 +59,10 @@ module.exports = function(env) {
         //  Module =============================================
         module: {
             rules: [
+                {
+                    test: /\.worker\.js$/,
+                    use: {loader: 'worker-loader'},
+                },
                 //  JavaScript =============================================
                 {
                     test: /\.js$/,
@@ -85,7 +88,7 @@ module.exports = function(env) {
                         'sass-loader',
                     ],
                 },
-                //  Assets =============================================
+                // Assets =============================================
                 {
                     type: 'javascript/auto',
                     test: /\.json$/,
@@ -170,12 +173,6 @@ module.exports = function(env) {
                 filename: '[name].css',
                 chunkFilename: '[id].css',
             }),
-
-            //  Service Worker
-            // new WorkboxPlugin.GenerateSW({
-            //     clientsClaim: true,
-            //     skipWaiting: true,
-            // }),
 
             new DefinePlugin({
                 'process.env': JSON.stringify(env),

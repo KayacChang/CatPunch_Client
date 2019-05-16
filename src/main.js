@@ -4,7 +4,7 @@ import {
 } from './web/utils/dom';
 
 import {App} from './system/application';
-// import {Service} from './service/01/';
+import {Service} from './service/00/';
 import {log} from './general/utils/dev';
 
 function startLoading(scene) {
@@ -12,32 +12,37 @@ function startLoading(scene) {
     clear(comp);
     comp.appendChild(app.view);
 
-    scene.create();
+    const loadScene = scene.create();
+    app.stage.addChild(loadScene);
     app.resize();
-}
 
-function loadComplete(scene) {
-    app.stage.removeChildren();
-
-    scene.create();
-    app.resize();
+    return loadScene;
 }
 
 async function main() {
     //  Init App
     // global.app = new App(Service);
-    global.app = new App();
+    global.app = new App(Service);
+
+    const result = await app.service.login();
+    console.log(result);
+
+    const user = await app.service.getUser();
+    console.log(user);
+
+    const initData = await app.service.init();
+    console.log(initData);
 
     // Import Load Scene
-    const loadScene = await import('./game/scenes/load/scene');
+    const LoadScene = await import('./game/scenes/load/scene');
 
-    await app.resource.load(loadScene);
+    await app.resource.load(LoadScene);
 
-    startLoading(loadScene);
+    const loadScene = startLoading(LoadScene);
 
     //  Import Main Scene
-    // const mainScene = await import('./game/scenes/main');
-    const userInterface = await import('./game/interface/slot');
+    const MainScene = await import('./game/scenes/main');
+    const UserInterface = await import('./game/interface/slot');
 
     app.on('loading', ({progress}, {name}) =>
         log(
@@ -47,11 +52,20 @@ async function main() {
 
     await Promise.all([
         // app.service.sendLogin(),
-        // app.resource.load(mainScene),
-        app.resource.load(userInterface),
+        app.resource.load(MainScene, UserInterface),
     ]);
 
-    loadComplete(userInterface);
+
+    const ui = UserInterface.create();
+    const scene = MainScene.create(initData);
+    scene.addChild(ui);
+
+    app.stage.addChildAt(scene, 0);
+
+    app.once('GameReady', () => {
+        app.stage.removeChild(loadScene);
+        app.resize();
+    });
 }
 
 main();
