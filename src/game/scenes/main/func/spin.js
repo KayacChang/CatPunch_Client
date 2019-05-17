@@ -15,24 +15,26 @@ const maybeBonusIcon =
 
 const emptyIcon = symbolConfig.length;
 
-export async function spin(it, result) {
-    spinStart(it);
+export async function spin(it, reels, result) {
+    spinStart(it, reels);
 
     await wait(spinDuration);
 
-    await spinStop(it, result);
+    await spinStop(it, reels, result);
 
     await wait(500);
 
-    return spinComplete(it, result);
+    await spinComplete(it, result);
+
+    await wait(500);
 }
 
-function spinStart(it) {
+function spinStart(it, reels) {
     console.log('Spin Start...');
     it.view.emit('spinStart');
 
     return anime({
-        targets: it.reels,
+        targets: reels,
         axis: '+=' + 300,
         easing: 'easeInOutQuad',
         duration: 10000,
@@ -40,11 +42,14 @@ function spinStart(it) {
     });
 }
 
-function spinStop(it, {positions, symbols}) {
+function spinStop(it, reels, {positions, symbols}) {
     console.log('Spin Stop...');
 
-    const reels = it.reels;
-    const fxReelRight = it.view.getChildByName('FXReel_R').anim;
+    const fxReels = [
+        it.view.getChildByName('FXReel_L'),
+        it.view.getChildByName('FXReel_M'),
+        it.view.getChildByName('FXReel_R'),
+    ];
 
     return Promise.all(reels.map(stop));
 
@@ -91,7 +96,9 @@ function spinStop(it, {positions, symbols}) {
             easing: 'easeOutElastic(1, .3)',
             duration: 500,
             complete() {
-                fxReelRight.visible = reel.reelIdx === 1 && isMaybeBonus();
+                fxReels.forEach((reel) => reel.visible = false);
+                fxReels[2].visible =
+                    (reel.reelIdx === 1 && isMaybeBonus());
 
                 const table = reel.symbols
                     .map(({icon, displayPos}) => {
@@ -112,33 +119,30 @@ function spinStop(it, {positions, symbols}) {
 async function spinComplete(it, {hasLink, symbols}) {
     console.log('Spin Complete...');
 
-    if (!hasLink) {
-        await wait(500);
-        return;
-    }
-
     it.view.children
         .filter(({name}) => name.includes('FXReel'))
         .forEach(({anim}) => anim.visible = false);
 
-    setEffectMask(it);
+    if (hasLink) {
+        setEffectMask(it);
 
-    symbols
-        .forEach((iconId, idx) => {
-            const symbolName = getSymbolName(iconId);
+        symbols
+            .forEach((iconId, idx) => {
+                const symbolName = getSymbolName(iconId);
 
-            const reel = it.reels[idx];
+                const reel = it.reels[idx];
 
-            if (isNormalSymbol(symbolName)) {
-                normalEffect(reel);
-            }
+                if (isNormalSymbol(symbolName)) {
+                    normalEffect(reel);
+                }
 
-            if (isSpecialSymbol(symbolName)) {
-                specialEffect(it, idx, symbolName);
-            }
-        });
+                if (isSpecialSymbol(symbolName)) {
+                    specialEffect(it, idx, symbolName);
+                }
+            });
 
-    await wait(1500);
+        await wait(1000);
+    }
 }
 
 function setSymbolsVisiblePerReel({symbols}, flag) {

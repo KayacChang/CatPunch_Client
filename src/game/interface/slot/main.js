@@ -130,7 +130,8 @@ function SpinButton(view) {
     const it = Button(view);
     it.on('pointerdown', () => {
         console.log('spin...');
-        app.service.getOneRound(10)
+        const bet = 10;
+        app.service.getOneRound({bet})
             .then((result) => app.emit('GameResult', result));
     });
     return it;

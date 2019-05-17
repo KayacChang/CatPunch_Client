@@ -13,6 +13,7 @@ export function Neko(scene) {
     neko.anim.on('complete', async () => {
         await wait(500);
         neko.anim.gotoAndStop(0);
+        disappear();
     });
 
     return {appear, disappear, hit};

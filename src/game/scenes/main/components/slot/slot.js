@@ -27,7 +27,11 @@ export function SlotMachine(
             .filter(isReel)
             .map(Reel);
 
-    return {view, reels};
+    return {view, reels, setReelTables};
+
+    function setReelTables(newTables) {
+        reelTables = newTables;
+    }
 
     function Symbol(view, symbolIdx, reel) {
         let displayPos = 0;
@@ -96,8 +100,6 @@ export function SlotMachine(
     function Reel(view, reelIdx) {
         let axis = 0;
 
-        let reelTable = reelTables[reelIdx];
-
         const motionBlur = setMotionBlur(view);
 
         let symbols = [];
@@ -110,10 +112,7 @@ export function SlotMachine(
                 return reelIdx;
             },
             get reelTable() {
-                return reelTable;
-            },
-            set reelTable(newTable) {
-                reelTable = newTable;
+                return reelTables[reelIdx];
             },
 
             get symbols() {
@@ -132,7 +131,7 @@ export function SlotMachine(
                 return axis;
             },
             set axis(newAxis) {
-                axis = newAxis % (reelTable.length);
+                axis = newAxis % (it.reelTable.length);
 
                 motionBlur.update(axis);
 

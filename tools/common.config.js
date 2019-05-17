@@ -104,7 +104,7 @@ module.exports = function(env) {
                     ],
                 },
                 {
-                    test: /\.(fui)$/,
+                    test: /\.(xml|fui)$/,
                     use: [
                         {
                             loader: 'file-loader',

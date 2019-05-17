@@ -28,6 +28,11 @@ import MAIN_ATLAS0_16_URL from './assets/sprite_sheets/main@atlas0_16.png';
 
 import MAIN_BGM from './assets/sounds/MainBGM.mp3';
 
+import EFFECT_TEXT_URL from './assets/fonts/effect-text.json';
+import './assets/fonts/effect-text.png';
+import FONT_EXPORT_URL from './assets/fonts/font-export.xml';
+import './assets/fonts/font-export.png';
+
 import * as coin from '../../interface/components/coin';
 
 export const symbolConfig = [
@@ -64,6 +69,8 @@ export function reserve() {
         {name: 'main@atlas0_14.png', url: MAIN_ATLAS0_14_URL},
         {name: 'main@atlas0_15.png', url: MAIN_ATLAS0_15_URL},
         {name: 'main@atlas0_16.png', url: MAIN_ATLAS0_16_URL},
+        {name: 'effect-text', url: EFFECT_TEXT_URL},
+        {name: 'effect-number', url: FONT_EXPORT_URL},
         {
             name: 'mainBGM',
             url: MAIN_BGM,

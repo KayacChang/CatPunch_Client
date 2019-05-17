@@ -5,21 +5,13 @@ import {SlotMachine} from './components/slot';
 import * as data from './data';
 import {spin} from './func/spin';
 
-// import {Neko} from './components/neko';
 import {EnergyBar} from './components/energy';
 
 import {setBevel, setDropShadow} from '../../plugin/filter';
-import {
-    __,
-    all,
-    any,
-    equals,
-    filter,
-    head,
-    includes,
-    range,
-    reject,
-} from 'ramda';
+import {wait} from '../../../general/utils/time';
+import {Neko} from './components/neko';
+import {FreeSpinIcon} from './components/freespin';
+import {freeGameEffect, reSpinEffect} from './components/effects';
 
 function initSlotMachine(scene, reelTables) {
     const slot =
@@ -63,68 +55,100 @@ function initSlotMachine(scene, reelTables) {
         fx.anim.gotoAndPlay(0);
 
         return new Promise((resolve) =>
-            fx.anim.once('complete', resolve),
-        ).then(() => {
-            fx.anim.visible = false;
-        });
+            fx.anim.once('complete', function onComplete() {
+                fx.anim.visible = false;
+                fx.anim.off('complete', onComplete);
+                resolve();
+            }),
+        );
     }
 }
 
-export function create({reelTables}) {
+export function create({normalTable, freeGameTable}) {
     const create = addPackage(app, 'main');
     const scene = create('MainScene');
 
-    const slot = initSlotMachine(scene, reelTables);
+    const slot = initSlotMachine(scene, normalTable);
 
     const energy = EnergyBar(slot.view.getChildByName('EnergyBar'));
 
-    // const neko = Neko(scene);
+    const freeSpinIcon =
+        FreeSpinIcon(
+            slot.view.getChildByName('icon@freespin'),
+        );
 
-    app.on('GameResult', (result) => {
+    const neko = Neko(scene);
+
+    window.respin = () => reSpinEffect(app.stage);
+
+    app.on('GameResult', async (result) => {
         console.log('Result =============');
         console.table(result);
 
-        spin(slot, result)
-            .then(() => energy.scale = result.earnPoints)
-            .then(() => console.log('One Round Complete...'));
+        await spin(
+            slot,
+            slot.reels,
+            {hasLink: result.hasLink, ...result.baseGame},
+        );
+
+        await energy.update(result.earnPoints);
+
+        if (energy.scale === 10) {
+            freeSpinIcon.shock();
+            await wait(2000);
+            await neko.appear();
+            await wait(1000);
+            await neko.hit();
+            freeSpinIcon.stop();
+            const freeGameResults =
+                result.freeGame.eachPositions
+                    .map((positions, index) => {
+                        const symbols =
+                            result.freeGame.eachSymbols[index];
+
+                        const hasLink =
+                            result.freeGame.hasLinks[index];
+
+                        const multiply =
+                            result.freeGame.multiply[index];
+
+                        return {positions, symbols, hasLink, multiply};
+                    });
+
+            for (const result of freeGameResults) {
+                slot.setReelTables(freeGameTable);
+                freeGameEffect(app.stage, result.multiply);
+                slot.view.children
+                    .filter(({name}) =>
+                        name === 'FXReel_L' || name === 'FXReel_R')
+                    .forEach(({anim}) => {
+                        anim.visible = true;
+                    });
+                await spin(
+                    slot,
+                    slot.reels.filter(({reelIdx}) => reelIdx !== 1),
+                    result,
+                );
+            }
+
+            slot.setReelTables(normalTable);
+            await energy.update(0);
+        }
+
+        console.log('Round Complete...');
+        app.emit('Idle');
     });
 
     global.play = function(symbols) {
         const positions =
-            reelTables.map((reel, index) => reel.indexOf(symbols[index]));
-        const hasLink = checkHasLink(symbols);
+            normalTable.map((reel, index) => reel.indexOf(symbols[index]));
 
-        let earnPoints = energy.scale;
-
-        if (hasBonusSymbol(symbols)) earnPoints += 1;
-
-        app.emit('GameResult', {positions, symbols, hasLink, earnPoints});
+        app.service
+            .getOneRound({bet: 10, baseGame: {positions, symbols}})
+            .then((result) => app.emit('GameResult', result));
     };
 
     slot.view.once('Ready', () => app.emit('GameReady'));
 
     return scene;
-}
-
-function hasBonusSymbol(symbols) {
-    return symbols[1] === 1;
-}
-
-function checkHasLink(symbols) {
-    const wildSet = range(0, 4 + 1);
-
-    const isWild = includes(__, wildSet);
-    const isEmpty = equals(10);
-
-    if (any(isEmpty, symbols)) return false;
-
-    if (filter(isWild, symbols).length >= 2) return true;
-
-    if (filter(isWild, symbols).length >= 1) {
-        const lastSymbol = reject(isWild, symbols);
-
-        return all(equals(head(lastSymbol)), lastSymbol);
-    }
-
-    return all(equals(head(symbols)), symbols);
 }

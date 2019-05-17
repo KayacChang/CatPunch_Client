@@ -46,13 +46,13 @@ export function Service(network) {
         });
     }
 
-    function getOneRound(bet) {
+    function getOneRound(data) {
         const body = {
             type: 'gameResult',
             token: '',
             playerid: '',
-            bet,
             gametypeid: '',
+            ...data,
         };
 
         it.postMessage(body);

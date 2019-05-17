@@ -5,9 +5,9 @@ import anime from 'animejs';
 export function EnergyBar(view) {
     let scale = 0;
 
-    const energyBarView = view.getChildByName('view').anim;
+    const energyHeadView = view.getChildByName('head');
 
-    setAdvancedBloom(energyBarView, {
+    setAdvancedBloom(view, {
         threshold: 0.5,
         bloomScale: 0.7,
         brightness: 0.9,
@@ -34,29 +34,31 @@ export function EnergyBar(view) {
     update(scale);
 
     return {
+        update,
         get scale() {
             return scale;
         },
-        set scale(newScale) {
-            update(newScale);
-            scale = newScale;
-        },
     };
 
-    function update(newScale) {
+    async function update(newScale) {
         const target = {
             width: maskWidth[scale],
         };
-        anime({
+
+        return anime({
             targets: target,
             width: maskWidth[newScale],
             duration: 1000,
-            easing: 'easeOutQuad',
-            update: function() {
+            easing: 'easeOutQuart',
+            update: () => {
                 view.updateMask({
                     width: target.width,
                 });
+                energyHeadView.x =
+                    maskWidth[0] - target.width - 4;
             },
-        });
+        })
+            .finished
+            .then(() => scale = newScale);
     }
 }
