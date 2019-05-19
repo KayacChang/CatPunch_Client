@@ -41,6 +41,8 @@ export function EnergyBar(view) {
     };
 
     async function update(newScale) {
+        energyHeadView.visible = (newScale !== 0);
+
         const target = {
             width: maskWidth[scale],
         };

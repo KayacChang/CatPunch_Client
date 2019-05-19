@@ -1,12 +1,16 @@
 import anime from 'animejs';
 import {wait} from '../../../../general/utils/time';
-import {toAxis} from '../components/slot';
+import {nth} from 'ramda';
+import {floor} from 'mathjs';
+
 import {
     spinDuration,
-    timeIntervalPerReel,
+    spinStopInterval,
     symbolConfig,
     maybeBonusFXDuration,
 } from '../data';
+
+import {Status} from '../components/slot';
 
 import {setBevel, setGlow} from '../../../plugin/filter';
 
@@ -24,32 +28,42 @@ export async function spin(it, reels, result) {
 
     await wait(500);
 
-    await spinComplete(it, result);
+    await spinComplete(it, reels, result);
 
     await wait(500);
 }
 
-function spinStart(it, reels) {
+async function spinStart(it, reels) {
     console.log('Spin Start...');
-    it.view.emit('spinStart');
 
-    return anime({
-        targets: reels,
-        axis: '+=' + 300,
-        easing: 'easeInOutQuad',
-        duration: 10000,
-        delay: anime.stagger(50, {easing: 'easeInCubic'}),
+    const mask = it.view.getChildByName('SlotBaseMask');
+    anime({
+        targets: mask,
+        alpha: 0,
+        easing: 'linear',
+        duration: 500,
     });
+
+    for (const reel of reels) {
+        reel.status = Status.Start;
+
+        anime({
+            targets: reel,
+            axis: '+=' + 300,
+            easing: 'easeInOutQuad',
+            duration: 10000,
+        });
+
+        await wait(120);
+    }
 }
 
 function spinStop(it, reels, {positions, symbols}) {
     console.log('Spin Stop...');
 
-    const fxReels = [
-        it.view.getChildByName('FXReel_L'),
-        it.view.getChildByName('FXReel_M'),
-        it.view.getChildByName('FXReel_R'),
-    ];
+    const fxReels =
+        ['L', 'M', 'R'].map((pos) =>
+            it.view.getChildByName(`FXReel_${pos}`).anim);
 
     return Promise.all(reels.map(stop));
 
@@ -60,11 +74,13 @@ function spinStop(it, reels, {positions, symbols}) {
         );
     }
 
-    async function stop(reel) {
-        const pos = positions[reel.reelIdx];
-        const icon = symbols[reel.reelIdx];
+    async function stop(reel, index) {
+        const results = reel.results;
+        const position = positions[index];
+        results[0].icon = symbols[index];
+        results[1].icon = nth(position + 1, reel.reelTable);
 
-        let time = reel.reelIdx * timeIntervalPerReel;
+        let time = index * spinStopInterval;
 
         if (reel.reelIdx === 2 && isMaybeBonus()) {
             time += maybeBonusFXDuration;
@@ -72,51 +88,31 @@ function spinStop(it, reels, {positions, symbols}) {
 
         await wait(time);
 
-        anime.remove(reel);
-
-        const targetAxis = toAxis(reel, pos);
-        let preAxis = targetAxis - (reel.displayLength);
-
-        preAxis =
-            preAxis > 0 ? preAxis : reel.reelTable.length - preAxis;
-
-        anime.set(reel, {axis: preAxis});
-
-        if (icon !== emptyIcon) {
-            const symbol =
-                reel.symbols.find((symbol) => symbol.displayPos === 2);
-
-            symbol.icon = icon;
-        }
+        reel.status = Status.Stop;
 
         return anime({
-            targets: reel,
-            //  @TODO Current Algorithm must be fix in future...
-            axis: '+=' + (reel.displayLength),
+            targets: reel.results,
+            pos: (el, index) => [2, 4][index],
             easing: 'easeOutElastic(1, .3)',
             duration: 500,
             complete() {
-                fxReels.forEach((reel) => reel.visible = false);
+                fxReels
+                    .forEach((reel) => reel.visible = false);
                 fxReels[2].visible =
                     (reel.reelIdx === 1 && isMaybeBonus());
 
-                const table = reel.symbols
-                    .map(({icon, displayPos}) => {
-                        const name = getSymbolName(icon);
-                        return {displayPos, icon, name};
-                    })
-                    .sort((a, b) => a.displayPos - b.displayPos);
+                anime.remove(reel);
 
-                console.table(table);
-
-                reel.symbols
-                    .forEach((symbol) => symbol.readyToChange = false);
+                reel.status = Status.Idle;
             },
-        }).finished;
+        }).finished
+            .then(() => reel.results
+                .forEach((result) =>
+                    result.pos = floor(result.pos)));
     }
 }
 
-async function spinComplete(it, {hasLink, symbols}) {
+async function spinComplete(it, reels, {hasLink, symbols}) {
     console.log('Spin Complete...');
 
     it.view.children
@@ -124,20 +120,26 @@ async function spinComplete(it, {hasLink, symbols}) {
         .forEach(({anim}) => anim.visible = false);
 
     if (hasLink) {
-        setEffectMask(it);
+        const mask = it.view.getChildByName('SlotBaseMask');
 
-        symbols
-            .forEach((iconId, idx) => {
-                const symbolName = getSymbolName(iconId);
+        anime({
+            targets: mask,
+            alpha: 0.3,
+            easing: 'linear',
+            duration: 500,
+        });
 
-                const reel = it.reels[idx];
+        reels
+            .forEach((reel) => {
+                const symbolName =
+                    getSymbolName(symbols[reel.reelIdx]);
 
                 if (isNormalSymbol(symbolName)) {
                     normalEffect(reel);
                 }
 
                 if (isSpecialSymbol(symbolName)) {
-                    specialEffect(it, idx, symbolName);
+                    specialEffect(it, reel, symbolName);
                 }
             });
 
@@ -145,9 +147,6 @@ async function spinComplete(it, {hasLink, symbols}) {
     }
 }
 
-function setSymbolsVisiblePerReel({symbols}, flag) {
-    symbols.forEach(({view}) => view.visible = flag);
-}
 
 function normalEffect(reel) {
     const symbol =
@@ -168,11 +167,6 @@ function normalEffect(reel) {
     });
 
     setBevel(symbol);
-
-    symbol.once('outside', () => {
-        symbol.filters = [];
-        symbol.scale.set(1);
-    });
 }
 
 function isNormalSymbol(name) {
@@ -186,8 +180,8 @@ function isSpecialSymbol(name) {
 }
 
 function getDisplaySymbol(reel) {
-    return reel.symbols.find(
-        (symbol) => symbol.displayPos === 2);
+    return reel.results
+        .find((symbol) => symbol.pos === 2);
 }
 
 function getSymbolName(icon) {
@@ -198,31 +192,15 @@ function getSymbolName(icon) {
         .name;
 }
 
-function setEffectMask(it) {
-    const mask = it.view.getChildByName('SlotBaseMask');
+function specialEffect(it, reel, symbolName) {
+    if (symbolName === 'taiko@5x') return;
 
-    anime({
-        targets: mask,
-        alpha: 0.3,
-        easing: 'linear',
-        duration: 500,
-    });
+    const symbol = getDisplaySymbol(reel);
 
-    it.view.once('spinStart', () => {
-        anime({
-            targets: mask,
-            alpha: 0,
-            easing: 'linear',
-            duration: 500,
-        });
-    });
-}
-
-function specialEffect(it, idx, symbolName) {
-    setSymbolsVisiblePerReel(it.reels[idx], false);
+    symbol.visible = false;
 
     const effect =
-        it.view.getChildByName(`Effect_${idx}`);
+        it.view.getChildByName(`Effect_${reel.reelIdx}`);
 
     effect.visible = true;
 
@@ -234,8 +212,8 @@ function specialEffect(it, idx, symbolName) {
     anim.visible = true;
     anim.gotoAndPlay(0);
 
-    it.view.once('spinStart', () => {
-        setSymbolsVisiblePerReel(it.reels[idx], true);
+    reel.once(Status.Start, () => {
+        symbol.visible = true;
 
         anim.visible = false;
         effect.visible = false;

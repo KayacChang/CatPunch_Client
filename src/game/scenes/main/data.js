@@ -36,8 +36,8 @@ import './assets/fonts/font-export.png';
 import * as coin from '../../interface/components/coin';
 
 export const symbolConfig = [
-    {id: 0, name: 'koi', url: SYMBOL_WILD_KOI},
-    {id: 1, name: 'neko', url: SYMBOL_WILD_NEKO, maybeBonus: true},
+    {id: 0, name: 'koi', url: SYMBOL_WILD_KOI, maybeBonus: true},
+    {id: 1, name: 'neko', url: SYMBOL_WILD_NEKO},
     {id: 2, name: 'taiko@5x', url: SYMBOL_WILD_TAIKO},
     {id: 3, name: 'taiko@7x', url: SYMBOL_WILD_TAIKO},
     {id: 4, name: 'taiko@10x', url: SYMBOL_WILD_TAIKO},
@@ -83,6 +83,6 @@ export function reserve() {
 
 export const stopPerSymbol = 2;
 export const spinDuration = 3000;
-export const timeIntervalPerReel = 450;
+export const spinStopInterval = 450;
 export const maybeBonusFXDuration = 1000;
-export const distancePerStop = 813 / 2;
+// export const distancePerStop = 813 / 2;

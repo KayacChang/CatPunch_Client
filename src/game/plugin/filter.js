@@ -95,17 +95,13 @@ export function setMotionBlur(view) {
 
     setFilter(view, it);
 
-    let prevPos = 0;
-
     it.update = update;
 
     return it;
 
     function update(newPos) {
-        const blurAmount = Math.max(0, (newPos - prevPos) * 100);
+        const blurAmount = Math.max(0, (newPos) * 100);
         it.velocity = [0, blurAmount];
         it.kernelSize = blurAmount;
-
-        prevPos = newPos;
     }
 }

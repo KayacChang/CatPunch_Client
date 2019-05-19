@@ -1,12 +1,14 @@
-import {floor, divide} from 'mathjs';
-import {setMotionBlur} from '../../../../plugin/filter';
+import {divide, mod, floor} from 'mathjs';
+import {nth} from 'ramda';
 
 import {
     TextureManager,
     isReel,
-    isSymbol,
-    toReelPos,
+    isSymbol, isResult,
 } from './util';
+
+import {Status} from './index';
+import {setMotionBlur} from '../../../../plugin/filter';
 
 export function SlotMachine(
     {
@@ -27,90 +29,139 @@ export function SlotMachine(
             .filter(isReel)
             .map(Reel);
 
-    return {view, reels, setReelTables};
+    return {
+        view,
+        reels,
+        reelTables,
+    };
 
-    function setReelTables(newTables) {
-        reelTables = newTables;
-    }
+    function Symbol(view, symbolIdx) {
+        const distance =
+            distancePerStop ||
+            divide(Number(view.height), stopPerSymbol);
 
-    function Symbol(view, symbolIdx, reel) {
-        let displayPos = 0;
+        const initPos =
+            symbolIdx * stopPerSymbol;
+
+        const anchorOffset =
+            view.anchor.y * view.height;
 
         let icon = 0;
 
-        let readyToChange = false;
-
-        const defaultDistance =
-            divide(Number(view.height), stopPerSymbol);
-
         return {
-            get reel() {
-                return reel;
-            },
-            set reel(newReel) {
-                reel = newReel;
-            },
-            get readyToChange() {
-                return readyToChange;
-            },
-            set readyToChange(flag) {
-                readyToChange = flag;
-            },
-
             get symbolIdx() {
                 return symbolIdx;
             },
 
-            get stopPerSymbol() {
-                return stopPerSymbol;
-            },
-
-            get distancePerStop() {
-                return distancePerStop || defaultDistance;
-            },
-
-            get displayPos() {
-                return displayPos;
-            },
-            set displayPos(newPos) {
-                view.y = (newPos * distancePerStop);
-
-                displayPos = floor(newPos);
-            },
-
             get view() {
                 return view;
             },
-            get x() {
-                return Number(view.x);
+
+            get height() {
+                return view.height;
             },
-            get y() {
-                return Number(view.y);
-            },
+
             get icon() {
                 return icon;
             },
             set icon(iconId) {
-                view.texture = getTexture(iconId);
                 icon = iconId;
+
+                view.texture = getTexture(iconId);
+            },
+
+            get initPos() {
+                return initPos;
+            },
+
+            get visible() {
+                return view.visible;
+            },
+            set visible(flag) {
+                view.visible = flag;
+            },
+
+            get pos() {
+                return divide(view.y - anchorOffset, distance);
+            },
+            set pos(newPos) {
+                view.y = (newPos * distance) + anchorOffset;
+            },
+
+            get y() {
+                return view.y;
+            },
+            set y(newY) {
+                view.y = newY;
+            },
+
+            emit(evt, ...args) {
+                view.emit(evt, ...args);
+            },
+            on(evt, callback) {
+                view.on(evt, callback);
+            },
+            once(evt, callback) {
+                view.once(evt, callback);
+            },
+            off(evt, callback) {
+                view.off(evt, callback);
             },
         };
     }
 
+
     function Reel(view, reelIdx) {
-        let axis = 0;
+        const symbols =
+            view.children
+                .filter(isSymbol)
+                .map(Symbol);
+
+        const results =
+            view.children
+                .filter(isResult)
+                .map(Symbol);
+
+        const displayLength =
+            symbols.length * stopPerSymbol;
 
         const motionBlur = setMotionBlur(view);
 
-        let symbols = [];
+        let axis = 0;
 
-        const it = {
-            get view() {
-                return view;
+        let status = Status.Idle;
+
+        return {
+            get status() {
+                return status;
             },
+            set status(newStatus) {
+                status = newStatus;
+
+                if (status === Status.Idle) {
+                    axis = floor(axis + 1);
+
+                    symbols.forEach((symbol) => {
+                        symbol.vy = 0;
+                        updateSymbol(symbol, axis);
+
+                        if (symbol.pos === 0) symbol.visible = true;
+                    });
+                }
+
+                if (status === Status.Start) {
+                    view.emit(Status.Start);
+                }
+            },
+
             get reelIdx() {
                 return reelIdx;
             },
+
+            get view() {
+                return view;
+            },
+
             get reelTable() {
                 return reelTables[reelIdx];
             },
@@ -118,67 +169,88 @@ export function SlotMachine(
             get symbols() {
                 return symbols;
             },
-            set symbols(newSymbols) {
-                symbols = newSymbols;
+
+            get results() {
+                return results;
             },
-            get displayLength() {
-                return it.symbols.length * stopPerSymbol;
-            },
-            get reelPos() {
-                return toReelPos(it, axis);
-            },
+
             get axis() {
                 return axis;
             },
             set axis(newAxis) {
-                axis = newAxis % (it.reelTable.length);
+                newAxis =
+                    mod(newAxis, reelTables[reelIdx].length);
 
-                motionBlur.update(axis);
+                symbols
+                    .forEach((symbol) => updateSymbol(symbol, newAxis));
 
-                update(it, axis);
+                results
+                    .forEach((result) => updateResult(result, newAxis));
+
+                const velocity =
+                    (status === Status.Stop) ? 0 : newAxis - axis;
+                motionBlur.update(velocity);
+
+                axis = newAxis;
+            },
+
+            emit(evt, ...args) {
+                view.emit(evt, ...args);
+            },
+            on(evt, callback) {
+                view.on(evt, callback);
+            },
+            once(evt, callback) {
+                view.once(evt, callback);
+            },
+            off(evt, callback) {
+                view.off(evt, callback);
             },
         };
 
-        it.symbols =
-            view.children
-                .filter(isSymbol)
-                .map((view, index) => Symbol(view, index, it));
+        function updateSymbol(symbol, newAxis) {
+            symbol.pos =
+                (newAxis + symbol.initPos) % displayLength;
 
-        return it;
+            if (status === Status.Start) {
+                if (symbol.pos < 1 && !symbol.visible) {
+                    symbol.visible = true;
+                }
+
+                if (symbol.pos >= displayLength - 1) {
+                    const iconId = nth(
+                        floor(newAxis), reelTables[reelIdx],
+                    );
+
+                    if (iconId !== 10) {
+                        symbol.icon = iconId;
+                    }
+                }
+            }
+
+            if (status === Status.Stop) {
+                if (symbol.pos >= displayLength - 1) {
+                    symbol.visible = false;
+                }
+            }
+        }
+
+        function updateResult(result, newAxis) {
+            if (status === Status.Start) {
+                if (result.pos < 0) return;
+
+                if (result.pos > displayLength - 1) {
+                    result.pos = [-4, -2][result.symbolIdx];
+
+                    result.view.filters = [];
+                    result.view.scale.set(1);
+                }
+                if (result.pos <= displayLength - 1) {
+                    const velocity = newAxis - axis;
+                    result.pos += (velocity);
+                }
+            }
+        }
     }
-}
-
-function isOutSideOfTheViewPort(symbol) {
-    return symbol.displayPos >= symbol.reel.displayLength - 2;
-}
-
-function update(reel, axis) {
-    reel.symbols
-        .forEach((symbol) => {
-            updatePos(symbol, axis);
-            updateIcon(symbol);
-        });
-}
-
-function updatePos(symbol, axis) {
-    const initialPos = symbol.symbolIdx * symbol.stopPerSymbol;
-
-    symbol.displayPos =
-        (axis + initialPos) % symbol.reel.displayLength;
-
-    if (isOutSideOfTheViewPort(symbol)) {
-        symbol.readyToChange = true;
-
-        symbol.view.emit('outside');
-    }
-}
-
-function updateIcon(symbol) {
-    if (!(symbol.readyToChange && symbol.displayPos < 1)) return;
-
-    const reel = symbol.reel;
-
-    symbol.icon = reel.reelTable[reel.reelPos];
-    symbol.readyToChange = false;
 }
 

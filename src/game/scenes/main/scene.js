@@ -12,6 +12,12 @@ import {wait} from '../../../general/utils/time';
 import {Neko} from './components/neko';
 import {FreeSpinIcon} from './components/freespin';
 import {freeGameEffect, reSpinEffect} from './components/effects';
+import {MersenneTwister19937, Random} from 'random-js';
+import {until} from 'ramda';
+
+const random = new Random(
+    MersenneTwister19937.autoSeed(),
+);
 
 function initSlotMachine(scene, reelTables) {
     const slot =
@@ -79,8 +85,6 @@ export function create({normalTable, freeGameTable}) {
 
     const neko = Neko(scene);
 
-    window.respin = () => reSpinEffect(app.stage);
-
     app.on('GameResult', async (result) => {
         console.log('Result =============');
         console.table(result);
@@ -92,6 +96,39 @@ export function create({normalTable, freeGameTable}) {
         );
 
         await energy.update(result.earnPoints);
+
+        if (result.hasReSpin) {
+            const reSpinTable =
+                JSON.parse(JSON.stringify(normalTable));
+            reSpinTable[1] = [
+                2, 4, 3, 2, 3,
+                2, 3, 4, 2, 3,
+                2, 2, 3, 2, 2,
+                3, 4, 2, 3, 2,
+            ];
+            slot.reelTables = reSpinTable;
+            await wait(1000);
+            await neko.appear();
+            await wait(1000);
+            await neko.hit();
+            reSpinEffect(app.stage);
+
+            const {positions, symbols} =
+                JSON.parse(JSON.stringify(result.baseGame));
+
+            positions[1] = until(
+                (pos) => reSpinTable[1][pos] !== 10,
+                () => random.integer(0, reSpinTable[1].length - 1),
+            )(1);
+
+            symbols[1] = result.reSpin.multiply;
+
+            await spin(
+                slot,
+                [slot.reels[1]],
+                {hasLink: true, positions, symbols},
+            );
+        }
 
         if (energy.scale === 10) {
             freeSpinIcon.shock();
@@ -116,7 +153,7 @@ export function create({normalTable, freeGameTable}) {
                     });
 
             for (const result of freeGameResults) {
-                slot.setReelTables(freeGameTable);
+                slot.reelTables = freeGameTable;
                 freeGameEffect(app.stage, result.multiply);
                 slot.view.children
                     .filter(({name}) =>
@@ -130,10 +167,10 @@ export function create({normalTable, freeGameTable}) {
                     result,
                 );
             }
-
-            slot.setReelTables(normalTable);
             await energy.update(0);
         }
+
+        slot.reelTables = normalTable;
 
         console.log('Round Complete...');
         app.emit('Idle');

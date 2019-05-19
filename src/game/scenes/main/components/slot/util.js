@@ -8,6 +8,10 @@ export function isSymbol({name}) {
     return name.includes('symbol');
 }
 
+export function isResult({name}) {
+    return name.includes('result');
+}
+
 export function toReelPos(reel, axis) {
     const maxLength = reel.reelTable.length;
     return (maxLength - floor(axis)) % maxLength;

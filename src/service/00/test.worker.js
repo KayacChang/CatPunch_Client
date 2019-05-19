@@ -1,6 +1,6 @@
 import {Random, MersenneTwister19937} from 'random-js';
 import {
-    intersperse, all, equals, filter,
+    all, equals, filter,
     includes, range, __, head, reject, any,
 } from 'ramda';
 
@@ -22,14 +22,13 @@ const freeGameTable = [
     '8,9,8,6,9,5,6,7,9,10,0,10,6,9,5,8,9,5,8,6,10,0,10,8,7,9,8,6,7,9,10,8,6,8,9,8,7,9,7,8,6,7,8,6,9,8,7,8,7,6,9,8,7,9,7,6,7,10,6,8,9,7,9,6,10,8,10,9,5,6,7,8,9,5,10,6',
 ].map(preprocess);
 
+const reSpinTable =
+    '2,4,3,2,3,2,3,4,2,3,2,2,3,2,2,3,4,2,3,2'.split(',').map(Number);
+
 function preprocess(str) {
-    let reel = str
+    return str
         .split(/,/g)
-        .map(Number)
-        .filter((icon) => icon !== 10);
-    reel = intersperse(10, reel);
-    reel.push(10);
-    return reel;
+        .map(Number);
 }
 
 const random = new Random(
@@ -77,15 +76,23 @@ function onGameResult({bet, baseGame}) {
     const hasFreeGame = !!(freeGame);
     const hasReSpin = checkHasReSpin(baseGame.symbols);
 
+    const reSpin = (hasReSpin) && spinReSpin(reSpinTable, baseGame);
+
     const result = {
         hasLink, hasFreeGame, hasReSpin,
         earnPoints,
-        baseGame, freeGame,
+        baseGame, freeGame, reSpin,
     };
 
     if (hasFreeGame) earnPoints = 0;
 
     return result;
+}
+
+function spinReSpin(table) {
+    const pos = random.integer(0, table.length - 1);
+    const multiply = table[pos];
+    return {multiply};
 }
 
 function spin(table) {
@@ -142,5 +149,5 @@ function checkHasReSpin(symbols) {
 
     if (isEmpty(symbols[0])) return false;
 
-    return isWild0(symbols[1]) && isWild1(symbols[2]);
+    return isWild1(symbols[1]) && isWild0(symbols[2]);
 }
