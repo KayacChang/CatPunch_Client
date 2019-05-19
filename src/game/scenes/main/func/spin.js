@@ -1,7 +1,7 @@
 import anime from 'animejs';
 import {wait} from '../../../../general/utils/time';
 import {nth} from 'ramda';
-import {floor} from 'mathjs';
+import {floor, mod} from 'mathjs';
 
 import {
     spinDuration,
@@ -74,11 +74,35 @@ function spinStop(it, reels, {positions, symbols}) {
         );
     }
 
-    async function stop(reel, index) {
+    async function stop(reel) {
+        const index = reel.reelIdx;
         const results = reel.results;
+
         const position = positions[index];
-        results[0].icon = symbols[index];
-        results[1].icon = nth(position + 1, reel.reelTable);
+
+        let resultPos = [2, 4];
+
+        const reelTable =
+            reel.reelTable.filter((num) => num !== 10);
+
+        if (symbols[index] !== 10) {
+            results[0].icon = symbols[index];
+            results[1].icon = nth(
+                mod(position + 1, reelTable.length),
+                reelTable,
+            );
+        } else {
+            results[0].icon = nth(
+                mod(position - 1, reelTable.length),
+                reelTable,
+            );
+            results[1].icon = nth(
+                mod(position + 1, reelTable.length),
+                reelTable,
+            );
+
+            resultPos = [1, 3];
+        }
 
         let time = index * spinStopInterval;
 
@@ -87,12 +111,11 @@ function spinStop(it, reels, {positions, symbols}) {
         }
 
         await wait(time);
-
         reel.status = Status.Stop;
 
-        return anime({
+        await anime({
             targets: reel.results,
-            pos: (el, index) => [2, 4][index],
+            pos: (el, index) => resultPos[index],
             easing: 'easeOutElastic(1, .3)',
             duration: 500,
             complete() {
@@ -103,12 +126,16 @@ function spinStop(it, reels, {positions, symbols}) {
 
                 anime.remove(reel);
 
+                reel.symbols
+                    .forEach((symbol) => symbol.visible = false);
+
                 reel.status = Status.Idle;
             },
-        }).finished
-            .then(() => reel.results
-                .forEach((result) =>
-                    result.pos = floor(result.pos)));
+        }).finished;
+
+        reel.results
+            .forEach((result) =>
+                result.pos = floor(result.pos));
     }
 }
 

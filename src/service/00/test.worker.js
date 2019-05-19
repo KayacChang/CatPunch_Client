@@ -120,7 +120,8 @@ function spinFreeGame() {
 }
 
 function hasBonusSymbol(symbols) {
-    return symbols[1] === 1;
+    const isBonus = equals(0);
+    return any(isBonus, symbols);
 }
 
 function checkHasLink(symbols) {
@@ -149,5 +150,5 @@ function checkHasReSpin(symbols) {
 
     if (isEmpty(symbols[0])) return false;
 
-    return isWild1(symbols[1]) && isWild0(symbols[2]);
+    return isWild0(symbols[1]) && isWild1(symbols[2]);
 }

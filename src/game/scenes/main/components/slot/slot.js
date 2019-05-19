@@ -32,7 +32,13 @@ export function SlotMachine(
     return {
         view,
         reels,
-        reelTables,
+
+        get reelTables() {
+            return reelTables;
+        },
+        set reelTables(newTables) {
+            reelTables = newTables;
+        },
     };
 
     function Symbol(view, symbolIdx) {
@@ -230,6 +236,9 @@ export function SlotMachine(
 
             if (status === Status.Stop) {
                 if (symbol.pos >= displayLength - 1) {
+                    symbol.visible = false;
+                }
+                if (symbol.pos < 1) {
                     symbol.visible = false;
                 }
             }

@@ -13,7 +13,8 @@ import {Neko} from './components/neko';
 import {FreeSpinIcon} from './components/freespin';
 import {freeGameEffect, reSpinEffect} from './components/effects';
 import {MersenneTwister19937, Random} from 'random-js';
-import {until} from 'ramda';
+import {until, clone} from 'ramda';
+import anime from 'animejs';
 
 const random = new Random(
     MersenneTwister19937.autoSeed(),
@@ -98,23 +99,34 @@ export function create({normalTable, freeGameTable}) {
         await energy.update(result.earnPoints);
 
         if (result.hasReSpin) {
-            const reSpinTable =
-                JSON.parse(JSON.stringify(normalTable));
+            const reSpinTable = clone(normalTable);
+
             reSpinTable[1] = [
                 2, 4, 3, 2, 3,
                 2, 3, 4, 2, 3,
                 2, 2, 3, 2, 2,
                 3, 4, 2, 3, 2,
             ];
+
             slot.reelTables = reSpinTable;
             await wait(1000);
             await neko.appear();
             await wait(1000);
-            await neko.hit();
+            neko.hit();
+
+            await wait(150);
+
+            scene.y = 10;
+            anime({
+                targets: scene,
+                y: 0,
+                easing: 'easeOutElastic(10, .1)',
+                duration: 750,
+            });
+
             reSpinEffect(app.stage);
 
-            const {positions, symbols} =
-                JSON.parse(JSON.stringify(result.baseGame));
+            const {positions, symbols} = clone(result.baseGame);
 
             positions[1] = until(
                 (pos) => reSpinTable[1][pos] !== 10,
@@ -135,7 +147,18 @@ export function create({normalTable, freeGameTable}) {
             await wait(2000);
             await neko.appear();
             await wait(1000);
-            await neko.hit();
+            neko.hit();
+
+            await wait(150);
+
+            scene.y = 10;
+            anime({
+                targets: scene,
+                y: 0,
+                easing: 'easeOutElastic(10, .1)',
+                duration: 750,
+            });
+
             freeSpinIcon.stop();
             const freeGameResults =
                 result.freeGame.eachPositions
@@ -158,9 +181,8 @@ export function create({normalTable, freeGameTable}) {
                 slot.view.children
                     .filter(({name}) =>
                         name === 'FXReel_L' || name === 'FXReel_R')
-                    .forEach(({anim}) => {
-                        anim.visible = true;
-                    });
+                    .forEach(({anim}) => anim.visible = true);
+
                 await spin(
                     slot,
                     slot.reels.filter(({reelIdx}) => reelIdx !== 1),

@@ -1,9 +1,15 @@
 import {Button, ToggleButton} from '../components';
 
+import {throttle} from 'lodash';
+
+import {setDropShadow} from '../../plugin/filter';
+
 const {assign, fromEntries} = Object;
 
 export function Main(parent) {
     const it = parent.getChildByName('main');
+
+    setDropShadow(it);
 
     Status(
         it.getChildByName('status'),
@@ -128,13 +134,32 @@ function FunctionMenu(view) {
 
 function SpinButton(view) {
     const it = Button(view);
-    it.on('pointerdown', () => {
-        console.log('spin...');
-        const bet = 10;
-        app.service.getOneRound({bet})
-            .then((result) => app.emit('GameResult', result));
-    });
+
+    let flag = false;
+
+    it.on('pointerdown',
+        throttle(
+            onClick,
+            100 * 4,
+            {leading: true, trailing: false},
+        ),
+    );
+
+    app.on('Idle', () => flag = false);
+
     return it;
+
+    function onClick() {
+        if (!flag) {
+            console.log('spin...');
+
+            flag = true;
+
+            const bet = 10;
+            app.service.getOneRound({bet})
+                .then((result) => app.emit('GameResult', result));
+        }
+    }
 }
 
 function Status(view) {
@@ -144,7 +169,5 @@ function Status(view) {
 }
 
 function setFontFamily({content}, fontFamily) {
-    assign(content.style, {
-        fontFamily,
-    });
+    assign(content.style, {fontFamily});
 }

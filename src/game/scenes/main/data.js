@@ -85,4 +85,3 @@ export const stopPerSymbol = 2;
 export const spinDuration = 3000;
 export const spinStopInterval = 450;
 export const maybeBonusFXDuration = 1000;
-// export const distancePerStop = 813 / 2;
