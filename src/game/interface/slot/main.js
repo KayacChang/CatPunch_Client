@@ -1,27 +1,22 @@
-import {Button, ToggleButton} from '../components';
+import {Clickable, ToggleButton} from '../components';
 
 import {throttle} from 'lodash';
 
 import {setDropShadow} from '../../plugin/filter';
+import anime from 'animejs';
 
-const {assign, fromEntries} = Object;
+const {assign} = Object;
 
 export function Main(parent) {
     const it = parent.getChildByName('main');
-
-    setDropShadow(it);
 
     Status(
         it.getChildByName('status'),
     );
 
-    SpinButton(
-        it.getChildByName('spin'),
-    );
+    SpinButton(it);
 
-    FunctionMenu(
-        it.getChildByName('function'),
-    );
+    FunctionButton(it);
 
     AudioButton(
         it.getChildByName('audio'),
@@ -34,11 +29,130 @@ export function Main(parent) {
 }
 
 function MenuButton(view, menu) {
-    const it = Button(view);
+    const it = Clickable(view);
     it.on('pointerdown', () => {
         menu.open();
         menu.visible = true;
     });
+    return it;
+}
+
+function setBehaviour(it) {
+    const anim = {
+        duration: 350,
+        easing: 'easeOutCubic',
+    };
+    const normal = {
+        shadow: {
+            distance: 12,
+            alpha: 0.5,
+        },
+        hoverMask: {
+            alpha: 0,
+        },
+        downMask: {
+            alpha: 0,
+        },
+    };
+    const hover = {
+        shadow: {
+            distance: 16,
+            alpha: 0.3,
+        },
+        hoverMask: {
+            alpha: 0.1,
+        },
+        downMask: {
+            alpha: 0,
+        },
+    };
+
+    const down = {
+        downMask: {
+            alpha: 0.3,
+        },
+    };
+
+    const hoverMaskView = it.getChildByName('hover');
+    const downMaskView = it.getChildByName('down');
+
+    const shadow = setDropShadow(it, normal.shadow);
+
+    it.on('pointerover', throttleFunc(onHover));
+
+    it.on('pointerout', throttleFunc(onNormal));
+
+    it.on('pointerdown', throttleFunc(onDown));
+
+    it.on('pointerup', throttleFunc(onHover));
+
+    return it;
+
+    function throttleFunc(func) {
+        return throttle(
+            func, 350,
+            {leading: true, trailing: false},
+        );
+    }
+
+    function onNormal() {
+        anime({
+            targets: shadow,
+            ...(anim),
+            ...(normal.shadow),
+        });
+        anime({
+            targets: hoverMaskView,
+            ...(anim),
+            ...(normal.hoverMask),
+        });
+        anime({
+            targets: downMaskView,
+            ...(anim),
+            ...(normal.downMask),
+        });
+    }
+
+    function onHover() {
+        anime({
+            targets: shadow,
+            ...(anim),
+            ...(hover.shadow),
+        });
+        anime({
+            targets: hoverMaskView,
+            ...(anim),
+            ...(hover.hoverMask),
+        });
+        anime({
+            targets: downMaskView,
+            ...(anim),
+            ...(hover.downMask),
+        });
+    }
+
+    function onDown() {
+        anime({
+            targets: downMaskView,
+            ...(anim),
+            ...(down.downMask),
+        });
+        anime({
+            targets: downMaskView.scale,
+            x: [0.2, 1],
+            y: [0.2, 1],
+            ...(anim),
+        });
+
+        it.emit('Click');
+    }
+}
+
+function FunctionButton(view) {
+    const it = ToggleButton(view.getChildByName('function'));
+
+    setBehaviour(it);
+
     return it;
 }
 
@@ -57,103 +171,24 @@ function AudioButton(view) {
     }
 }
 
-function FunctionMenu(view) {
-    const positions =
-        fromEntries(
-            view.children
-                .map(({name, position}) => {
-                    const {x, y} = position;
-                    return [name, {x, y}];
-                }),
-        );
-
-    const buttons =
-        view.children
-            .map((child) => {
-                const func = {
-                    'back': BackButton,
-                    'speed': SpeedButton,
-                    'bet': BetButton,
-                    'auto': AutoButton,
-                    'function': FunctionButton,
-                }[child.name];
-
-                const btn = func && func(child);
-
-                btn.position = positions['function'];
-
-                return btn;
-            });
-
-    function BackButton(view) {
-        const it = Button(view);
-        it.on('pointerdown', () => {
-            buttons.forEach((btn) => {
-                btn.position = positions['function'];
-
-                if (btn.name === 'function') {
-                    btn.visible = true;
-                }
-            });
-        });
-        return it;
-    }
-
-    function SpeedButton(view) {
-        const it = Button(view);
-        it.on('pointerdown', () => console.log('speed'));
-        return it;
-    }
-
-    function BetButton(view) {
-        const it = Button(view);
-        it.on('pointerdown', () => console.log('bet'));
-        return it;
-    }
-
-    function AutoButton(view) {
-        const it = Button(view);
-        it.on('pointerdown', () => console.log('auto'));
-        return it;
-    }
-
-    function FunctionButton(view) {
-        const it = Button(view);
-        it.on('pointerdown', () => {
-            buttons.forEach((btn) => {
-                const {x, y} = positions[btn.name];
-                btn.position.set(x, y);
-            });
-
-            it.visible = false;
-        });
-
-        return it;
-    }
-}
-
 function SpinButton(view) {
-    const it = Button(view);
+    const it = Clickable(view.getChildByName('spin'));
+
+    setBehaviour(it);
+
+    it.on('Click', onClick);
 
     let flag = false;
-
-    it.on('pointerdown',
-        throttle(
-            onClick,
-            100 * 4,
-            {leading: true, trailing: false},
-        ),
-    );
 
     app.on('Idle', () => flag = false);
 
     return it;
 
-    function onClick() {
+    function onClick(evt) {
         if (!flag) {
             console.log('spin...');
 
-            flag = true;
+            // flag = true;
 
             const bet = 10;
             app.service.getOneRound({bet})

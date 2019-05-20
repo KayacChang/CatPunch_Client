@@ -1,4 +1,4 @@
-import {Button} from '../../components/Button';
+import {Clickable} from '../../components/Clickable';
 import {Exchange} from './exchange';
 import {Setting} from './setting';
 import {Openable} from '../../components/Openable';
@@ -45,7 +45,7 @@ function Nav(menu, sections) {
         it.icon =
             nav.getChildByName(`img@${name}`);
 
-        it = Button(it);
+        it = Clickable(it);
         it.on('pointerdown', click);
 
         return it;
@@ -63,7 +63,7 @@ function Nav(menu, sections) {
     }
 
     function BackButton(btn, menu) {
-        btn = Button(btn);
+        btn = Clickable(btn);
         btn.on('pointerdown', () => menu.close());
         return btn;
     }

@@ -1,4 +1,4 @@
-import {Button} from '../../components/Button';
+import {Clickable} from '../../components/Clickable';
 import {Openable} from '../../components/Openable';
 
 const {trunc} = Math;
@@ -67,7 +67,7 @@ export function Exchange(exchange) {
             return it;
 
             function Item(it) {
-                it = Button(it);
+                it = Clickable(it);
 
                 const [, id] = it.name.split('@');
                 it.on('pointerdown', () => {
@@ -83,7 +83,7 @@ export function Exchange(exchange) {
         }
 
         function DropDownButton(btn) {
-            btn = Button(btn);
+            btn = Clickable(btn);
 
             btn.on('pointerdown', click);
             return btn;
@@ -122,7 +122,7 @@ export function Exchange(exchange) {
     }
 
     function RefreshButton(btn) {
-        btn = Button(btn);
+        btn = Clickable(btn);
         btn.on('pointerdown', click);
         return btn;
 
@@ -133,7 +133,7 @@ export function Exchange(exchange) {
     }
 
     function NumberButton(btn) {
-        btn = Button(btn);
+        btn = Clickable(btn);
 
         const num =
             Number(btn.name.split('@')[1]);
@@ -148,7 +148,7 @@ export function Exchange(exchange) {
     }
 
     function DeleteButton(btn) {
-        btn = Button(btn);
+        btn = Clickable(btn);
         btn.on('pointerdown', click);
 
         return btn;
@@ -159,7 +159,7 @@ export function Exchange(exchange) {
     }
 
     function CleanButton(btn) {
-        btn = Button(btn);
+        btn = Clickable(btn);
         btn.on('pointerdown', click);
 
         return btn;

@@ -1,5 +1,5 @@
 import {Openable} from '../../components/Openable';
-import {Button, ToggleButton, RangeSlider} from '../../components';
+import {Clickable, ToggleButton, RangeSlider} from '../../components';
 
 import {range} from 'ramda';
 
@@ -57,7 +57,7 @@ function Toggle(setting, target) {
 }
 
 function Slider(setting, target, {parts, onchange}) {
-    const frame = Button(
+    const frame = Clickable(
         setting.getChildByName(`frame@${target}`),
     );
 

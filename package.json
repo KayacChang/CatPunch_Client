@@ -57,7 +57,7 @@
     "mobile-detect": "^1.4.3",
     "pixi-filters": "^2.7.1",
     "pixi.js": "^4.8.7",
-    "pixi_fairygui": "^0.3.46",
+    "pixi_fairygui": "^0.3.47",
     "ramda": "^0.26.1",
     "random-js": "^2.0.0",
     "webfontloader": "^1.6.28",

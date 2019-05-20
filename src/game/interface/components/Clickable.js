@@ -1,11 +1,11 @@
-export function Button(it) {
+export function Clickable(it) {
     it.buttonMode = true;
     it.interactive = true;
     return it;
 }
 
 export function ToggleButton(it) {
-    it = Button(it);
+    it = Clickable(it);
     it.checked = false;
 
     it.on('pointerdown', click);

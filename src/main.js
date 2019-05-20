@@ -58,15 +58,15 @@ async function main() {
 
 
     const ui = UserInterface.create();
-    const scene = MainScene.create(initData);
-    scene.addChild(ui);
+    // const scene = MainScene.create(initData);
+    // scene.addChild(ui);
 
-    app.stage.addChildAt(scene, 0);
+    app.stage.addChildAt(ui, 0);
 
-    app.once('GameReady', () => {
-        app.stage.removeChild(loadScene);
-        app.resize();
-    });
+    // app.once('GameReady', () => {
+    app.stage.removeChild(loadScene);
+    app.resize();
+    // });
 }
 
 main();
