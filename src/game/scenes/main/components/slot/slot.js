@@ -100,19 +100,6 @@ export function SlotMachine(
             set y(newY) {
                 view.y = newY;
             },
-
-            emit(evt, ...args) {
-                view.emit(evt, ...args);
-            },
-            on(evt, callback) {
-                view.on(evt, callback);
-            },
-            once(evt, callback) {
-                view.once(evt, callback);
-            },
-            off(evt, callback) {
-                view.off(evt, callback);
-            },
         };
     }
 
@@ -153,10 +140,7 @@ export function SlotMachine(
 
                         if (symbol.pos === 0) symbol.visible = true;
                     });
-                }
-
-                if (status === Status.Start) {
-                    view.emit(Status.Start);
+                    //
                 }
             },
 
@@ -199,47 +183,27 @@ export function SlotMachine(
 
                 axis = newAxis;
             },
-
-            emit(evt, ...args) {
-                view.emit(evt, ...args);
-            },
-            on(evt, callback) {
-                view.on(evt, callback);
-            },
-            once(evt, callback) {
-                view.once(evt, callback);
-            },
-            off(evt, callback) {
-                view.off(evt, callback);
-            },
         };
 
         function updateSymbol(symbol, newAxis) {
             symbol.pos =
                 (newAxis + symbol.initPos) % displayLength;
 
-            if (status === Status.Start) {
+            if (status === Status.Stop) {
+                return symbol.visible = false;
+                //
+            } else if (status === Status.Start) {
                 if (symbol.pos < 1 && !symbol.visible) {
-                    symbol.visible = true;
-                }
-
-                if (symbol.pos >= displayLength - 1) {
+                    return symbol.visible = true;
+                    //
+                } else if (symbol.pos >= displayLength - 1) {
                     const iconId = nth(
                         floor(newAxis), reelTables[reelIdx],
                     );
 
-                    if (iconId !== 10) {
-                        symbol.icon = iconId;
-                    }
-                }
-            }
+                    if (iconId === 10) return;
 
-            if (status === Status.Stop) {
-                if (symbol.pos >= displayLength - 1) {
-                    symbol.visible = false;
-                }
-                if (symbol.pos < 1) {
-                    symbol.visible = false;
+                    symbol.icon = iconId;
                 }
             }
         }
@@ -253,8 +217,8 @@ export function SlotMachine(
 
                     result.view.filters = [];
                     result.view.scale.set(1);
-                }
-                if (result.pos <= displayLength - 1) {
+                    //
+                } else if (result.pos <= displayLength - 1) {
                     const velocity = newAxis - axis;
                     result.pos += (velocity);
                 }

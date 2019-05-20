@@ -81,7 +81,7 @@ export function create({normalTable, freeGameTable}) {
 
     const freeSpinIcon =
         FreeSpinIcon(
-            slot.view.getChildByName('icon@freespin'),
+            slot.view.getChildByName('Icon@freespin'),
         );
 
     const neko = Neko(scene);

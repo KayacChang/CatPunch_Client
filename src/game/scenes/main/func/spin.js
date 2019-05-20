@@ -29,8 +29,6 @@ export async function spin(it, reels, result) {
     await wait(500);
 
     await spinComplete(it, reels, result);
-
-    await wait(500);
 }
 
 async function spinStart(it, reels) {
@@ -43,6 +41,22 @@ async function spinStart(it, reels) {
         easing: 'linear',
         duration: 500,
     });
+
+    it.reels
+        .forEach((reel) =>
+            reel.results.forEach((result) =>
+                result.visible = true));
+
+    it.view
+        .children
+        .filter(({name}) => name.includes('Effect'))
+        .forEach((effect) => {
+            effect.visible = false;
+
+            effect.children
+                .filter(({name}) => name.includes('anim'))
+                .forEach(({anim}) => anim.visible = false);
+        });
 
     for (const reel of reels) {
         reel.status = Status.Start;
@@ -126,9 +140,6 @@ function spinStop(it, reels, {positions, symbols}) {
 
                 anime.remove(reel);
 
-                reel.symbols
-                    .forEach((symbol) => symbol.visible = false);
-
                 reel.status = Status.Idle;
             },
         }).finished;
@@ -177,7 +188,9 @@ async function spinComplete(it, reels, {hasLink, symbols}) {
 
 function normalEffect(reel) {
     const symbol =
-        getDisplaySymbol(reel).view;
+        reel.results
+            .find((symbol) => symbol.pos === 2)
+            .view;
 
     anime({
         targets: symbol.scale,
@@ -206,11 +219,6 @@ function isSpecialSymbol(name) {
         name.includes('taiko');
 }
 
-function getDisplaySymbol(reel) {
-    return reel.results
-        .find((symbol) => symbol.pos === 2);
-}
-
 function getSymbolName(icon) {
     if (icon === emptyIcon) return 'empty';
 
@@ -220,11 +228,9 @@ function getSymbolName(icon) {
 }
 
 function specialEffect(it, reel, symbolName) {
-    if (symbolName === 'taiko@5x') return;
-
-    const symbol = getDisplaySymbol(reel);
-
-    symbol.visible = false;
+    reel.results
+        .find((symbol) => symbol.pos === 2)
+        .visible = false;
 
     const effect =
         it.view.getChildByName(`Effect_${reel.reelIdx}`);
@@ -238,11 +244,4 @@ function specialEffect(it, reel, symbolName) {
 
     anim.visible = true;
     anim.gotoAndPlay(0);
-
-    reel.once(Status.Start, () => {
-        symbol.visible = true;
-
-        anim.visible = false;
-        effect.visible = false;
-    });
 }

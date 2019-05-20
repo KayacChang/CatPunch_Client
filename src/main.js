@@ -44,11 +44,12 @@ async function main() {
     const MainScene = await import('./game/scenes/main');
     const UserInterface = await import('./game/interface/slot');
 
-    app.on('loading', ({progress}, {name}) =>
-        log(
-            `Progress: ${progress} % \n` +
-            `Resource: ${name}`,
-        ));
+    app.on('loading', ({progress}, {name}) => {
+        log(`Progress: ${progress} %`);
+        log(`Resource: ${name}`);
+
+        loadScene.update(progress);
+    });
 
     await Promise.all([
         // app.service.sendLogin(),

@@ -12,15 +12,17 @@ export function isResult({name}) {
 }
 
 export function TextureManager(symbolConfig) {
-    const textures =
+    const {textures} = app.resource.get('symbols');
+
+    const mapping =
         symbolConfig
-            .map(({id, name}) =>
-                ({id, texture: app.resource.get(name).texture}));
+            .map(({id, texture}) =>
+                ({id, texture: textures[texture]}));
 
     return {getTexture};
 
     function getTexture(iconId) {
-        return textures
+        return mapping
             .find(({id}) => id === iconId)
             .texture;
     }

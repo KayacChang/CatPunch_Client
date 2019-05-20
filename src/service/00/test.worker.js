@@ -120,8 +120,8 @@ function spinFreeGame() {
 }
 
 function hasBonusSymbol(symbols) {
-    const isBonus = equals(0);
-    return any(isBonus, symbols);
+    const isNeko = equals(1);
+    return any(isNeko, symbols);
 }
 
 function checkHasLink(symbols) {
@@ -129,6 +129,9 @@ function checkHasLink(symbols) {
 
     const isWild = includes(__, wildSet);
     const isEmpty = equals(10);
+
+    const is7 = includes(__, [5, 6]);
+    const isBAR = includes(__, [7, 8, 9]);
 
     if (any(isEmpty, symbols)) return false;
 
@@ -140,15 +143,17 @@ function checkHasLink(symbols) {
         return all(equals(head(lastSymbol)), lastSymbol);
     }
 
-    return all(equals(head(symbols)), symbols);
+    if (all(is7, symbols)) return true;
+    if (all(isBAR, symbols)) return true;
+    return (all(equals(head(symbols)), symbols));
 }
 
 function checkHasReSpin(symbols) {
     const isEmpty = equals(10);
-    const isWild0 = equals(0);
-    const isWild1 = equals(1);
+    const isKoi = equals(0);
+    const isNeko = equals(1);
 
     if (isEmpty(symbols[0])) return false;
 
-    return isWild0(symbols[1]) && isWild1(symbols[2]);
+    return isNeko(symbols[1]) && isKoi(symbols[2]);
 }
