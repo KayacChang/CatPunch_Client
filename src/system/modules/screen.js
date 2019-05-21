@@ -1,4 +1,4 @@
-import MobileDetect from 'mobile-detect';
+import {isMobile} from 'pixi.js/lib/core/utils';
 
 function getClientSize(target) {
     const {clientWidth, clientHeight} = target;
@@ -9,19 +9,12 @@ function getWindowSize() {
     return getClientSize(document.documentElement);
 }
 
-function isMobile() {
-    const detector =
-        new MobileDetect(navigator.userAgent);
-
-    return detector.mobile();
-}
-
 // function isLandScape() {
 //     return matchMedia('all and (orientation:landscape)').matches;
 // }
 
 function getExpectSize() {
-    if (isMobile()) return getWindowSize();
+    if (isMobile.phone) return getWindowSize();
 
     const size = getWindowSize();
 

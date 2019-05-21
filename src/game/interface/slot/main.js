@@ -1,7 +1,5 @@
 import {Clickable, ToggleButton} from '../components';
 
-import {throttle} from 'lodash';
-
 import {setDropShadow} from '../../plugin/filter';
 import anime from 'animejs';
 
@@ -14,9 +12,9 @@ export function Main(parent) {
         it.getChildByName('status'),
     );
 
-    SpinButton(it);
+    it.funcBtn = FunctionButton(it);
 
-    FunctionButton(it);
+    SpinButton(it);
 
     AudioButton(
         it.getChildByName('audio'),
@@ -28,6 +26,7 @@ export function Main(parent) {
     );
 }
 
+
 function MenuButton(view, menu) {
     const it = Clickable(view);
     it.on('pointerdown', () => {
@@ -38,13 +37,22 @@ function MenuButton(view, menu) {
 }
 
 function setBehaviour(it) {
+    const hoverMaskView = it.getChildByName('hover');
+    const downMaskView = it.getChildByName('down');
+
+    const shadow = setDropShadow(it, {
+        distance: 6,
+        alpha: 0.5,
+        rotation: 90,
+    });
+
     const anim = {
         duration: 350,
         easing: 'easeOutCubic',
     };
     const normal = {
         shadow: {
-            distance: 12,
+            distance: 6,
             alpha: 0.5,
         },
         hoverMask: {
@@ -56,7 +64,7 @@ function setBehaviour(it) {
     };
     const hover = {
         shadow: {
-            distance: 16,
+            distance: 6,
             alpha: 0.3,
         },
         hoverMask: {
@@ -67,38 +75,27 @@ function setBehaviour(it) {
         },
     };
 
-    const down = {
-        downMask: {
-            alpha: 0.3,
-        },
-    };
+    it.on('Hover', onHover);
 
-    const hoverMaskView = it.getChildByName('hover');
-    const downMaskView = it.getChildByName('down');
+    it.on('Normal', onNormal);
 
-    const shadow = setDropShadow(it, normal.shadow);
+    it.on('Click', ({data}) => {
+        onClick({data});
+        it.emit('click');
+    });
 
-    it.on('pointerover', throttleFunc(onHover));
-
-    it.on('pointerout', throttleFunc(onNormal));
-
-    it.on('pointerdown', throttleFunc(onDown));
-
-    it.on('pointerup', throttleFunc(onHover));
+    it.on('Change', ({data, checked}) => {
+        onClick({data});
+        it.emit('change', {checked});
+    });
 
     return it;
-
-    function throttleFunc(func) {
-        return throttle(
-            func, 350,
-            {leading: true, trailing: false},
-        );
-    }
 
     function onNormal() {
         anime({
             targets: shadow,
-            ...(anim),
+            easing: 'easeInOutSine',
+            duration: 100,
             ...(normal.shadow),
         });
         anime({
@@ -108,15 +105,17 @@ function setBehaviour(it) {
         });
         anime({
             targets: downMaskView,
-            ...(anim),
-            ...(normal.downMask),
+            alpha: 0,
+            duration: 160,
+            easing: 'easeOutSine',
         });
     }
 
     function onHover() {
         anime({
             targets: shadow,
-            ...(anim),
+            easing: 'easeInOutSine',
+            duration: 100,
             ...(hover.shadow),
         });
         anime({
@@ -126,25 +125,30 @@ function setBehaviour(it) {
         });
         anime({
             targets: downMaskView,
-            ...(anim),
-            ...(hover.downMask),
+            alpha: 0,
+            duration: 160,
+            easing: 'easeOutSine',
         });
     }
 
-    function onDown() {
-        anime({
-            targets: downMaskView,
-            ...(anim),
-            ...(down.downMask),
-        });
+    function onClick({data}) {
+        const {x, y} = data.getLocalPosition(it);
+        downMaskView.position.set(x, y);
+        downMaskView.alpha = 0.3;
         anime({
             targets: downMaskView.scale,
-            x: [0.2, 1],
-            y: [0.2, 1],
-            ...(anim),
+            x: [0, 1.8],
+            y: [0, 1.8],
+            duration: 300,
+            easing: 'easeOutQuad',
         });
-
-        it.emit('Click');
+        anime({
+            targets: shadow,
+            distance: 6,
+            alpha: 0.5,
+            duration: 100,
+            easing: 'easeInOutSine',
+        });
     }
 }
 
@@ -153,7 +157,110 @@ function FunctionButton(view) {
 
     setBehaviour(it);
 
+    const btns =
+        ['speed', 'bet', 'auto'].map(OptionButton);
+
+    const settingIcon = it.getChildByName('img@setting');
+    settingIcon.scale.set(0.4);
+
+    const backIcon = it.getChildByName('img@back');
+    backIcon.scale.set(0);
+
+    it.on('change', onChange);
+
     return it;
+
+    function openBtns(open) {
+        btns
+            .forEach((targets) => {
+                const scale =
+                    open ? {x: 1, y: 1} : {x: 0, y: 0};
+
+                anime({
+                    targets: targets.scale,
+                    ...(scale),
+                    easing: 'easeInQuart',
+                    duration: 300,
+                });
+            });
+    }
+
+    function onChange({checked}) {
+        openBtns(checked);
+
+        anime({
+            targets: backIcon.scale,
+            ...(
+                checked ? {x: 0.6, y: 0.6} : {x: 0, y: 0}
+            ),
+            easing: 'easeInQuart',
+            duration: 300,
+        });
+
+        anime({
+            targets: settingIcon.scale,
+            ...(
+                !checked ? {x: 0.4, y: 0.4} : {x: 0, y: 0}
+            ),
+            easing: 'easeInQuart',
+            duration: 300,
+        });
+    }
+
+    function OptionButton(key) {
+        const btn =
+            Clickable(view.getChildByName(key));
+
+        setBehaviour(btn);
+
+        const options =
+            view.children
+                .filter(({name}) => name.includes(`${key}@`))
+                .map((it) => {
+                    Clickable(it);
+                    setBehaviour(it);
+                    return it;
+                });
+
+        btn.scale.set(0);
+
+        btn.on('click', onOptionOpen(open));
+
+        return btn;
+
+        function open(flag) {
+            options
+                .forEach((targets) => {
+                    const scale =
+                        flag ? {x: 1, y: 1} : {x: 0, y: 0};
+
+                    anime({
+                        targets: targets.scale,
+                        ...(scale),
+                        easing: 'easeInQuart',
+                        duration: 300,
+                    });
+                });
+        }
+    }
+
+    function onOptionOpen(func) {
+        return function() {
+            it.off('change', onChange);
+            it.on('change', function _onChange() {
+                func(false);
+                openBtns(true);
+
+                it.checked = true;
+                it.off('change', _onChange);
+                it.on('change', onChange);
+            });
+
+            func(true);
+
+            openBtns(false);
+        };
+    }
 }
 
 function AudioButton(view) {
@@ -172,7 +279,9 @@ function AudioButton(view) {
 }
 
 function SpinButton(view) {
-    const it = Clickable(view.getChildByName('spin'));
+    const it = Clickable(
+        view.getChildByName('spin'),
+    );
 
     setBehaviour(it);
 
@@ -184,9 +293,17 @@ function SpinButton(view) {
 
     return it;
 
+    function closeFuncBtn() {
+        view.funcBtn.emit('change', {checked: false});
+        view.funcBtn.emit('change', {checked: false});
+        view.funcBtn.checked = false;
+    }
+
     function onClick(evt) {
         if (!flag) {
             console.log('spin...');
+
+            closeFuncBtn();
 
             // flag = true;
 
