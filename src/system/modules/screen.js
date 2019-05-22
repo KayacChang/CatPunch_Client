@@ -36,6 +36,7 @@ function setSize(target, {width, height}) {
 }
 
 function setStyleSize(target, {width, height}) {
+    if (!target) return;
     target.style.width = width + 'px';
     target.style.height = height + 'px';
 }
@@ -43,7 +44,7 @@ function setStyleSize(target, {width, height}) {
 export function resize(app) {
     const size = getExpectSize();
 
-    setStyleSize(app.view.parentNode, size);
+    setStyleSize(app.view.parentElement, size);
     setSize(app.view, size);
     app.renderer
         .resize(size.width, size.height);

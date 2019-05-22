@@ -12,8 +12,6 @@ import MAIN_ATLAS0_6_URL from './assets/sprite_sheets/main@atlas0_6.png';
 import MAIN_ATLAS0_7_URL from './assets/sprite_sheets/main@atlas0_7.png';
 import MAIN_ATLAS0_8_URL from './assets/sprite_sheets/main@atlas0_8.png';
 
-import MAIN_BGM from './assets/sounds/MainBGM.mp3';
-
 import EFFECT_TEXT_URL from './assets/fonts/effect-text.json';
 import './assets/fonts/effect-text.png';
 import FONT_EXPORT_URL from './assets/fonts/font-export.xml';
@@ -46,11 +44,11 @@ export function reserve() {
         {name: 'main@atlas0_8.png', url: MAIN_ATLAS0_8_URL},
         {name: 'effect-text', url: EFFECT_TEXT_URL},
         {name: 'effect-number', url: FONT_EXPORT_URL},
-        {
-            name: 'mainBGM',
-            url: MAIN_BGM,
-            metadata: {html5: true, loop: true},
-        },
+        // {
+        //     name: 'mainBGM',
+        //     url: MAIN_BGM,
+        //     metadata: {html5: true, loop: true},
+        // },
         {name: 'symbols', url: SYMBOLS},
     ];
 }

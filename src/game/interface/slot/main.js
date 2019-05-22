@@ -1,4 +1,4 @@
-import {Clickable, ToggleButton} from '../components';
+import {Clickable} from '../components';
 
 import {setDropShadow} from '../../plugin/filter';
 import anime from 'animejs';
@@ -12,29 +12,136 @@ export function Main(parent) {
         it.getChildByName('status'),
     );
 
-    it.funcBtn = FunctionButton(it);
-
     SpinButton(it);
 
-    AudioButton(
-        it.getChildByName('audio'),
-    );
+    Options(it);
+}
 
-    MenuButton(
-        it.getChildByName('menu'),
-        parent.getChildByName('menu'),
+function Options(view) {
+    const btn = Clickable(
+        view.getChildByName('btn@option'),
     );
+    const btnIcon = view.getChildByName('img@option');
+    btnIcon.originScale = {
+        x: btnIcon.scale.x,
+        y: btnIcon.scale.y,
+    };
+    const btnFrame = view.getChildByName('frame@option');
+    btnFrame.originScale = {
+        x: btnFrame.scale.x,
+        y: btnFrame.scale.y,
+    };
+
+    const menu = OptionMenu(
+        view.getChildByName('optionMenu'),
+    );
+    menu.interactive = true;
+
+    setBehaviour(btn);
+
+    btn.on('click', () => setMenu(true));
+
+    return btn;
+
+    function setMenu(open) {
+        const originPos = btn.position;
+        const openPos =
+            view.getChildByName('pos@option').position;
+
+        const {x, y} = open ? openPos : originPos;
+
+        const easing = open ? 'easeOutExpo' : 'easeOutCubic';
+
+        anime({
+            targets: menu.position,
+            x, y,
+            duration: 360,
+            easing,
+        });
+
+        setScale(
+            open ? {x: 0, y: 0} : btnIcon.originScale,
+            btnIcon,
+        );
+        setScale(
+            open ? {x: 0, y: 0} : btnFrame.originScale,
+            btnFrame,
+        );
+        setScale(
+            open ? {x: 1, y: 1} : {x: 0, y: 0},
+            menu,
+        );
+    }
+
+    function setScale({x, y}, ...targets) {
+        anime({
+            targets: targets.map(({scale}) => scale),
+            x, y,
+            duration: 360,
+            easing: 'easeOutQuart',
+        });
+    }
+
+    function OptionMenu(menu) {
+        const btns = {};
+        menu.children
+            .filter(({name}) => name.includes('btn'))
+            .forEach((it) => {
+                Clickable(it);
+                setBehaviour(it);
+
+                const name = it.name.split('@')[1];
+                btns[name] = it;
+            });
+
+        const numbers =
+            menu.children
+                .filter(({name}) => name.includes('num'));
+
+        console.log(numbers);
+
+        const icons =
+            menu.children
+                .filter(({name}) =>
+                    name.includes('img') && !name.includes('back'));
+
+        btns['back'].on('click', () => setMenu(false));
+
+        btns['bet'].on('click', setBet);
+
+        return menu;
+
+        function setBet() {
+            const bets = [
+                1.0, 10.0, 20.0, 50.0, 100.0,
+            ];
+
+            numbers.forEach((num) => {
+                const index = num.name.split('@')[1];
+
+                console.log(index);
+                num.text = bets[index];
+            });
+
+            setScale(
+                {x: 1, y: 1}, ...numbers,
+            );
+            setScale(
+                {x: 0, y: 0}, ...icons,
+            );
+        }
+    }
 }
 
 
-function MenuButton(view, menu) {
-    const it = Clickable(view);
-    it.on('pointerdown', () => {
-        menu.open();
-        menu.visible = true;
-    });
-    return it;
-}
+// function MenuButton(view, menu) {
+//     const it = Clickable(view);
+//     it.on('pointerdown', () => {
+//         menu.open();
+//         menu.visible = true;
+//     });
+//     return it;
+// }
 
 function setBehaviour(it) {
     const hoverMaskView = it.getChildByName('hover');
@@ -152,131 +259,20 @@ function setBehaviour(it) {
     }
 }
 
-function FunctionButton(view) {
-    const it = ToggleButton(view.getChildByName('function'));
-
-    setBehaviour(it);
-
-    const btns =
-        ['speed', 'bet', 'auto'].map(OptionButton);
-
-    const settingIcon = it.getChildByName('img@setting');
-    settingIcon.scale.set(0.4);
-
-    const backIcon = it.getChildByName('img@back');
-    backIcon.scale.set(0);
-
-    it.on('change', onChange);
-
-    return it;
-
-    function openBtns(open) {
-        btns
-            .forEach((targets) => {
-                const scale =
-                    open ? {x: 1, y: 1} : {x: 0, y: 0};
-
-                anime({
-                    targets: targets.scale,
-                    ...(scale),
-                    easing: 'easeInQuart',
-                    duration: 300,
-                });
-            });
-    }
-
-    function onChange({checked}) {
-        openBtns(checked);
-
-        anime({
-            targets: backIcon.scale,
-            ...(
-                checked ? {x: 0.6, y: 0.6} : {x: 0, y: 0}
-            ),
-            easing: 'easeInQuart',
-            duration: 300,
-        });
-
-        anime({
-            targets: settingIcon.scale,
-            ...(
-                !checked ? {x: 0.4, y: 0.4} : {x: 0, y: 0}
-            ),
-            easing: 'easeInQuart',
-            duration: 300,
-        });
-    }
-
-    function OptionButton(key) {
-        const btn =
-            Clickable(view.getChildByName(key));
-
-        setBehaviour(btn);
-
-        const options =
-            view.children
-                .filter(({name}) => name.includes(`${key}@`))
-                .map((it) => {
-                    Clickable(it);
-                    setBehaviour(it);
-                    return it;
-                });
-
-        btn.scale.set(0);
-
-        btn.on('click', onOptionOpen(open));
-
-        return btn;
-
-        function open(flag) {
-            options
-                .forEach((targets) => {
-                    const scale =
-                        flag ? {x: 1, y: 1} : {x: 0, y: 0};
-
-                    anime({
-                        targets: targets.scale,
-                        ...(scale),
-                        easing: 'easeInQuart',
-                        duration: 300,
-                    });
-                });
-        }
-    }
-
-    function onOptionOpen(func) {
-        return function() {
-            it.off('change', onChange);
-            it.on('change', function _onChange() {
-                func(false);
-                openBtns(true);
-
-                it.checked = true;
-                it.off('change', _onChange);
-                it.on('change', onChange);
-            });
-
-            func(true);
-
-            openBtns(false);
-        };
-    }
-}
-
-function AudioButton(view) {
-    const it = ToggleButton(view);
-    const openView = it.getChildByName('open');
-
-    it.on('Change', onChange);
-
-    onChange(it.checked);
-
-    return it;
-
-    function onChange(checked) {
-        openView.visible = checked;
-    }
-}
+// function AudioButton(view) {
+//     const it = ToggleButton(view);
+//     const openView = it.getChildByName('open');
+//
+//     it.on('Change', onChange);
+//
+//     onChange(it.checked);
+//
+//     return it;
+//
+//     function onChange(checked) {
+//         openView.visible = checked;
+//     }
+// }
 
 function SpinButton(view) {
     const it = Clickable(
@@ -293,17 +289,9 @@ function SpinButton(view) {
 
     return it;
 
-    function closeFuncBtn() {
-        view.funcBtn.emit('change', {checked: false});
-        view.funcBtn.emit('change', {checked: false});
-        view.funcBtn.checked = false;
-    }
-
     function onClick(evt) {
         if (!flag) {
             console.log('spin...');
-
-            closeFuncBtn();
 
             // flag = true;
 

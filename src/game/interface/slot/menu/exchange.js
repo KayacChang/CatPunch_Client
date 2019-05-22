@@ -42,10 +42,10 @@ export function Exchange(exchange) {
         const {content} = exchange.getChildByName('input@currencies');
         content.text = typeOfCurrencies[0];
 
-        const list =
-            DropDown(exchange.getChildByName('ul@dropdown'));
+        // const list =
+        //     DropDown(exchange.getChildByName('ul@dropdown'));
 
-        DropDownButton(exchange.getChildByName('btn@dropdown'));
+        // DropDownButton(exchange.getChildByName('btn@dropdown'));
 
         return {get};
 
@@ -53,46 +53,46 @@ export function Exchange(exchange) {
             return content.text;
         }
 
-        function DropDown(it) {
-            it = Openable(it);
+        // function DropDown(it) {
+        //     it = Openable(it);
+        //
+        //     it.children
+        //         .filter(({name}) => name.includes('btn'))
+        //         .forEach(Item);
+        //
+        //     it.children
+        //         .filter(({name}) => name.includes('text'))
+        //         .forEach(setText);
+        //
+        //     return it;
+        //
+        //     function Item(it) {
+        //         it = Clickable(it);
+        //
+        //         const [, id] = it.name.split('@');
+        //         it.on('pointerdown', () => {
+        //             content.text = typeOfCurrencies[id];
+        //             list.close();
+        //         });
+        //     }
+        //
+        //     function setText({name, content}) {
+        //         const [, id] = name.split('@');
+        //         content.text = typeOfCurrencies[id];
+        //     }
+        // }
 
-            it.children
-                .filter(({name}) => name.includes('btn'))
-                .forEach(Item);
-
-            it.children
-                .filter(({name}) => name.includes('text'))
-                .forEach(setText);
-
-            return it;
-
-            function Item(it) {
-                it = Clickable(it);
-
-                const [, id] = it.name.split('@');
-                it.on('pointerdown', () => {
-                    content.text = typeOfCurrencies[id];
-                    list.close();
-                });
-            }
-
-            function setText({name, content}) {
-                const [, id] = name.split('@');
-                content.text = typeOfCurrencies[id];
-            }
-        }
-
-        function DropDownButton(btn) {
-            btn = Clickable(btn);
-
-            btn.on('pointerdown', click);
-            return btn;
-
-            function click() {
-                list.visible ?
-                    list.close() : list.open();
-            }
-        }
+        // function DropDownButton(btn) {
+        //     btn = Clickable(btn);
+        //
+        //     btn.on('pointerdown', click);
+        //     return btn;
+        //
+        //     function click() {
+        //         list.visible ?
+        //             list.close() : list.open();
+        //     }
+        // }
     }
 
 
