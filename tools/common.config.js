@@ -16,7 +16,7 @@ const {
 
 //  Exports
 module.exports = function(env) {
-    env = {...env, SERVICE_URL: 'https://stage.ucoin.club:20000'};
+    env = {...env, SERVICE_URL: 'http://192.168.1.14:8000'};
 
     return {
         //  Entry   ===========================================

@@ -2,6 +2,7 @@ import {Openable} from '../../components/Openable';
 import {Clickable, ToggleButton, RangeSlider} from '../../components';
 
 import {range} from 'ramda';
+import anime from 'animejs';
 
 export function Setting(setting) {
     setting = Openable(setting);
@@ -29,7 +30,33 @@ export function Setting(setting) {
     Toggle(setting, 'effects');
     Toggle(setting, 'ambience');
 
+    setting.y -= 53;
+    setting.open = open;
+    setting.close = close;
+
     return setting;
+
+    function open() {
+        setting.visible = true;
+        return anime({
+            targets: setting,
+            alpha: 1, y: 0,
+            duration: 300,
+            easing: 'easeOutQuad',
+        }).finished;
+    }
+
+    function close() {
+        return anime({
+            targets: setting,
+            alpha: 0, y: '-=' + 53,
+            duration: 300,
+            easing: 'easeOutQuad',
+            complete() {
+                setting.visible = false;
+            },
+        }).finished;
+    }
 }
 
 function Toggle(setting, target) {

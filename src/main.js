@@ -4,7 +4,7 @@ import {
 } from './web/utils/dom';
 
 import {App} from './system/application';
-import {Service} from './service/00/';
+import {Service} from './service/01/';
 import {log} from './general/utils/dev';
 
 function startLoading(scene) {
@@ -21,52 +21,60 @@ function startLoading(scene) {
 
 async function main() {
     //  Init App
-    // global.app = new App(Service);
-    global.app = new App(Service);
+    try {
+        global.app = new App(Service);
 
-    const result = await app.service.login();
-    console.log(result);
+        const result = await app.service.login();
+        console.log(result);
 
-    const user = await app.service.getUser();
-    console.log(user);
+        const initData = await app.service.init();
+        console.log(initData);
 
-    const initData = await app.service.init();
-    console.log(initData);
+        // const refresh = await app.service.refresh();
+        // console.log(refresh);
 
-    // Import Load Scene
-    const LoadScene = await import('./game/scenes/load/scene');
+        // const exchange = await app.service.exchange({type: '1', amount: 10});
+        // console.log(exchange);
 
-    await app.resource.load(LoadScene);
+        // const checkout = await app.service.checkout();
+        // console.log(checkout);
 
-    const loadScene = startLoading(LoadScene);
+        // Import Load Scene
+        const LoadScene = await import('./game/scenes/load/scene');
 
-    //  Import Main Scene
-    const MainScene = await import('./game/scenes/main');
-    const UserInterface = await import('./game/interface/slot');
+        await app.resource.load(LoadScene);
 
-    app.on('loading', ({progress}, {name}) => {
-        log(`Progress: ${progress} %`);
-        log(`Resource: ${name}`);
+        const loadScene = startLoading(LoadScene);
 
-        loadScene.update(progress);
-    });
+        //  Import Main Scene
+        const MainScene = await import('./game/scenes/main');
+        const UserInterface = await import('./game/interface/slot');
 
-    await Promise.all([
-        // app.service.sendLogin(),
-        app.resource.load(MainScene, UserInterface),
-    ]);
+        app.on('loading', ({progress}, {name}) => {
+            log(`Progress: ${progress} %`);
+            log(`Resource: ${name}`);
+
+            loadScene.update(progress);
+        });
+
+        await Promise.all([
+            app.resource.load(MainScene, UserInterface),
+        ]);
 
 
-    const ui = UserInterface.create();
-    // const scene = MainScene.create(initData);
-    // scene.addChild(ui);
+        const ui = UserInterface.create();
+        // const scene = MainScene.create(initData);
+        // scene.addChild(ui);
 
-    app.stage.addChildAt(ui, 0);
+        app.stage.addChildAt(ui, 0);
 
-    // app.once('GameReady', () => {
-    app.stage.removeChild(loadScene);
-    app.resize();
-    // });
+        // app.once('GameReady', () => {
+        app.stage.removeChild(loadScene);
+        app.resize();
+        // });
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 main();

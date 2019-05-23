@@ -1,6 +1,9 @@
 import {Clickable} from '../components';
 
-import {setDropShadow} from '../../plugin/filter';
+import {
+    setDropShadow,
+    setBlur,
+} from '../../plugin/filter';
 import anime from 'animejs';
 
 const {assign} = Object;
@@ -41,6 +44,11 @@ function Options(view) {
         x: btnFrame.scale.x,
         y: btnFrame.scale.y,
     };
+    setDropShadow(btnFrame, {
+        distance: 6,
+        alpha: 0.5,
+        rotation: 90,
+    });
 
     const menu = OptionMenu(
         view.getChildByName('optionMenu'),
@@ -170,6 +178,11 @@ function Options(view) {
 
                     return frame;
                 });
+
+        setBlur(
+            menu.getChildByName('blur'),
+            {strength: 12, quality: 8, kernelSize: 15},
+        );
 
         return menu;
 
@@ -328,7 +341,6 @@ function Options(view) {
     }
 }
 
-
 function setBehaviour(it) {
     const hoverMaskView = it.getChildByName('hover');
     const downMaskView = it.getChildByName('down');
@@ -377,7 +389,7 @@ function setBehaviour(it) {
     });
 
     it.on('Change', ({data, checked}) => {
-        onClick({data});
+        onClick({data, checked});
     });
 
     return it;
@@ -473,7 +485,10 @@ function SpinButton(view) {
 
 function Status(view) {
     view.children
-        .filter(({content}) => content !== undefined)
+        .filter(({name}) => name.includes('label'))
+        .map((label) => setFontFamily(label, 'Basic'));
+    view.children
+        .filter(({name}) => name.includes('output'))
         .map((label) => setFontFamily(label, 'Candal'));
 }
 

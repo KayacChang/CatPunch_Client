@@ -4,12 +4,38 @@ import {
     OutlineFilter, ZoomBlurFilter,
 } from 'pixi-filters';
 
+import {filters} from 'pixi.js';
+
+const {BlurFilter} = filters;
+
 function setFilter(view, filter) {
     if (!view.filters) view.filters = [];
 
     view.filters = [filter, ...view.filters];
 
     return view;
+}
+
+export function setBlur(view, options = {}) {
+    const {
+        strength,
+        quality,
+        resolution,
+        kernelSize,
+        blur,
+    } = options;
+
+    const it = new BlurFilter(
+        strength || 8,
+        quality || 4,
+        resolution,
+        kernelSize || 5,
+    );
+    if (blur) it.blur = blur;
+
+    setFilter(view, it);
+
+    return it;
 }
 
 export function setZoom(view, options) {

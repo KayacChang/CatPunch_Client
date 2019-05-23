@@ -1,5 +1,6 @@
 import {Clickable} from '../../components/Clickable';
 import {Openable} from '../../components/Openable';
+import anime from 'animejs';
 
 const {trunc} = Math;
 
@@ -31,7 +32,33 @@ export function Exchange(exchange) {
         exchange.getChildByName('btn@refresh'),
     );
 
+    exchange.y -= 53;
+    exchange.open = open;
+    exchange.close = close;
+
     return exchange;
+
+    function open() {
+        exchange.visible = true;
+        return anime({
+            targets: exchange,
+            alpha: 1, y: 0,
+            duration: 300,
+            easing: 'easeOutQuad',
+        }).finished;
+    }
+
+    function close() {
+        return anime({
+            targets: exchange,
+            alpha: 0, y: '-=' + 53,
+            duration: 300,
+            easing: 'easeOutQuad',
+            complete() {
+                exchange.visible = false;
+            },
+        }).finished;
+    }
 
     function Currencies(exchange) {
         const typeOfCurrencies = [

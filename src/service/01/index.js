@@ -1,21 +1,28 @@
 import {getSearchParams} from '../utils';
 
+const {assign, entries, fromEntries} = Object;
+
 export function Service(network) {
     const tokens = {
-        'token': construct(),
-        'sso_token': '',
+        'accounttoken': construct(),
+        'token': '',
+    };
+
+    const user = {
+        'gameaccount': '',
+        'playerid': '',
     };
 
     const env = {
-        agent_id: 0,
-        game_id: 5,
+        logintype: 3,
+        gametypeid: 'A173D52E01A6EB65A5D6EDFB71A8C39C',
     };
 
-    return {sendLogin, sendInit, sendOneRound};
+    return {login, init, refresh, exchange, checkout, sendOneRound};
 
     function construct() {
         const token =
-            getSearchParams('token') || sessionStorage.getItem('token');
+            getSearchParams('token') || sessionStorage.getItem('accounttoken');
 
         if (!token) {
             // @TODO Maybe Popup an Alert before redirect to game hall.
@@ -31,39 +38,120 @@ export function Service(network) {
 
         global.addEventListener('popstate', () => history.back());
 
-        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('accounttoken', token);
 
         return token;
     }
 
-    function sendLogin() {
+    function login() {
         const requestBody = {
             ...tokens,
             ...env,
-            packet_id: 0,
-            Payload: '',
         };
 
         return network
-            .post('api/entry', requestBody)
-            .then(({payload}) => JSON.parse(payload))
-            .then((result) => {
-                tokens['sso_token'] = result['sso_token'];
-                return result;
-            });
+            .post('account/login', requestBody)
+            .then(({data, error}) => {
+                if (error['ErrorCode'] !== 0) {
+                    throw error['Msg'];
+                }
+
+                tokens.token = data['token'];
+
+                user.gameaccount = data['gameaccount'];
+
+                user.balance = new Map(
+                    data['userCoinQuota']
+                        .map((data) => [data.type, data]),
+                );
+
+                data['gameInfo']
+                    .forEach(({type, ...data}) =>
+                        assign(user.balance.get(type), data));
+
+                return data;
+            })
+            .catch((err) => console.error(err));
     }
 
-    function sendInit() {
+    function init() {
         const requestBody = {
             ...tokens,
             ...env,
-            packet_id: 4,
-            Payload: '',
+            ...user,
         };
 
         return network
-            .post('api/entry', requestBody)
-            .then(({payload}) => JSON.parse(payload));
+            .post('lobby/init', requestBody)
+            .then(({data, error}) => {
+                user.playerid = data['player']['id'];
+
+                return data;
+            })
+            .catch((err) => console.error(err));
+    }
+
+    function refresh() {
+        const requestBody = {
+            ...tokens,
+            ...env,
+            ...user,
+        };
+
+        return network
+            .post('lobby/refresh', requestBody)
+            .then(({data, error}) => {
+                data['userCoinQuota']
+                    .forEach(({type, amount}) => {
+                        user.balance.get(type).amount = amount;
+                    });
+                return data;
+            })
+            .catch((err) => console.error(err));
+    }
+
+    function exchange({type, amount}) {
+        const requestBody = {
+            ...tokens,
+            ...env,
+            ...user,
+
+            'cointype': Number(type),
+            'coinamount': amount,
+        };
+
+        return network
+            .post('lobby/exchange', requestBody)
+            .then(({data, error}) => {
+                user.coin = data['gameCoin'];
+                return data;
+            })
+            .then(refresh)
+            .catch((err) => console.error(err));
+    }
+
+    function checkout() {
+        const requestBody = {
+            ...tokens,
+            ...env,
+            ...user,
+        };
+
+        return network
+            .post('lobby/checkout', requestBody)
+            .then(({data, error}) => {
+                user.coin = 0;
+
+                return fromEntries(
+                    entries(data['userCoinQuota'])
+                        .filter(([key]) => key.includes('coin'))
+                        .map(([key, value]) => {
+                            const type = key.match(/\d+/g);
+                            return [type, value];
+                        }),
+                );
+            })
+            .catch((err) => console.error(err));
     }
 
     function sendOneRound(userBet) {

@@ -9,7 +9,7 @@ import {Menu} from './menu';
 
 const fontsConfig = {
     google: {
-        families: ['Candal'],
+        families: ['Candal', 'Basic'],
     },
 };
 
