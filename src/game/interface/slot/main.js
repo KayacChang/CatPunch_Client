@@ -5,6 +5,12 @@ import anime from 'animejs';
 
 const {assign} = Object;
 
+const user = {
+    bet: 1.0,
+    auto: 0,
+    speed: '1x',
+};
+
 export function Main(parent) {
     const it = parent.getChildByName('main');
 
@@ -13,6 +19,10 @@ export function Main(parent) {
     );
 
     SpinButton(it);
+
+    it.openMenu = function() {
+        parent.menu.open();
+    };
 
     Options(it);
 }
@@ -35,113 +45,289 @@ function Options(view) {
     const menu = OptionMenu(
         view.getChildByName('optionMenu'),
     );
+    menu.originScale = {
+        x: menu.scale.x,
+        y: menu.scale.y,
+    };
+
+    menu.scale.set(0);
+    menu.position = btn.position;
     menu.interactive = true;
 
     setBehaviour(btn);
 
-    btn.on('click', () => setMenu(true));
+    btn.on('Click', () => setOptionMenu(true));
 
     return btn;
 
-    function setMenu(open) {
-        const originPos = btn.position;
-        const openPos =
-            view.getChildByName('pos@option').position;
-
-        const {x, y} = open ? openPos : originPos;
-
-        const easing = open ? 'easeOutExpo' : 'easeOutCubic';
+    function setOptionMenu(open) {
+        const originPos = {
+            x: btn.position.x,
+            y: btn.position.y,
+        };
+        const location = view.getChildByName('pos@option');
+        const openPos = {
+            x: location.position.x,
+            y: location.position.y,
+        };
 
         anime({
             targets: menu.position,
-            x, y,
+            ...(open ? openPos : originPos),
             duration: 360,
-            easing,
+            easing: open ? 'easeOutCirc' : 'easeOutCubic',
         });
 
-        setScale(
-            open ? {x: 0, y: 0} : btnIcon.originScale,
-            btnIcon,
-        );
-        setScale(
-            open ? {x: 0, y: 0} : btnFrame.originScale,
-            btnFrame,
-        );
-        setScale(
-            open ? {x: 1, y: 1} : {x: 0, y: 0},
-            menu,
-        );
+        setScale(open, menu);
+        setScale(!open, btnIcon);
+        setScale(!open, btnFrame);
     }
 
-    function setScale({x, y}, ...targets) {
-        anime({
-            targets: targets.map(({scale}) => scale),
-            x, y,
-            duration: 360,
-            easing: 'easeOutQuart',
-        });
+    function setScale(open, ...targets) {
+        const tasks =
+            targets.map((it) => {
+                const state =
+                    open ? it.originScale : {x: 0, y: 0};
+
+                return anime({
+                    targets: it.scale,
+                    ...(state),
+                    duration: 360,
+                    easing: 'easeOutExpo',
+                }).finished;
+            });
+
+        return Promise.all(tasks);
     }
 
     function OptionMenu(menu) {
-        const btns = {};
-        menu.children
-            .filter(({name}) => name.includes('btn'))
-            .forEach((it) => {
-                Clickable(it);
-                setBehaviour(it);
+        const btns =
+            getChildren('btn')
+                .map((it) => {
+                    Clickable(it);
+                    setBehaviour(it);
+                    return it;
+                });
 
-                const name = it.name.split('@')[1];
-                btns[name] = it;
-            });
+        let btnsFunc = [
+            setSpeed,
+            setAuto,
+            setBet,
+            setAudio,
+            setMenu,
+        ];
+
+        let backFunc = setBack;
+
+        const backBtn = Clickable(
+            menu.getChildByName('back'),
+        );
+
+        setBehaviour(backBtn)
+            .on('Click', () => backFunc());
+
+        btns.forEach((btn) => {
+            const index = btn.name.split('@')[1];
+            btn.on('Click', () => btnsFunc[index]());
+        });
 
         const numbers =
-            menu.children
-                .filter(({name}) => name.includes('num'));
+            getChildren('num')
+                .map((num) => {
+                    const text = num.getChildByName('content');
+                    setFontFamily(text, 'Candal');
 
-        console.log(numbers);
+                    num.originScale = {x: 1, y: 1};
+
+                    return num;
+                });
 
         const icons =
-            menu.children
-                .filter(({name}) =>
-                    name.includes('img') && !name.includes('back'));
+            getChildren('img')
+                .filter(({name}) => !name.includes('back'))
+                .map((icon) => {
+                    const {x, y} = icon.scale;
+                    icon.originScale = {x, y};
 
-        btns['back'].on('click', () => setMenu(false));
+                    if (icon.name.includes('audio')) {
+                        icon.originScale = {
+                            x: icon.scale.x,
+                            y: icon.scale.y,
+                        };
+                        if (icon.name.includes('close')) {
+                            icon.scale.set(0);
+                        }
+                    }
 
-        btns['bet'].on('click', setBet);
+                    return icon;
+                });
+
+        const frames =
+            getChildren('frame')
+                .map((frame) => {
+                    const {x, y} = frame.scale;
+                    frame.originScale = {x, y};
+
+                    return frame;
+                });
 
         return menu;
 
-        function setBet() {
+        function resetFunc() {
+            btnsFunc = [
+                setSpeed,
+                setAuto,
+                setBet,
+                setAudio,
+                setMenu,
+            ];
+
+            backFunc = setBack;
+        }
+
+        function setSpeed() {
+            const counts = [
+                '1x', '2x', '3x',
+            ];
+            setOptionItems(counts, update);
+
+            numbers.forEach((num) => refresh(num, user.speed));
+
+            function update(value) {
+                user.speed = value;
+                console.log(`Speed: ${value}`);
+
+                numbers.forEach((num) => refresh(num, value));
+            }
+        }
+
+        function setAuto() {
+            const counts = [
+                0, 25, 100, 500, 1000,
+            ];
+            setOptionItems(counts, update);
+
+            numbers.forEach((num) => refresh(num, user.auto));
+
+            function update(value) {
+                user.auto = value;
+                console.log(`Auto: ${value}`);
+
+                numbers.forEach((num) => refresh(num, value));
+            }
+        }
+
+        async function setBet() {
             const bets = [
                 1.0, 10.0, 20.0, 50.0, 100.0,
             ];
+            setOptionItems(bets, update);
 
-            numbers.forEach((num) => {
-                const index = num.name.split('@')[1];
+            numbers.forEach((num) => refresh(num, user.bet));
 
-                console.log(index);
-                num.text = bets[index];
+            function update(value) {
+                user.bet = value;
+                console.log(`Bet: ${value}`);
+
+                numbers.forEach((num) => refresh(num, value));
+            }
+        }
+
+        function refresh(num, value) {
+            const enableFrame = num.getChildByName('enable');
+
+            setScale(num.value === value, enableFrame);
+        }
+
+        async function setOptionItems(options, func) {
+            const targets =
+                options.map((option, index) =>
+                    numbers.find(({name}) =>
+                        name.split('@')[1] === index + ''),
+                );
+
+            btnsFunc =
+                targets.map((num) => {
+                    const index = num.name.split('@')[1];
+
+                    num.value = options[index];
+
+                    num.getChildByName('content')
+                        .text = `${options[index]}`;
+
+                    const enableFrame = num.getChildByName('enable');
+                    enableFrame.originScale = {x: 1, y: 1};
+
+                    return function onClick() {
+                        func(options[index]);
+                    };
+                });
+
+            await setIcons(false);
+            setScale(true, ...targets);
+
+            targets.forEach(({name}) => {
+                const btn = btns[name.split('@')[1]];
+                btn.scale.set(1);
             });
 
-            setScale(
-                {x: 1, y: 1}, ...numbers,
-            );
-            setScale(
-                {x: 0, y: 0}, ...icons,
-            );
+            backFunc = async function() {
+                await setScale(false, ...targets);
+                setIcons(true);
+
+                resetFunc();
+            };
+        }
+
+
+        async function setAudio() {
+            const audioFrame = frames[3];
+            const disableFrame =
+                menu.getChildByName('disable');
+            disableFrame.originScale = {x: 1, y: 1};
+
+            const closeIcon =
+                icons.find(({name}) => name.includes('audio_close'));
+            const openIcon =
+                icons.find(({name}) => name.includes('audio_open'));
+
+            app.sound.mute(true);
+
+            await setScale(false, audioFrame, openIcon);
+            setScale(true, disableFrame, closeIcon);
+
+            btnsFunc[3] = async function() {
+                app.sound.mute(false);
+                await setScale(false, disableFrame, closeIcon);
+                setScale(true, audioFrame, openIcon);
+                resetFunc();
+            };
+        }
+
+        function setBack() {
+            setOptionMenu(false);
+        }
+
+        function setMenu() {
+            view.openMenu();
+            setOptionMenu(false);
+        }
+
+        function getChildren(keyword) {
+            return menu.children
+                .filter(({name}) => name.includes(keyword));
+        }
+
+        function setIcons(open) {
+            return Promise.all([
+                setScale(open, ...icons),
+                setScale(open, ...frames),
+                setScale(open, ...btns),
+            ]);
         }
     }
 }
 
-
-// function MenuButton(view, menu) {
-//     const it = Clickable(view);
-//     it.on('pointerdown', () => {
-//         menu.open();
-//         menu.visible = true;
-//     });
-//     return it;
-// }
 
 function setBehaviour(it) {
     const hoverMaskView = it.getChildByName('hover');
@@ -188,12 +374,10 @@ function setBehaviour(it) {
 
     it.on('Click', ({data}) => {
         onClick({data});
-        it.emit('click');
     });
 
     it.on('Change', ({data, checked}) => {
         onClick({data});
-        it.emit('change', {checked});
     });
 
     return it;
@@ -259,21 +443,6 @@ function setBehaviour(it) {
     }
 }
 
-// function AudioButton(view) {
-//     const it = ToggleButton(view);
-//     const openView = it.getChildByName('open');
-//
-//     it.on('Change', onChange);
-//
-//     onChange(it.checked);
-//
-//     return it;
-//
-//     function onChange(checked) {
-//         openView.visible = checked;
-//     }
-// }
-
 function SpinButton(view) {
     const it = Clickable(
         view.getChildByName('spin'),
@@ -308,6 +477,7 @@ function Status(view) {
         .map((label) => setFontFamily(label, 'Candal'));
 }
 
-function setFontFamily({content}, fontFamily) {
-    assign(content.style, {fontFamily});
+function setFontFamily(it, fontFamily) {
+    assign(it.content.style, {fontFamily});
+    return it;
 }

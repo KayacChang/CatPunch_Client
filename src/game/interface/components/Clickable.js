@@ -31,7 +31,7 @@ export function Clickable(it) {
 
     function throttleFunc(func) {
         return throttle(
-            func, 320,
+            func, 400,
             {leading: true, trailing: false},
         );
     }

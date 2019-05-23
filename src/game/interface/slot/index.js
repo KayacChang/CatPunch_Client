@@ -26,9 +26,9 @@ export function create() {
     const create = addPackage(app, 'interface');
     const it = create('UserInterface');
 
-    Main(it);
+    it.menu = Menu(it);
 
-    Menu(it);
+    it.main = Main(it);
 
     return it;
 }
