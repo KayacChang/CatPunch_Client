@@ -6,7 +6,7 @@ import {
 
 import {filters} from 'pixi.js';
 
-const {BlurFilter} = filters;
+const {BlurFilter, ColorMatrixFilter} = filters;
 
 function setFilter(view, filter) {
     if (!view.filters) view.filters = [];
@@ -14,6 +14,14 @@ function setFilter(view, filter) {
     view.filters = [filter, ...view.filters];
 
     return view;
+}
+
+export function setColorMatrix(view) {
+    const it = new ColorMatrixFilter();
+
+    setFilter(view, it);
+
+    return it;
 }
 
 export function setBlur(view, options = {}) {

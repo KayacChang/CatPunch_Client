@@ -7,6 +7,8 @@ import {App} from './system/application';
 import {Service} from './service/01/';
 import {log} from './general/utils/dev';
 
+import alert from './web/components/swal';
+
 function startLoading(scene) {
     const comp = select('#app');
     clear(comp);
@@ -24,20 +26,9 @@ async function main() {
     try {
         global.app = new App(Service);
 
-        const result = await app.service.login();
-        console.log(result);
+        await app.service.login();
 
-        const initData = await app.service.init();
-        console.log(initData);
-
-        // const refresh = await app.service.refresh();
-        // console.log(refresh);
-
-        // const exchange = await app.service.exchange({type: '1', amount: 10});
-        // console.log(exchange);
-
-        // const checkout = await app.service.checkout();
-        // console.log(checkout);
+        await app.service.init();
 
         // Import Load Scene
         const LoadScene = await import('./game/scenes/load/scene');
@@ -71,9 +62,11 @@ async function main() {
         // app.once('GameReady', () => {
         app.stage.removeChild(loadScene);
         app.resize();
+        app.emit('Idle');
         // });
     } catch (err) {
         console.error(err);
+        alert.error({title: err.message});
     }
 }
 

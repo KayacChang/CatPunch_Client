@@ -4,13 +4,23 @@ import {Clickable, ToggleButton, RangeSlider} from '../../components';
 import {range} from 'ramda';
 import anime from 'animejs';
 
+import {divide, multiply, round} from 'mathjs';
+import {setColorMatrix} from '../../../plugin/filter';
+
 export function Setting(setting) {
     setting = Openable(setting);
 
-    Slider(setting, 'volume', {
-        parts: 10,
-        onchange: (level) => app.sound.volume(level),
-    });
+    const volume =
+        Slider(setting, 'volume', {
+            parts: 10,
+            onchange: (level) => app.sound.volume(divide(level, 10)),
+        });
+
+    const soundLevel =
+        app.sound.mute() === true ?
+            0 : multiply(app.sound.volume(), 10);
+
+    volume.setLevel(soundLevel);
 
     Slider(setting, 'auto', {
         parts: 10,
@@ -27,8 +37,14 @@ export function Setting(setting) {
         onchange: (level) => console.log(level),
     });
 
-    Toggle(setting, 'effects');
-    Toggle(setting, 'ambience');
+    const effectSwitch =
+        Toggle(setting, 'effects');
+    effectSwitch.set(app.sound.mute());
+
+    const ambienceSwitch =
+        Toggle(setting, 'ambience');
+    ambienceSwitch.set(app.sound.mute());
+
 
     setting.y -= 53;
     setting.open = open;
@@ -63,6 +79,9 @@ function Toggle(setting, target) {
     const ball =
         setting.getChildByName(`ball@${target}`);
 
+    const color = setColorMatrix(ball);
+    color.saturate(-1);
+
     const toggle = ToggleButton(
         setting.getChildByName(`frame@${target}`),
     );
@@ -71,15 +90,33 @@ function Toggle(setting, target) {
 
     update(toggle.checked);
 
-    function update(checked) {
+    return {set};
+
+    function set(checked) {
+        toggle.checked = checked;
+        update(toggle.checked);
+    }
+
+    function update({checked}) {
         app.sound
             .getBy(({name}) => name.includes(target))
             .forEach(({data}) => data.mute = checked);
 
-        if (checked) {
-            return ball.x = toggle.x + (toggle.width / 2);
-        }
-        return ball.x = toggle.x;
+        const x = (checked) ?
+            toggle.x + (toggle.width / 2) : toggle.x - 4;
+
+        return anime({
+            targets: ball,
+            x,
+            duration: 300,
+            easing: 'easeOutQuad',
+            update(anim) {
+                const progress = divide(round(anim.progress), 100);
+                const rate = (checked) ?
+                    1 - progress : 0 - progress;
+                color.saturate(rate);
+            },
+        });
     }
 }
 
@@ -99,17 +136,35 @@ function Slider(setting, target, {parts, onchange}) {
         frame,
     );
 
+    let level = 0;
+
     slider.onDragMove = () => {
         if (slider.getPos) {
             const {x} = slider.getPos();
 
-            const level = condition(x);
-
-            slider.x = frame.x + moveRange[level];
+            setLevel(condition(x));
 
             onchange(level);
         }
     };
+
+    return {setLevel};
+
+    function click({data}) {
+        const {x} = data.getLocalPosition(frame);
+
+        setLevel(condition(x));
+
+        onchange(level);
+    }
+
+    function setLevel(value) {
+        level = value;
+
+        slider.x = frame.x + moveRange[level];
+
+        return level;
+    }
 
     function condition(x) {
         if (x <= 0) return 0;
@@ -119,16 +174,6 @@ function Slider(setting, target, {parts, onchange}) {
                 (level === -1) ? parts :
                     level - 1
         );
-    }
-
-    function click({data}) {
-        const {x} = data.getLocalPosition(frame);
-
-        const level = condition(x);
-
-        slider.x = frame.x + moveRange[level];
-
-        onchange(level);
     }
 }
 

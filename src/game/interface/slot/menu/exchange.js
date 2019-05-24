@@ -1,11 +1,15 @@
 import {Clickable} from '../../components/Clickable';
 import {Openable} from '../../components/Openable';
 import anime from 'animejs';
+import {capitalize, currencyFormat} from '../../utils';
+import {ToggleButton} from '../../components';
 
-const {trunc} = Math;
+const {log10, trunc} = Math;
 
-export function Exchange(exchange) {
-    exchange = Openable(exchange);
+export function Exchange(menu) {
+    const exchange = Openable(
+        menu.getChildByName('exchange'),
+    );
 
     const pad =
         exchange.getChildByName('NumberPad');
@@ -13,6 +17,18 @@ export function Exchange(exchange) {
     pad.children
         .filter(({name}) => name.includes('num'))
         .forEach(NumberButton);
+
+    const currency = Currency(
+        exchange.getChildByName('output@currency'),
+    );
+
+    const dropdown = DropDown(
+        exchange.getChildByName('dropdown@currency'),
+    );
+
+    DropDownButton(
+        exchange.getChildByName('btn@dropdown'),
+    );
 
     DeleteButton(
         pad.getChildByName('btn@delete'),
@@ -22,14 +38,16 @@ export function Exchange(exchange) {
         exchange.getChildByName('btn@cancel'),
     );
 
-    const credit = Credit(
-        exchange.getChildByName('input@credit'),
-    );
-
-    Currencies(exchange);
-
     RefreshButton(
         exchange.getChildByName('btn@refresh'),
+    );
+
+    ConfirmButton(
+        exchange.getChildByName('btn@confirm'),
+    );
+
+    const amount = Amount(
+        exchange.getChildByName('output@amount'),
     );
 
     exchange.y -= 53;
@@ -38,7 +56,9 @@ export function Exchange(exchange) {
 
     return exchange;
 
-    function open() {
+    async function open() {
+        refresh(app.service.accountBalance);
+
         exchange.visible = true;
         return anime({
             targets: exchange,
@@ -60,91 +80,185 @@ export function Exchange(exchange) {
         }).finished;
     }
 
-    function Currencies(exchange) {
-        const typeOfCurrencies = [
-            'Gold', 'Entertain',
-            'Bonus', 'Gift',
-        ];
+    function refresh(accountBalance) {
+        exchange.children
+            .filter(({name}) => name.includes('balance'))
+            .forEach(({name, content}) => {
+                const [, currency] = name.split('@');
 
-        const {content} = exchange.getChildByName('input@currencies');
-        content.text = typeOfCurrencies[0];
+                content.text =
+                    currencyFormat(accountBalance[currency]);
+            });
 
-        // const list =
-        //     DropDown(exchange.getChildByName('ul@dropdown'));
-
-        // DropDownButton(exchange.getChildByName('btn@dropdown'));
-
-        return {get};
-
-        function get() {
-            return content.text;
-        }
-
-        // function DropDown(it) {
-        //     it = Openable(it);
-        //
-        //     it.children
-        //         .filter(({name}) => name.includes('btn'))
-        //         .forEach(Item);
-        //
-        //     it.children
-        //         .filter(({name}) => name.includes('text'))
-        //         .forEach(setText);
-        //
-        //     return it;
-        //
-        //     function Item(it) {
-        //         it = Clickable(it);
-        //
-        //         const [, id] = it.name.split('@');
-        //         it.on('pointerdown', () => {
-        //             content.text = typeOfCurrencies[id];
-        //             list.close();
-        //         });
-        //     }
-        //
-        //     function setText({name, content}) {
-        //         const [, id] = name.split('@');
-        //         content.text = typeOfCurrencies[id];
-        //     }
-        // }
-
-        // function DropDownButton(btn) {
-        //     btn = Clickable(btn);
-        //
-        //     btn.on('pointerdown', click);
-        //     return btn;
-        //
-        //     function click() {
-        //         list.visible ?
-        //             list.close() : list.open();
-        //     }
-        // }
+        exchange.getChildByName('output@cash')
+            .content.text = currencyFormat(app.user.cash);
     }
 
+    function Currency({content}) {
+        const currencies = app.service.currencies;
 
-    function Credit({content}) {
-        let credit = 0;
+        let selected = '1';
 
-        set(credit);
+        return {get, set};
+
+        function get() {
+            return selected;
+        }
+
+        function set(value) {
+            if (value === selected) return;
+
+            amount.set(0);
+
+            selected = value;
+            content.text = capitalize(
+                currencies.get(selected).name,
+            );
+        }
+    }
+
+    function DropDownButton(view) {
+        view = ToggleButton(view);
+
+        view.on('Change', ({checked}) =>
+            checked ? dropdown.open() : dropdown.close(),
+        );
+
+        return view;
+    }
+
+    function DropDown(view) {
+        const currencies =
+            [...app.service.currencies.values()];
+
+        view.children
+            .filter(({name}) => name.includes('item'))
+            .map(({content}, index) => {
+                content.text =
+                    capitalize(currencies[index].name);
+            });
+
+        const btns =
+            view.children
+                .filter(({name}) => name.includes('btn'))
+                .map(SelectButton);
+
+        view.open = open;
+        view.close = close;
+
+        return view;
+
+        function open() {
+            view.visible = true;
+
+            const index = currencies
+                .findIndex(({type}) => currency.get() === type);
+
+            btns.forEach((btn) => btn.setSelected(false));
+            btns[index].setSelected(true);
+        }
+
+        function close() {
+            view.visible = false;
+        }
+
+        function SelectButton(it, index) {
+            it = Clickable(it);
+
+            it.on('pointerover', hover);
+            it.on('pointerup', hover);
+            it.on('pointerout', normal);
+
+            it.on('Click', click);
+
+            let selected = false;
+
+            it.setSelected = setSelected;
+
+            return it;
+
+            function setSelected(flag) {
+                selected = flag;
+
+                if (selected) {
+                    it.alpha = 0.3;
+                    it.off('pointerout', normal);
+                } else {
+                    it.alpha = 0;
+                    it.on('pointerout', normal);
+                }
+            }
+
+            function hover() {
+                it.alpha = 0.3;
+            }
+
+            function normal() {
+                it.alpha = 0;
+            }
+
+            function click() {
+                it.alpha = 0.5;
+
+                currency.set(currencies[index].type);
+
+                close();
+            }
+        }
+    }
+
+    function Amount({content}) {
+        let amount = 0;
+
+        const cashField =
+            exchange.getChildByName('output@cash').content;
+
+        set(amount);
 
         return {get, set, push, pop};
 
         function set(val) {
-            credit = val;
-            content.text = currency(credit);
+            amount = val;
+            content.text = currencyFormat(amount);
+
+            const selected = currency.get();
+            const {rate} = app.service.currencies.get(selected);
+
+            cashField.text =
+                currencyFormat(amount * rate);
         }
 
         function get() {
-            return credit;
+            return amount;
         }
 
         function push(num) {
-            set((credit * 10) + num);
+            if (log10(amount) + 1 >= 10) return;
+            set((amount * 10) + num);
         }
 
         function pop() {
-            set(trunc(credit / 10));
+            set(trunc(amount / 10));
+        }
+    }
+
+    function ConfirmButton(btn) {
+        btn = Clickable(btn);
+        btn.on('pointerdown', click);
+
+        return btn;
+
+        function click() {
+            app.service
+                .exchange({
+                    currency: currency.get(),
+                    amount: amount.get(),
+                })
+                .then(({accountBalance}) => {
+                    amount.set(0);
+                    refresh(accountBalance);
+                })
+                .then(() => menu.close());
         }
     }
 
@@ -154,8 +268,8 @@ export function Exchange(exchange) {
         return btn;
 
         function click() {
-            console.log('Send Refresh...');
-            // @TODO Send Refresh to server and sync result to coin groups
+            app.service.refresh()
+                .then(refresh);
         }
     }
 
@@ -170,7 +284,7 @@ export function Exchange(exchange) {
         return btn;
 
         function click() {
-            credit.push(num);
+            amount.push(num);
         }
     }
 
@@ -181,7 +295,7 @@ export function Exchange(exchange) {
         return btn;
 
         function click() {
-            credit.pop();
+            amount.pop();
         }
     }
 
@@ -192,11 +306,9 @@ export function Exchange(exchange) {
         return btn;
 
         function click() {
-            credit.set(0);
+            amount.set(0);
         }
     }
 }
 
-function currency(num) {
-    return new Intl.NumberFormat('en').format(num);
-}
+

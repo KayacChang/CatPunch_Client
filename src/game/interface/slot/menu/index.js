@@ -18,9 +18,7 @@ export function Menu(parent) {
         menu.getChildByName('hr');
     hr.scale.x = 0;
 
-    const exchange = Exchange(
-        menu.getChildByName('exchange'),
-    );
+    const exchange = Exchange(menu);
 
     const setting = Setting(
         menu.getChildByName('setting'),
@@ -38,13 +36,21 @@ export function Menu(parent) {
     nav.y = 0;
     nav.alpha = 0;
 
-    menu.section = exchange;
+    menu.section = setting;
     menu.open = open;
     menu.close = close;
 
+    app.on('Idle', onIdle);
+
     return menu;
 
-    async function open() {
+    function onIdle() {
+        if (app.user.cash > 10) return;
+
+        open('exchange');
+    }
+
+    async function open(name = 'setting') {
         menu.visible = true;
         menu.alpha = 1;
 
@@ -63,6 +69,8 @@ export function Menu(parent) {
                 easing: 'easeOutQuad',
             }).finished;
 
+        if (name) menu.section = sections.get(name);
+        await nav.updateState();
         menu.section.open();
 
         anime({
@@ -74,6 +82,7 @@ export function Menu(parent) {
     }
 
     function close() {
+        parent.main.updateStatus();
         menu.section.close();
 
         anime({
@@ -119,7 +128,32 @@ function Nav(menu, sections) {
             .filter(({name}) => name.includes('btn'))
             .map(NavButton);
 
+    nav.updateState = updateState;
+
     return nav;
+
+    function updateState() {
+        const target = menu.section.name;
+        let targetBtn = undefined;
+
+        navBtns.forEach((btn) => {
+            const [, name] = btn.name.split('@');
+
+            if (name === target) {
+                btn.icon.alpha = 0.9;
+                targetBtn = btn;
+            } else {
+                btn.icon.alpha = 0.5;
+            }
+        });
+
+        return anime({
+            targets: tab,
+            y: targetBtn.y,
+            duration: 300,
+            easing: 'easeOutQuart',
+        }).finished;
+    }
 
     function NavButton(it) {
         const [, name] = it.name.split('@');
@@ -133,19 +167,6 @@ function Nav(menu, sections) {
         return it;
 
         async function click() {
-            navBtns.forEach((btn) =>
-                btn.icon.alpha =
-                    (btn.name === it.name) ?
-                        0.9 : 0.5,
-            );
-
-            anime({
-                targets: tab,
-                y: it.y,
-                duration: 300,
-                easing: 'easeOutQuart',
-            });
-
             if (sections.has(name)) {
                 const target = sections.get(name);
                 if (menu.section === target) return;
@@ -153,6 +174,13 @@ function Nav(menu, sections) {
                 await menu.section.close();
 
                 menu.section = target;
+
+                if (name === 'exchange') {
+                    if (app.user.cash > 0) await app.service.checkout();
+                    await app.service.refresh();
+                }
+
+                updateState();
                 target.open();
             }
         }

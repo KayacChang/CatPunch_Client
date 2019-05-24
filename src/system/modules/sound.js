@@ -2,14 +2,13 @@ import {Howler} from 'howler';
 import {loaders} from 'pixi.js';
 
 export function Sound({loader}) {
-    Howler.autoUnlock = false;
-
     function play(name) {
         const sound = loader.resources[name].data;
         sound.play();
     }
 
     function mute(isMuted) {
+        if (isMuted === undefined) return Howler._muted;
         return Howler.mute(isMuted);
     }
 
@@ -23,6 +22,8 @@ export function Sound({loader}) {
             .filter(({type}) => type === loaders.Resource.TYPE.AUDIO)
             .filter(predicate);
     }
+
+    mute(true);
 
     return {play, mute, volume, getBy};
 }

@@ -1,6 +1,7 @@
 import {getSearchParams} from '../utils';
+import {clone} from 'ramda';
 
-const {assign, entries, fromEntries} = Object;
+const {entries, fromEntries} = Object;
 
 export function Service(network) {
     const tokens = {
@@ -8,17 +9,34 @@ export function Service(network) {
         'token': '',
     };
 
-    const user = {
-        'gameaccount': '',
-        'playerid': '',
-    };
-
     const env = {
-        logintype: 3,
-        gametypeid: 'A173D52E01A6EB65A5D6EDFB71A8C39C',
+        'logintype': 3,
+        'gametypeid': 'A173D52E01A6EB65A5D6EDFB71A8C39C',
     };
 
-    return {login, init, refresh, exchange, checkout, sendOneRound};
+    // type 1 - 金幣      gold
+    // type 2 - 禮卷      gift
+    // type 3 - 娛樂幣    etc
+    // type 4 - 紅利      bonus
+    const currencies = new Map([
+        ['1', {type: '1', name: 'gold', rate: 1}],
+        ['2', {type: '2', name: 'gift', rate: 0.5}],
+        ['3', {type: '3', name: 'etc', rate: 1}],
+        ['4', {type: '4', name: 'bonus', rate: 0.5}],
+    ]);
+    const accountBalance = {};
+
+    return {
+        login, init, refresh, exchange, checkout, sendOneRound,
+
+        get currencies() {
+            return currencies;
+        },
+
+        get accountBalance() {
+            return clone(accountBalance);
+        },
+    };
 
     function construct() {
         const token =
@@ -29,9 +47,7 @@ export function Service(network) {
 
             history.back();
 
-            throw new Error(
-                `User Access Tokens is empty. Redirect to Game Hall`,
-            );
+            throw new Error(`User Access Tokens is empty`);
         }
 
         history.pushState(undefined, undefined, location.origin);
@@ -41,6 +57,17 @@ export function Service(network) {
         sessionStorage.setItem('accounttoken', token);
 
         return token;
+    }
+
+    function updateAccount(data) {
+        data.forEach(({type, amount}) => {
+            if (!currencies.has(type)) return;
+            const currency = currencies.get(type).name;
+
+            accountBalance[currency] = amount;
+        });
+
+        return accountBalance;
     }
 
     function login() {
@@ -53,38 +80,41 @@ export function Service(network) {
             .post('account/login', requestBody)
             .then(({data, error}) => {
                 if (error['ErrorCode'] !== 0) {
-                    throw error['Msg'];
+                    throw new Error(error['Msg']);
                 }
 
                 tokens.token = data['token'];
 
-                user.gameaccount = data['gameaccount'];
+                app.user.account = data['gameaccount'];
 
-                user.balance = new Map(
-                    data['userCoinQuota']
-                        .map((data) => [data.type, data]),
-                );
+                updateAccount(data['userCoinQuota']);
 
                 data['gameInfo']
-                    .forEach(({type, ...data}) =>
-                        assign(user.balance.get(type), data));
+                    .forEach(({type, rate}) => {
+                        currencies.get(type).rate = rate;
+                    });
 
                 return data;
-            })
-            .catch((err) => console.error(err));
+            });
     }
 
     function init() {
         const requestBody = {
             ...tokens,
             ...env,
-            ...user,
+            'gameaccount': app.user.account,
         };
 
         return network
             .post('lobby/init', requestBody)
             .then(({data, error}) => {
-                user.playerid = data['player']['id'];
+                if (error['ErrorCode'] !== 0) {
+                    throw new Error(error['Msg']);
+                }
+
+                app.user.cash = data['player']['money'];
+
+                app.user.id = Number(data['player']['id']);
 
                 return data;
             })
@@ -95,38 +125,44 @@ export function Service(network) {
         const requestBody = {
             ...tokens,
             ...env,
-            ...user,
+            'gameaccount': app.user.account,
         };
 
         return network
             .post('lobby/refresh', requestBody)
             .then(({data, error}) => {
-                data['userCoinQuota']
-                    .forEach(({type, amount}) => {
-                        user.balance.get(type).amount = amount;
-                    });
-                return data;
+                if (error['ErrorCode'] !== 0) {
+                    throw new Error(error['Msg']);
+                }
+
+                updateAccount(data['userCoinQuota']);
+
+                return accountBalance;
             })
             .catch((err) => console.error(err));
     }
 
-    function exchange({type, amount}) {
+    function exchange({currency, amount}) {
         const requestBody = {
             ...tokens,
             ...env,
-            ...user,
-
-            'cointype': Number(type),
+            'playerid': app.user.id,
+            'cointype': currency,
             'coinamount': amount,
         };
 
         return network
             .post('lobby/exchange', requestBody)
             .then(({data, error}) => {
-                user.coin = data['gameCoin'];
-                return data;
+                if (error['ErrorCode'] !== 0) {
+                    throw new Error(error['Msg']);
+                }
+
+                app.user.cash = data['gameCoin'];
+                app.emit('UserStatusChange', app.user);
             })
             .then(refresh)
+            .then(() => ({accountBalance, cash: app.user.cash}))
             .catch((err) => console.error(err));
     }
 
@@ -134,19 +170,23 @@ export function Service(network) {
         const requestBody = {
             ...tokens,
             ...env,
-            ...user,
+            'playerid': app.user.id,
         };
 
         return network
             .post('lobby/checkout', requestBody)
             .then(({data, error}) => {
-                user.coin = 0;
+                if (error['ErrorCode'] !== 0) {
+                    throw new Error(error['Msg']);
+                }
+
+                app.user.cash = 0;
 
                 return fromEntries(
                     entries(data['userCoinQuota'])
                         .filter(([key]) => key.includes('coin'))
                         .map(([key, value]) => {
-                            const type = key.match(/\d+/g);
+                            const type = Number(key.match(/\d+/g));
                             return [type, value];
                         }),
                 );
@@ -154,18 +194,8 @@ export function Service(network) {
             .catch((err) => console.error(err));
     }
 
-    function sendOneRound(userBet) {
-        const requestBody = {
-            ...tokens,
-            ...env,
-            packet_id: 5,
-            Payload: {
-                enumOperationType: 2,
-                // enumBetBaseType: 0,
-                // enumBetMultiply: 0,
-                ...userBet,
-            },
-        };
+    function sendOneRound() {
+        const requestBody = {};
         return network
             .post('api/entry', requestBody)
             .then(({payload}) => JSON.parse(payload));

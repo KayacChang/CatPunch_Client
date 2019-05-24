@@ -6,6 +6,7 @@ import {Sound} from './modules/sound';
 import {Network} from './modules/network';
 import {Resource} from './modules/resource';
 import {resize} from './modules/screen';
+import {User} from './modules/user';
 
 const {defineProperties, assign, freeze} = Object;
 
@@ -25,7 +26,7 @@ export function App(Service) {
     //  Service
     const service = Service && Service(network);
     //  User
-    const user = new Map();
+    const user = User();
 
     //  Modules
     defineProperties(app, {

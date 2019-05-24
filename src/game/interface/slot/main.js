@@ -5,6 +5,7 @@ import {
     setBlur,
 } from '../../plugin/filter';
 import anime from 'animejs';
+import {currencyFormat} from '../utils';
 
 const {assign} = Object;
 
@@ -17,7 +18,7 @@ const user = {
 export function Main(parent) {
     const it = parent.getChildByName('main');
 
-    Status(
+    const status = Status(
         it.getChildByName('status'),
     );
 
@@ -28,6 +29,20 @@ export function Main(parent) {
     };
 
     Options(it);
+
+    it.updateStatus = updateStatus;
+
+    return it;
+
+    function updateStatus() {
+        status.children
+            .filter(({name}) => name.includes('output'))
+            .forEach((field) => {
+                const [, name] = field.name.split('@');
+                field.content.text =
+                    currencyFormat(app.user[name]);
+            });
+    }
 }
 
 function Options(view) {
@@ -485,11 +500,21 @@ function SpinButton(view) {
 
 function Status(view) {
     view.children
-        .filter(({name}) => name.includes('label'))
-        .map((label) => setFontFamily(label, 'Basic'));
-    view.children
-        .filter(({name}) => name.includes('output'))
-        .map((label) => setFontFamily(label, 'Candal'));
+        .filter(({content}) => content !== undefined)
+        .forEach((field) => {
+            const [type, name] = field.name.split('@');
+
+            if (type === 'label') {
+                setFontFamily(field, 'Basic');
+            } else if (type === 'output') {
+                setFontFamily(field, 'Candal');
+
+                field.content.text =
+                    currencyFormat(app.user[name]);
+            }
+        });
+
+    return view;
 }
 
 function setFontFamily(it, fontFamily) {

@@ -60,6 +60,7 @@
     "pixi_fairygui": "^0.3.49",
     "ramda": "^0.26.1",
     "random-js": "^2.0.0",
+    "sweetalert2": "^8.11.5",
     "webfontloader": "^1.6.28",
     "xml-js": "^1.6.11",
     "zlibjs": "^0.3.1"
