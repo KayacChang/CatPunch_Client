@@ -1,10 +1,10 @@
 import {Openable} from '../../components/Openable';
 import {Clickable, ToggleButton, RangeSlider} from '../../components';
 
-import {range} from 'ramda';
+import {range} from 'lodash';
 import anime from 'animejs';
 
-import {divide, multiply, round} from 'mathjs';
+import {divide, round} from 'mathjs';
 import {setColorMatrix} from '../../../plugin/filter';
 
 export function Setting(setting) {
@@ -12,28 +12,28 @@ export function Setting(setting) {
 
     const volume =
         Slider(setting, 'volume', {
-            parts: 10,
-            onchange: (level) => app.sound.volume(divide(level, 10)),
+            range: range(0, 1, 0.1),
+            onchange: (level) => app.sound.volume(level),
         });
 
     const soundLevel =
         app.sound.mute() === true ?
-            0 : multiply(app.sound.volume(), 10);
+            0 : app.sound.volume();
 
     volume.setLevel(soundLevel);
 
     Slider(setting, 'auto', {
-        parts: 10,
+        range: [0, 25, 100, 500, 1000],
         onchange: (level) => console.log(level),
     });
 
     Slider(setting, 'speed', {
-        parts: 10,
+        range: range(0, 3),
         onchange: (level) => console.log(level),
     });
 
     Slider(setting, 'betLevel', {
-        parts: 10,
+        range: [1.0, 10.0, 20.0, 50.0, 100.0],
         onchange: (level) => console.log(level),
     });
 
@@ -120,14 +120,15 @@ function Toggle(setting, target) {
     }
 }
 
-function Slider(setting, target, {parts, onchange}) {
+function Slider(setting, target, {range, onchange}) {
     const frame = Clickable(
         setting.getChildByName(`frame@${target}`),
     );
 
+    const parts = range.length - 1;
     const base = (frame.width / parts);
     const moveRange =
-        range(0, parts + 1).map((level) => base * level);
+        range.map((level, index) => base * index);
 
     frame.on('pointerdown', click);
 
@@ -136,6 +137,19 @@ function Slider(setting, target, {parts, onchange}) {
         frame,
     );
 
+    if (range) {
+        const minLabel =
+            setting
+                .getChildByName(`label@${target}_min`);
+        const maxLabel =
+            setting
+                .getChildByName(`label@${target}_max`);
+
+        if (minLabel) minLabel.content.text = range[0];
+
+        if (maxLabel) maxLabel.content.text = range[range.length - 1];
+    }
+
     let level = 0;
 
     slider.onDragMove = () => {
@@ -143,8 +157,6 @@ function Slider(setting, target, {parts, onchange}) {
             const {x} = slider.getPos();
 
             setLevel(condition(x));
-
-            onchange(level);
         }
     };
 
@@ -154,14 +166,14 @@ function Slider(setting, target, {parts, onchange}) {
         const {x} = data.getLocalPosition(frame);
 
         setLevel(condition(x));
-
-        onchange(level);
     }
 
     function setLevel(value) {
         level = value;
 
         slider.x = frame.x + moveRange[level];
+
+        onchange(range[level]);
 
         return level;
     }
