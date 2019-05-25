@@ -7,8 +7,10 @@ import anime from 'animejs';
 import {divide, round} from 'mathjs';
 import {setColorMatrix} from '../../../plugin/filter';
 
-export function Setting(setting) {
-    setting = Openable(setting);
+export function Setting(menu) {
+    const setting = Openable(
+        menu.getChildByName('setting'),
+    );
 
     const volume =
         Slider(setting, 'volume', {
@@ -24,26 +26,26 @@ export function Setting(setting) {
 
     Slider(setting, 'auto', {
         range: [0, 25, 100, 500, 1000],
-        onchange: (level) => console.log(level),
+        onchange: (level) => app.user.auto = level,
     });
 
     Slider(setting, 'speed', {
         range: range(0, 3),
-        onchange: (level) => console.log(level),
+        onchange: (level) => app.user.speed = level,
     });
 
     Slider(setting, 'betLevel', {
         range: [1.0, 10.0, 20.0, 50.0, 100.0],
-        onchange: (level) => console.log(level),
+        onchange: (level) => app.user.bet = level,
     });
 
     const effectSwitch =
         Toggle(setting, 'effects');
-    effectSwitch.set(app.sound.mute());
+    effectSwitch.set(!app.sound.mute());
 
     const ambienceSwitch =
         Toggle(setting, 'ambience');
-    ambienceSwitch.set(app.sound.mute());
+    ambienceSwitch.set(!app.sound.mute());
 
 
     setting.y -= 53;

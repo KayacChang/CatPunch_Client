@@ -1,19 +1,15 @@
-import {Clickable} from '../components';
+import {Clickable} from '../../components';
 
 import {
     setDropShadow,
-    setBlur,
-} from '../../plugin/filter';
+    setBlur, setColorMatrix,
+} from '../../../plugin/filter';
 import anime from 'animejs';
-import {currencyFormat} from '../utils';
+import {currencyFormat} from '../../utils';
+
+import {Text, Container} from 'pixi.js';
 
 const {assign} = Object;
-
-const user = {
-    bet: 1.0,
-    auto: 0,
-    speed: '1x',
-};
 
 export function Main(parent) {
     const it = parent.getChildByName('main');
@@ -158,7 +154,7 @@ function Options(view) {
             getChildren('num')
                 .map((num) => {
                     const text = num.getChildByName('content');
-                    setFontFamily(text, 'Candal');
+                    defaultFont(text.content, {fontFamily: 'Candal'});
 
                     num.originScale = {x: 1, y: 1};
 
@@ -199,6 +195,8 @@ function Options(view) {
             {strength: 12, quality: 8, kernelSize: 15},
         );
 
+        setAudio(app.sound.mute());
+
         return menu;
 
         function resetFunc() {
@@ -211,19 +209,23 @@ function Options(view) {
             ];
 
             backFunc = setBack;
+
+            setAudio(app.sound.mute());
         }
 
         function setSpeed() {
             const counts = [
-                '1x', '2x', '3x',
+                0, 1, 2,
             ];
-            setOptionItems(counts, update);
+            setOptionItems(
+                counts.map((level) => (level + 1) + 'x'),
+                update,
+            );
 
-            numbers.forEach((num) => refresh(num, user.speed));
+            numbers.forEach((num) => refresh(num, app.user.speed));
 
             function update(value) {
-                user.speed = value;
-                console.log(`Speed: ${value}`);
+                app.user.speed = value;
 
                 numbers.forEach((num) => refresh(num, value));
             }
@@ -235,11 +237,10 @@ function Options(view) {
             ];
             setOptionItems(counts, update);
 
-            numbers.forEach((num) => refresh(num, user.auto));
+            numbers.forEach((num) => refresh(num, app.user.auto));
 
             function update(value) {
-                user.auto = value;
-                console.log(`Auto: ${value}`);
+                app.user.auto = value;
 
                 numbers.forEach((num) => refresh(num, value));
             }
@@ -251,11 +252,10 @@ function Options(view) {
             ];
             setOptionItems(bets, update);
 
-            numbers.forEach((num) => refresh(num, user.bet));
+            numbers.forEach((num) => refresh(num, app.user.bet));
 
             function update(value) {
-                user.bet = value;
-                console.log(`Bet: ${value}`);
+                app.user.bet = value;
 
                 numbers.forEach((num) => refresh(num, value));
             }
@@ -308,10 +308,10 @@ function Options(view) {
         }
 
 
-        async function setAudio() {
+        function setAudio(isMute) {
             const audioFrame = frames[3];
             const disableFrame =
-                menu.getChildByName('disable');
+                frames.find(({name}) => name.includes('disable'));
             disableFrame.originScale = {x: 1, y: 1};
 
             const closeIcon =
@@ -319,18 +319,29 @@ function Options(view) {
             const openIcon =
                 icons.find(({name}) => name.includes('audio_open'));
 
-            app.sound.mute(true);
+            if (isMute !== undefined) {
+                return (isMute) ? close() : open();
+            }
 
-            await setScale(false, audioFrame, openIcon);
-            setScale(true, disableFrame, closeIcon);
-
-            btnsFunc[3] = async function() {
+            if (app.sound.mute()) {
                 app.sound.mute(false);
+                return open();
+            } else {
+                app.sound.mute(true);
+                return close();
+            }
+
+            async function open() {
                 await setScale(false, disableFrame, closeIcon);
                 setScale(true, audioFrame, openIcon);
-                resetFunc();
-            };
+            }
+
+            async function close() {
+                await setScale(false, audioFrame, openIcon);
+                setScale(true, disableFrame, closeIcon);
+            }
         }
+
 
         function setBack() {
             setOptionMenu(false);
@@ -475,26 +486,71 @@ function SpinButton(view) {
         view.getChildByName('spin'),
     );
 
+    const block =
+        view.getChildByName('block');
+
+    const msg = defaultFont(
+        new Text('insufficient funds to spin...'.toUpperCase()),
+        {
+            fontFamily: 'Candal',
+            fontSize: 34,
+            fill: '#ffc105',
+            stroke: '#121212',
+            strokeThickness: 5,
+        },
+    );
+
+    const comp = new Container();
+    comp.addChild(msg);
+    comp.position.set(view.width / 2, view.height / 2 - msg.height);
+    msg.alpha = 0;
+    msg.pivot.set(comp.width / 2, comp.height / 2);
+    view.addChild(comp);
+
+    const color = setColorMatrix(it);
+
     setBehaviour(it);
 
     it.on('Click', onClick);
 
-    let flag = false;
+    let isBlocking = false;
 
-    app.on('Idle', () => flag = false);
+    app.on('Idle', checkState);
 
     return it;
 
-    function onClick(evt) {
-        if (!flag) {
-            console.log('spin...');
-
-            // flag = true;
-
-            const bet = 10;
-            app.service.getOneRound({bet})
-                .then((result) => app.emit('GameResult', result));
+    function checkState() {
+        if (app.user.cash <= 10) {
+            color.saturate(-.9);
+            isBlocking = true;
+        } else {
+            color.saturate(0);
+            isBlocking = false;
         }
+    }
+
+    function onClick(evt) {
+        if (isBlocking) {
+            anime({
+                targets: msg,
+                alpha: 1,
+                duration: 500,
+                direction: 'alternate',
+                easing: 'easeOutExpo',
+            });
+
+            anime({
+                targets: block,
+                alpha: 0.5,
+                duration: 500,
+                direction: 'alternate',
+                easing: 'easeOutExpo',
+            });
+
+            return;
+        }
+
+        console.log('spin...');
     }
 }
 
@@ -505,9 +561,9 @@ function Status(view) {
             const [type, name] = field.name.split('@');
 
             if (type === 'label') {
-                setFontFamily(field, 'Basic');
+                defaultFont(field.content, {fontFamily: 'Basic'});
             } else if (type === 'output') {
-                setFontFamily(field, 'Candal');
+                defaultFont(field.content, {fontFamily: 'Candal'});
 
                 field.content.text =
                     currencyFormat(app.user[name]);
@@ -517,7 +573,19 @@ function Status(view) {
     return view;
 }
 
-function setFontFamily(it, fontFamily) {
-    assign(it.content.style, {fontFamily});
-    return it;
+function defaultFont(text, config) {
+    assign(text.style, {
+        fontFamily: 'Arial',
+        align: 'center',
+
+        dropShadow: true,
+        dropShadowColor: '#000000',
+        dropShadowBlur: 4,
+        dropShadowAngle: Math.PI / 6,
+        dropShadowDistance: 6,
+
+        ...config,
+    });
+
+    return text;
 }

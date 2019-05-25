@@ -65,7 +65,12 @@ export function setZoom(view, options) {
 }
 
 export function setOutline(view, options) {
-    const it = new OutlineFilter(options);
+    const {thickness, color, quality} = options;
+    const it = new OutlineFilter(
+        thickness || 1,
+        color || 0x000000,
+        quality || 0.1,
+    );
 
     setFilter(view, it);
 
@@ -86,13 +91,15 @@ export function setGlow(view, options) {
         outerStrength,
         innerStrength,
         color,
+        quality,
     } = options;
 
     const it = new GlowFilter(
-        distance,
-        outerStrength,
-        innerStrength,
-        color,
+        distance || 10,
+        outerStrength || 4,
+        innerStrength || 0,
+        color || 0xffffff,
+        quality || 0.1,
     );
 
     setFilter(view, it);

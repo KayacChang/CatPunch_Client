@@ -3,6 +3,7 @@ import {Exchange} from './exchange';
 import {Setting} from './setting';
 import {Openable} from '../../components/Openable';
 import anime from 'animejs';
+import {Information} from './information';
 
 const {entries} = Object;
 
@@ -19,13 +20,13 @@ export function Menu(parent) {
     hr.scale.x = 0;
 
     const exchange = Exchange(menu);
-
-    const setting = Setting(
-        menu.getChildByName('setting'),
-    );
+    const setting = Setting(menu);
+    const information = Information(menu);
 
     const sections =
-        new Map(entries({exchange, setting}));
+        new Map(entries({
+            exchange, setting, information,
+        }));
     sections.forEach((section) => section.alpha = 0);
 
     const nav = Nav(menu, sections);

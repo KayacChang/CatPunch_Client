@@ -4,7 +4,7 @@ import * as coin from '../../interface/components/coin';
 
 import {addPackage} from 'pixi_fairygui';
 
-import {Main} from './main';
+import {Main} from './main/main';
 import {Menu} from './menu';
 
 const fontsConfig = {
