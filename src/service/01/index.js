@@ -26,6 +26,12 @@ export function Service(network) {
     ]);
     const accountBalance = {};
 
+    //  Test Worker
+    const worker = new Worker(
+        '../worker/test0.worker.js',
+        {type: 'module'},
+    );
+
     return {
         login, init, refresh, exchange, checkout, sendOneRound,
 
@@ -44,8 +50,6 @@ export function Service(network) {
 
         if (!token) {
             // @TODO Maybe Popup an Alert before redirect to game hall.
-
-            history.back();
 
             throw new Error(`User Access Tokens is empty`);
         }
@@ -116,9 +120,14 @@ export function Service(network) {
 
                 app.user.id = Number(data['player']['id']);
 
-                return data;
-            })
-            .catch((err) => console.error(err));
+                const body = {type: 'init'};
+
+                worker.postMessage(body);
+
+                return new Promise((resolve) => {
+                    worker.onmessage = (e) => resolve(e.data);
+                });
+            });
     }
 
     function refresh() {
@@ -138,8 +147,7 @@ export function Service(network) {
                 updateAccount(data['userCoinQuota']);
 
                 return accountBalance;
-            })
-            .catch((err) => console.error(err));
+            });
     }
 
     function exchange({currency, amount}) {
@@ -147,8 +155,8 @@ export function Service(network) {
             ...tokens,
             ...env,
             'playerid': app.user.id,
-            'cointype': currency,
-            'coinamount': amount,
+            'cointype': Number(currency),
+            'coinamount': Number(amount),
         };
 
         return network
@@ -162,8 +170,7 @@ export function Service(network) {
                 app.emit('UserStatusChange', app.user);
             })
             .then(refresh)
-            .then(() => ({accountBalance, cash: app.user.cash}))
-            .catch((err) => console.error(err));
+            .then(() => ({accountBalance, cash: app.user.cash}));
     }
 
     function checkout() {
@@ -190,15 +197,22 @@ export function Service(network) {
                             return [type, value];
                         }),
                 );
-            })
-            .catch((err) => console.error(err));
+            });
     }
 
-    function sendOneRound() {
-        const requestBody = {};
-        return network
-            .post('api/entry', requestBody)
-            .then(({payload}) => JSON.parse(payload));
+    function sendOneRound(data) {
+        const body = {
+            type: 'gameResult',
+            ...tokens,
+            ...env,
+            ...data,
+        };
+
+        worker.postMessage(body);
+
+        return new Promise((resolve) => {
+            worker.onmessage = (e) => resolve(e.data);
+        });
     }
 }
 

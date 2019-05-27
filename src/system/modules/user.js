@@ -7,8 +7,11 @@ export function User() {
     let cash = 0;
     let totalWin = 0;
 
-    let bet = 1;
+    const betOptions = [1.0, 10.0, 20.0, 50.0, 100.0];
+    let bet = 0;
+    const speedOptions = [1, 2, 3];
     let speed = 0;
+    const autoOptions = [0, 25, 100, 500, 1000];
     let auto = 0;
 
     return seal({
@@ -38,26 +41,37 @@ export function User() {
         },
 
         //  Setting...
+        get betOptions() {
+            return betOptions;
+        },
         get bet() {
             return bet;
         },
-        set bet(value) {
-            bet = value;
-            console.log(`Bet: ${bet}`);
+        set bet(index) {
+            bet = index;
+            console.log(`Bet: ${betOptions[index]}`);
+        },
+
+        get speedOptions() {
+            return speedOptions;
         },
         get speed() {
             return speed;
         },
-        set speed(value) {
-            speed = value;
-            console.log(`Speed: ${speed}`);
+        set speed(index) {
+            speed = index;
+            console.log(`Speed: ${speedOptions[index]}`);
+        },
+
+        get autoOptions() {
+            return autoOptions;
         },
         get auto() {
             return auto;
         },
-        set auto(value) {
-            auto = value;
-            console.log(`Auto: ${auto}`);
+        set auto(index) {
+            auto = index;
+            console.log(`Auto: ${autoOptions[index]}`);
         },
     });
 }

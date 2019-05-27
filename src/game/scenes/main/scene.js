@@ -203,7 +203,7 @@ export function create({normalTable, freeGameTable}) {
             normalTable.map((reel, index) => reel.indexOf(symbols[index]));
 
         app.service
-            .getOneRound({bet: 10, baseGame: {positions, symbols}})
+            .sendOneRound({bet: 10, baseGame: {positions, symbols}})
             .then((result) => app.emit('GameResult', result));
     };
 

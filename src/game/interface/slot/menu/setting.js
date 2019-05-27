@@ -24,20 +24,29 @@ export function Setting(menu) {
 
     volume.setLevel(soundLevel);
 
-    Slider(setting, 'auto', {
-        range: [0, 25, 100, 500, 1000],
-        onchange: (level) => app.user.auto = level,
-    });
+    const auto =
+        Slider(setting, 'auto', {
+            range: app.user.autoOptions,
+            onchange: (level) => app.user.auto = level,
+        });
 
-    Slider(setting, 'speed', {
-        range: range(0, 3),
-        onchange: (level) => app.user.speed = level,
-    });
+    auto.setLevel(app.user.auto);
 
-    Slider(setting, 'betLevel', {
-        range: [1.0, 10.0, 20.0, 50.0, 100.0],
-        onchange: (level) => app.user.bet = level,
-    });
+    const speed =
+        Slider(setting, 'speed', {
+            range: app.user.speedOptions,
+            onchange: (level) => app.user.speed = level,
+        });
+
+    speed.setLevel(app.user.speed);
+
+    const betLevel =
+        Slider(setting, 'betLevel', {
+            range: app.user.betOptions,
+            onchange: (level) => app.user.bet = level,
+        });
+
+    betLevel.setLevel(app.user.bet);
 
     const effectSwitch =
         Toggle(setting, 'effects');
@@ -110,7 +119,7 @@ function Toggle(setting, target) {
         return anime({
             targets: ball,
             x,
-            duration: 300,
+            duration: 260,
             easing: 'easeOutQuad',
             update(anim) {
                 const progress = divide(round(anim.progress), 100);
@@ -138,6 +147,9 @@ function Slider(setting, target, {range, onchange}) {
         setting.getChildByName(`slider@${target}`),
         frame,
     );
+
+    const valueBar =
+        setting.getChildByName(`value@${target}`);
 
     if (range) {
         const minLabel =
@@ -174,8 +186,9 @@ function Slider(setting, target, {range, onchange}) {
         level = value;
 
         slider.x = frame.x + moveRange[level];
+        valueBar.width = moveRange[level];
 
-        onchange(range[level]);
+        onchange(level);
 
         return level;
     }

@@ -4,6 +4,7 @@ const {ProgressPlugin, DefinePlugin, optimize} = require('webpack');
 const {ModuleConcatenationPlugin} = optimize;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const WorkerPlugin = require('worker-plugin');
 
 //  Path
 const {
@@ -59,10 +60,12 @@ module.exports = function(env) {
         //  Module =============================================
         module: {
             rules: [
-                {
-                    test: /\.worker\.js$/,
-                    use: {loader: 'worker-loader'},
-                },
+                // {
+                //     test: /\.worker\.js$/,
+                //     use: {
+                //         loader: 'worker-loader',
+                //     },
+                // },
                 //  JavaScript =============================================
                 {
                     test: /\.js$/,
@@ -177,6 +180,8 @@ module.exports = function(env) {
             new DefinePlugin({
                 'process.env': JSON.stringify(env),
             }),
+
+            new WorkerPlugin(),
         ],
         //  END ============================================
     };

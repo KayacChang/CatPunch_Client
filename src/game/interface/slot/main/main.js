@@ -18,7 +18,7 @@ export function Main(parent) {
         it.getChildByName('status'),
     );
 
-    SpinButton(it);
+    const spinButton = SpinButton(it);
 
     it.openMenu = function() {
         parent.menu.open();
@@ -35,9 +35,17 @@ export function Main(parent) {
             .filter(({name}) => name.includes('output'))
             .forEach((field) => {
                 const [, name] = field.name.split('@');
+
+                if (name === 'bet') {
+                    return field.content.text =
+                        app.user.betOptions[app.user.bet];
+                }
+
                 field.content.text =
                     currencyFormat(app.user[name]);
             });
+
+        spinButton.checkState();
     }
 }
 
@@ -214,57 +222,57 @@ function Options(view) {
         }
 
         function setSpeed() {
-            const counts = [
-                0, 1, 2,
-            ];
             setOptionItems(
-                counts.map((level) => (level + 1) + 'x'),
+                app.user.speedOptions
+                    .map((level) => (level) + 'x'),
                 update,
             );
 
-            numbers.forEach((num) => refresh(num, app.user.speed));
+            refresh(app.user.speed);
 
-            function update(value) {
-                app.user.speed = value;
+            function update(index) {
+                app.user.speed = index;
 
-                numbers.forEach((num) => refresh(num, value));
+                refresh(app.user.speed);
             }
         }
 
         function setAuto() {
-            const counts = [
-                0, 25, 100, 500, 1000,
-            ];
-            setOptionItems(counts, update);
+            setOptionItems(
+                app.user.autoOptions,
+                update,
+            );
 
-            numbers.forEach((num) => refresh(num, app.user.auto));
+            refresh(app.user.auto);
 
-            function update(value) {
-                app.user.auto = value;
+            function update(index) {
+                app.user.auto = index;
 
-                numbers.forEach((num) => refresh(num, value));
+                refresh(app.user.auto);
             }
         }
 
         async function setBet() {
-            const bets = [
-                1.0, 10.0, 20.0, 50.0, 100.0,
-            ];
-            setOptionItems(bets, update);
+            setOptionItems(
+                app.user.betOptions,
+                update,
+            );
 
-            numbers.forEach((num) => refresh(num, app.user.bet));
+            refresh(app.user.bet);
 
-            function update(value) {
-                app.user.bet = value;
+            function update(index) {
+                app.user.bet = index;
 
-                numbers.forEach((num) => refresh(num, value));
+                refresh(app.user.bet);
             }
         }
 
-        function refresh(num, value) {
-            const enableFrame = num.getChildByName('enable');
+        function refresh(index) {
+            numbers.forEach((num) => {
+                const enableFrame = num.getChildByName('enable');
 
-            setScale(num.value === value, enableFrame);
+                setScale(num.index === index, enableFrame);
+            });
         }
 
         async function setOptionItems(options, func) {
@@ -276,9 +284,11 @@ function Options(view) {
 
             btnsFunc =
                 targets.map((num) => {
-                    const index = num.name.split('@')[1];
+                    const index = Number(
+                        num.name.split('@')[1],
+                    );
 
-                    num.value = options[index];
+                    num.index = index;
 
                     num.getChildByName('content')
                         .text = `${options[index]}`;
@@ -287,7 +297,7 @@ function Options(view) {
                     enableFrame.originScale = {x: 1, y: 1};
 
                     return function onClick() {
-                        func(options[index]);
+                        func(index);
                     };
                 });
 
@@ -514,6 +524,9 @@ function SpinButton(view) {
     it.on('Click', onClick);
 
     let isBlocking = false;
+    let whenAnim = false;
+
+    it.checkState = checkState;
 
     app.on('Idle', checkState);
 
@@ -531,6 +544,9 @@ function SpinButton(view) {
 
     function onClick(evt) {
         if (isBlocking) {
+            if (whenAnim) return;
+
+            whenAnim = true;
             anime({
                 targets: msg,
                 alpha: 1,
@@ -545,12 +561,19 @@ function SpinButton(view) {
                 duration: 500,
                 direction: 'alternate',
                 easing: 'easeOutExpo',
+                complete() {
+                    whenAnim = false;
+                },
             });
 
             return;
         }
 
-        console.log('spin...');
+        isBlocking = true;
+
+        app.service
+            .sendOneRound({bet: 10})
+            .then((result) => app.emit('GameResult', result));
     }
 }
 

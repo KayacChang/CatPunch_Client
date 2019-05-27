@@ -4,6 +4,7 @@ import {Setting} from './setting';
 import {Openable} from '../../components/Openable';
 import anime from 'animejs';
 import {Information} from './information';
+import {leave} from '../../../../web/components/swal';
 
 const {entries} = Object;
 
@@ -182,7 +183,11 @@ function Nav(menu, sections) {
                 }
 
                 updateState();
-                target.open();
+                return target.open();
+            }
+
+            if (name === 'home') {
+                return leave();
             }
         }
     }

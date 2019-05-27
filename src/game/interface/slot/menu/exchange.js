@@ -3,6 +3,7 @@ import {Openable} from '../../components/Openable';
 import anime from 'animejs';
 import {capitalize, currencyFormat} from '../../utils';
 import {ToggleButton} from '../../components';
+import alert from '../../../../web/components/swal';
 
 const {log10, trunc} = Math;
 
@@ -249,6 +250,10 @@ export function Exchange(menu) {
         return btn;
 
         function click() {
+            if (amount.get() <= 0) return;
+
+            alert.loading({title: 'Wait...'});
+
             app.service
                 .exchange({
                     currency: currency.get(),
@@ -257,7 +262,12 @@ export function Exchange(menu) {
                 .then(({accountBalance}) => {
                     amount.set(0);
                     refresh(accountBalance);
+
+                    alert.close();
                 })
+                .then(() => alert.success({
+                    title: `Cash Received: ${app.user.cash}`,
+                }))
                 .then(() => menu.close());
         }
     }

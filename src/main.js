@@ -28,7 +28,7 @@ async function main() {
 
         await app.service.login();
 
-        await app.service.init();
+        const initData = await app.service.init();
 
         // Import Load Scene
         const LoadScene = await import('./game/scenes/load/scene');
@@ -52,18 +52,17 @@ async function main() {
             app.resource.load(MainScene, UserInterface),
         ]);
 
-
         const ui = UserInterface.create();
-        // const scene = MainScene.create(initData);
-        // scene.addChild(ui);
+        const scene = MainScene.create(initData);
+        scene.addChild(ui);
 
-        app.stage.addChildAt(ui, 0);
+        app.stage.addChildAt(scene, 0);
 
-        // app.once('GameReady', () => {
-        app.stage.removeChild(loadScene);
-        app.resize();
-        app.emit('Idle');
-        // });
+        app.once('GameReady', () => {
+            app.stage.removeChild(loadScene);
+            app.resize();
+            app.emit('Idle');
+        });
     } catch (err) {
         console.error(err);
         alert.error({title: err.message});

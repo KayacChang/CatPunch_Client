@@ -1,7 +1,7 @@
-import Worker from './test.worker.js';
-
 export function Service(network) {
-    const it = new Worker();
+    const it = new Worker(
+        '../worker/test0.worker.js', {type: 'module'},
+    );
 
     return {
         login,
