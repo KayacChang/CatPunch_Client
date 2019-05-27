@@ -11,7 +11,7 @@ import {setBevel, setDropShadow} from '../../plugin/filter';
 import {wait} from '../../../general/utils/time';
 import {Neko} from './components/neko';
 import {FreeSpinIcon} from './components/freespin';
-import {freeGameEffect, reSpinEffect} from './components/effects';
+import {bigwinEffect, freeGameEffect, reSpinEffect} from './components/effects';
 import {MersenneTwister19937, Random} from 'random-js';
 import {until, clone} from 'ramda';
 import anime from 'animejs';
@@ -86,6 +86,10 @@ export function create({normalTable, freeGameTable}) {
 
     const neko = Neko(scene);
 
+    window.freeGame = () => freeGameEffect(scene, 5);
+    window.respin = () => reSpinEffect(scene);
+    window.bigwin = () => bigwinEffect(scene);
+
     app.on('GameResult', async (result) => {
         console.log('Result =============');
         console.table(result);
@@ -124,7 +128,7 @@ export function create({normalTable, freeGameTable}) {
                 duration: 750,
             });
 
-            reSpinEffect(app.stage);
+            reSpinEffect(scene);
 
             const {positions, symbols} = clone(result.baseGame);
 
@@ -177,7 +181,7 @@ export function create({normalTable, freeGameTable}) {
 
             for (const result of freeGameResults) {
                 slot.reelTables = freeGameTable;
-                freeGameEffect(app.stage, result.multiply);
+                freeGameEffect(scene, result.multiply);
                 slot.view.children
                     .filter(({name}) =>
                         name === 'FXReel_L' || name === 'FXReel_R')
