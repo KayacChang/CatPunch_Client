@@ -36,13 +36,10 @@ export function Main(parent) {
             .forEach((field) => {
                 const [, name] = field.name.split('@');
 
-                if (name === 'bet') {
-                    return field.content.text =
-                        app.user.betOptions[app.user.bet];
-                }
-
                 field.content.text =
-                    currencyFormat(app.user[name]);
+                    (name === 'bet') ?
+                        app.user.betOptions[app.user.bet] :
+                        currencyFormat(app.user[name]);
             });
 
         spinButton.checkState();
