@@ -5,7 +5,7 @@ import {
     setBlur, setColorMatrix,
 } from '../../../plugin/filter';
 import anime from 'animejs';
-import {currencyFormat} from '../../utils';
+import {currencyFormat} from '../../../utils';
 
 import {Text, Container} from 'pixi.js';
 

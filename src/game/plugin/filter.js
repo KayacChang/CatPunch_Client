@@ -1,7 +1,7 @@
 import {
     GlowFilter, BevelFilter, DropShadowFilter,
     BulgePinchFilter, MotionBlurFilter, AdvancedBloomFilter,
-    OutlineFilter, ZoomBlurFilter,
+    OutlineFilter, ZoomBlurFilter, GodrayFilter,
 } from 'pixi-filters';
 
 import {filters} from 'pixi.js';
@@ -117,6 +117,23 @@ export function setBevel(view, options) {
 
 export function setDropShadow(view, options) {
     const it = new DropShadowFilter(options);
+
+    setFilter(view, it);
+
+    return it;
+}
+
+export function setGodray(view, options = {}) {
+    const {angle, gain, lacunrity, parallel, time, center} = options;
+
+    const it = new GodrayFilter({
+        angle: angle || 30,
+        gain: gain || 0.5,
+        lacunrity: lacunrity || 2.5,
+        parallel: parallel !== undefined ? parallel : true,
+        time: time || 0,
+        center: center || [0, 0],
+    });
 
     setFilter(view, it);
 

@@ -6,7 +6,7 @@
 <page id="0" file="font-export.png" />
 </pages>
 <chars count="15" >
-    <char id="48" x="0" y="0" width="185" height="192" xoffset="20" yoffset="-113" xadvance="160" page="0" chnl="0" letter="0" />
+    <char id="48" x="0" y="0" width="185" height="192" xoffset="20" yoffset="-113" xadvance="185" page="0" chnl="0" letter="0" />
     <char id="49" x="300" y="215" width="110" height="193" xoffset="42" yoffset="-113" xadvance="160" page="0" chnl="0" letter="1" />
     <char id="50" x="155" y="581" width="145" height="192" xoffset="20" yoffset="-112" xadvance="160" page="0" chnl="0" letter="2" />
     <char id="51" x="297" y="774" width="128" height="197" xoffset="30" yoffset="-115" xadvance="160" page="0" chnl="0" letter="3" />

@@ -12,8 +12,8 @@ import {wait} from '../../../general/utils/time';
 import {Neko} from './components/neko';
 import {FreeSpinIcon} from './components/freespin';
 import {
-    bigWinEffect,
-    freeGameEffect, numberIncrement,
+    bigWinEffect, coinEffect,
+    freeGameEffect, numberIncrementEffect,
     reSpinEffect,
 } from './components/effects';
 import {MersenneTwister19937, Random} from 'random-js';
@@ -93,7 +93,8 @@ export function create({normalTable, freeGameTable}) {
     window.freeGame = () => freeGameEffect(scene, 5);
     window.respin = () => reSpinEffect(scene);
     window.bigwin = () => bigWinEffect(scene);
-    window.number = () => numberIncrement(scene, 1000);
+    window.number = () => numberIncrementEffect(scene, 1000);
+    window.coin = () => coinEffect(scene);
 
     app.on('GameResult', async (result) => {
         console.log('Result =============');

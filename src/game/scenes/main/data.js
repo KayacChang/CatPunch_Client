@@ -16,6 +16,8 @@ import EFFECT_TEXT_URL from './assets/fonts/effect-text.json';
 import './assets/fonts/effect-text.png';
 import FONT_EXPORT_URL from './assets/fonts/font-export.xml';
 import './assets/fonts/font-export.png';
+import COIN_DATA from './assets/coin/coin';
+import './assets/coin/coin.png';
 
 export const symbolConfig = [
     {id: 0, name: 'koi', texture: 'wild_koi.png', maybeBonus: true},
@@ -50,6 +52,7 @@ export function reserve() {
         //     metadata: {html5: true, loop: true},
         // },
         {name: 'symbols', url: SYMBOLS},
+        {name: 'coin', url: COIN_DATA},
     ];
 }
 
