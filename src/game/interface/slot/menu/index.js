@@ -1,10 +1,9 @@
-import {Clickable} from '../../components/Clickable';
+import {Clickable, Openable} from '../../components';
 import {Exchange} from './exchange';
 import {Setting} from './setting';
-import {Openable} from '../../components/Openable';
 import anime from 'animejs';
 import {Information} from './information';
-import {leave} from '../../../../web/components/swal';
+import {checkoutList, leave} from '../../../../web/components/swal';
 
 const {entries} = Object;
 
@@ -178,7 +177,11 @@ function Nav(menu, sections) {
                 menu.section = target;
 
                 if (name === 'exchange') {
-                    if (app.user.cash > 0) await app.service.checkout();
+                    if (app.user.cash > 0) {
+                        const data = await app.service.checkout();
+
+                        checkoutList(data);
+                    }
                     await app.service.refresh();
                 }
 
@@ -187,6 +190,11 @@ function Nav(menu, sections) {
             }
 
             if (name === 'home') {
+                if (app.user.cash > 0) {
+                    const data = await app.service.checkout();
+
+                    await checkoutList(data);
+                }
                 return leave();
             }
         }

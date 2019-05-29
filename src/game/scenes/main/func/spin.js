@@ -181,7 +181,7 @@ async function spinComplete(it, reels, {hasLink, symbols}) {
                 }
             });
 
-        await wait(1000);
+        await wait(500);
     }
 }
 
@@ -209,24 +209,6 @@ function normalEffect(reel) {
     setBevel(symbol);
 }
 
-function isNormalSymbol(name) {
-    return name.includes('bar') || name.includes('seven');
-}
-
-function isSpecialSymbol(name) {
-    return name.includes('koi') ||
-        name.includes('neko') ||
-        name.includes('taiko');
-}
-
-function getSymbolName(icon) {
-    if (icon === emptyIcon) return 'empty';
-
-    return symbolConfig
-        .find(({id}) => id === icon)
-        .name;
-}
-
 function specialEffect(it, reel, symbolName) {
     reel.results
         .find((symbol) => symbol.pos === 2)
@@ -244,4 +226,22 @@ function specialEffect(it, reel, symbolName) {
 
     anim.visible = true;
     anim.gotoAndPlay(0);
+}
+
+function isNormalSymbol(name) {
+    return name.includes('bar') || name.includes('seven');
+}
+
+function isSpecialSymbol(name) {
+    return name.includes('koi') ||
+        name.includes('neko') ||
+        name.includes('taiko');
+}
+
+function getSymbolName(icon) {
+    if (icon === emptyIcon) return 'empty';
+
+    return symbolConfig
+        .find(({id}) => id === icon)
+        .name;
 }

@@ -60,12 +60,6 @@ module.exports = function(env) {
         //  Module =============================================
         module: {
             rules: [
-                // {
-                //     test: /\.worker\.js$/,
-                //     use: {
-                //         loader: 'worker-loader',
-                //     },
-                // },
                 //  JavaScript =============================================
                 {
                     test: /\.js$/,

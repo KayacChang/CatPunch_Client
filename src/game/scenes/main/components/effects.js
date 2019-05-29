@@ -3,13 +3,14 @@ import {Container, Sprite, extras, particles} from 'pixi.js';
 import {map, times} from 'ramda';
 
 import anime from 'animejs';
-import {currencyFormat, currencyValue} from '../../../utils';
-import {wait} from '../../../../general/utils/time';
+import {
+    currencyFormat, currencyValue, wait,
+    degreeToRadian, radianToDegree,
+} from '../../../../general/utils';
 
 import {
     random, randomInt, pi,
 } from 'mathjs';
-import {degreeToRadian, radianToDegree} from '../../../../general/utils/logic';
 
 function setFlex(elements, options = {}) {
     const padding = options.padding || 0;

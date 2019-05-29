@@ -1,9 +1,9 @@
-import {Clickable} from '../../components/Clickable';
-import {Openable} from '../../components/Openable';
 import anime from 'animejs';
-import {capitalize, currencyFormat} from '../../../utils';
-import {ToggleButton} from '../../components';
+
+import {ToggleButton, Clickable, Openable} from '../../components';
 import alert from '../../../../web/components/swal';
+
+import {capitalize, currencyFormat} from '../../../../general/utils';
 
 const {log10, trunc} = Math;
 

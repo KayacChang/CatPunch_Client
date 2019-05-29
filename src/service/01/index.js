@@ -193,8 +193,10 @@ export function Service(network) {
                     entries(data['userCoinQuota'])
                         .filter(([key]) => key.includes('coin'))
                         .map(([key, value]) => {
-                            const type = Number(key.match(/\d+/g));
-                            return [type, value];
+                            const type = key.match(/\d+/)[0];
+                            const {name} = currencies.get(type);
+
+                            return [name, value];
                         }),
                 );
             });

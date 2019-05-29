@@ -5,7 +5,7 @@ import {
     setBlur, setColorMatrix,
 } from '../../../plugin/filter';
 import anime from 'animejs';
-import {currencyFormat} from '../../../utils';
+import {currencyFormat} from '../../../../general/utils';
 
 import {Text, Container} from 'pixi.js';
 
@@ -75,7 +75,6 @@ function Options(view) {
     };
 
     menu.scale.set(0);
-    menu.position = btn.position;
     menu.interactive = true;
 
     setBehaviour(btn);
@@ -85,23 +84,6 @@ function Options(view) {
     return btn;
 
     function setOptionMenu(open) {
-        const originPos = {
-            x: btn.position.x,
-            y: btn.position.y,
-        };
-        const location = view.getChildByName('pos@option');
-        const openPos = {
-            x: location.position.x,
-            y: location.position.y,
-        };
-
-        anime({
-            targets: menu.position,
-            ...(open ? openPos : originPos),
-            duration: 360,
-            easing: open ? 'easeOutCirc' : 'easeOutCubic',
-        });
-
         setScale(open, menu);
         setScale(!open, btnIcon);
         setScale(!open, btnFrame);

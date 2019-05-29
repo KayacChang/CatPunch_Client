@@ -1,40 +1,121 @@
+import {spin} from './spin';
+import {clone, until} from 'ramda';
+import {wait} from '../../../../general/utils';
 import anime from 'animejs';
+import {freeGameEffect, reSpinEffect} from '../components/effects';
 
-export async function play() {
-    const userBet = {
-        enumBetBaseType: 0,
-        enumBetMultiply: 0,
-    };
-    const response =
-        await app.service.sendOneRound(userBet);
+export function play(scene) {
+    const {
+        slot, energy, neko, freeSpinIcon,
+        normalTable, freeGameTable,
+    } = scene;
 
-    const gameResult = JSON.parse(response['jsonGameResult']);
+    app.on('GameResult', async (result) => {
+        console.log('Result =============');
+        console.table(result);
 
-    response.gameResult = gameResult;
+        await spin(
+            slot, slot.reels,
+            {hasLink: result.hasLink, ...result.baseGame},
+        );
 
-    await slot.spin(gameResult.baseGame);
+        await energy.update(result.earnPoints);
 
-    if (gameResult.hasReSpin) {
-        await slot.spin(gameResult.reSpinGame);
-    }
+        if (result.hasReSpin) {
+            const reSpinTable = clone(normalTable);
 
-    if (gameResult.hasFreeGame) {
-        await slot.spin(gameResult.freeGame);
-    }
+            reSpinTable[1] = [
+                2, 4, 3, 2, 3,
+                2, 3, 4, 2, 3,
+                2, 2, 3, 2, 2,
+                3, 4, 2, 3, 2,
+            ];
 
-    return response;
+            slot.reelTables = reSpinTable;
+            await wait(1000);
+            await neko.appear();
+            await wait(1000);
+            neko.hit();
+
+            await wait(150);
+
+            scene.y = 10;
+            anime({
+                targets: scene,
+                y: 0,
+                easing: 'easeOutElastic(10, .1)',
+                duration: 750,
+            });
+
+            reSpinEffect(scene);
+
+            const {positions, symbols} = clone(result.baseGame);
+
+            positions[1] = until(
+                (pos) => reSpinTable[1][pos] !== 10,
+                () => random.integer(0, reSpinTable[1].length - 1),
+            )(1);
+
+            symbols[1] = result.reSpin.multiply;
+
+            await spin(
+                slot, [slot.reels[1]],
+                {hasLink: true, positions, symbols},
+            );
+        }
+
+        if (energy.scale === 10) {
+            freeSpinIcon.shock();
+            await wait(2000);
+            await neko.appear();
+            await wait(1000);
+            neko.hit();
+
+            await wait(150);
+
+            scene.y = 10;
+            anime({
+                targets: scene,
+                y: 0,
+                easing: 'easeOutElastic(10, .1)',
+                duration: 750,
+            });
+
+            freeSpinIcon.stop();
+            const freeGameResults =
+                result.freeGame.eachPositions
+                    .map((positions, index) => {
+                        const symbols =
+                            result.freeGame.eachSymbols[index];
+
+                        const hasLink =
+                            result.freeGame.hasLinks[index];
+
+                        const multiply =
+                            result.freeGame.multiply[index];
+
+                        return {positions, symbols, hasLink, multiply};
+                    });
+
+            for (const result of freeGameResults) {
+                slot.reelTables = freeGameTable;
+                freeGameEffect(scene, result.multiply);
+                slot.view.children
+                    .filter(({name}) =>
+                        name === 'FXReel_L' || name === 'FXReel_R')
+                    .forEach(({anim}) => anim.visible = true);
+
+                await spin(
+                    slot, slot.reels.filter(({reelIdx}) => reelIdx !== 1),
+                    result,
+                );
+            }
+            await energy.update(0);
+        }
+
+        slot.reelTables = normalTable;
+
+        console.log('Round Complete...');
+        app.emit('Idle');
+    });
 }
-
-anime({
-    targets: displaySymbol.view.scale,
-    x: [{value: 1.1, duration: 1000}],
-    y: [{value: 1.1, duration: 1000, delay: 120}],
-    easing: 'easeOutElastic(5, .2)',
-});
-
-anime({
-    targets: displaySymbol.view.scale,
-    x: [{value: 1.1, duration: 360}],
-    y: [{value: 1.1, duration: 500, delay: 250}],
-    easing: 'spring(1, 80, 1, 30)',
-});

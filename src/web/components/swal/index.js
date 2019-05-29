@@ -61,4 +61,70 @@ export function leave() {
         .then(({value}) => (value) && history.back());
 }
 
-export default {error, leave, loading, close, success};
+export function checkoutList({gold, gift, etc, bonus}) {
+    const config = {
+        title: 'Check Out',
+        html: `
+        <ul id="list">
+        </ul>
+        `,
+        cancelButtonColor: '#3085d6',
+        background,
+        onBeforeOpen,
+    };
+
+    return Swal.fire(config);
+
+    function onBeforeOpen() {
+        Swal.showLoading();
+
+        const content = Swal.getContent();
+        const list = content.querySelector('#list');
+
+        const host = 'http://dev01.ulg168.com/front/img/icon/usercoin/';
+
+        const tasks = [
+            {url: 'user_bg_gold_01', money: gold},
+            {url: 'user_bg_ulg_01', money: etc},
+            {url: 'user_bg_bonus_01', money: bonus},
+            {url: 'user_bg_gift_01', money: gift},
+        ].map(({url, money}) => {
+            const image = new Image();
+            image.src = host + url + '.png';
+
+            const text =
+                document.createElement('div');
+
+            text.textContent = money;
+
+            const container =
+                document.createElement('div');
+
+            container.append(image, text);
+
+            container.classList.add('text-center', 'number-font');
+
+            const item =
+                document.createElement('li');
+
+            item.append(container);
+
+            return new Promise((resolve) => {
+                image.onload = () => resolve(item);
+            });
+        });
+
+        Promise.all(tasks)
+            .then((items) => {
+                items.forEach((item) => {
+                    list.appendChild(item);
+                });
+            })
+            .then(() => Swal.hideLoading());
+    }
+}
+
+export default {
+    error, leave, loading, close,
+    success, checkoutList,
+};
