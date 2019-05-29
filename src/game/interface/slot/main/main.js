@@ -290,7 +290,9 @@ function Options(view) {
 
             backFunc = async function() {
                 await setScale(false, ...targets);
-                setIcons(true);
+                await setIcons(true);
+
+                btns.forEach((btn) => btn.scale.set(1));
 
                 resetFunc();
             };

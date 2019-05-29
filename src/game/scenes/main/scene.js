@@ -25,9 +25,9 @@ function initSlotMachine(scene, reelTables) {
         .forEach((reel) =>
             setDropShadow(reel.view, {
                 blur: 3.2,
-                quality: 3,
+                quality: 2,
                 alpha: 0.58,
-                distance: 15,
+                distance: 8,
                 rotation: [45, 90, 135][reel.reelIdx],
             }));
 

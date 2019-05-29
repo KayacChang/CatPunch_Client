@@ -19,7 +19,9 @@ export function play(scene) {
             {hasLink: result.hasLink, ...result.baseGame},
         );
 
-        await energy.update(result.earnPoints);
+        if (result.earnPoints !== energy.scale) {
+            await energy.update(result.earnPoints);
+        }
 
         if (result.hasReSpin) {
             const reSpinTable = clone(normalTable);

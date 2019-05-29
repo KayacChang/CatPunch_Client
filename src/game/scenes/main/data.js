@@ -57,6 +57,6 @@ export function reserve() {
 }
 
 export const stopPerSymbol = 2;
-export const spinDuration = 3000;
-export const spinStopInterval = 450;
+export const spinDuration = [3000, 2000, 1500];
+export const spinStopInterval = [450, 300, 150];
 export const maybeBonusFXDuration = 1000;

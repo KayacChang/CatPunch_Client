@@ -100,6 +100,13 @@ export function SlotMachine(
             set y(newY) {
                 view.y = newY;
             },
+
+            get alpha() {
+                return view.alpha;
+            },
+            set alpha(newAlpha) {
+                view.alpha = newAlpha;
+            },
         };
     }
 

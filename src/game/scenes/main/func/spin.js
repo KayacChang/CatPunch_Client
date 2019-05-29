@@ -22,7 +22,7 @@ const emptyIcon = symbolConfig.length;
 export async function spin(it, reels, result) {
     spinStart(it, reels);
 
-    await wait(spinDuration);
+    await wait(spinDuration[app.user.speed]);
 
     await spinStop(it, reels, result);
 
@@ -65,7 +65,7 @@ async function spinStart(it, reels) {
             targets: reel,
             axis: '+=' + 300,
             easing: 'easeInOutQuad',
-            duration: 10000,
+            duration: 10000 - (2000 * app.user.speed),
         });
 
         await wait(120);
@@ -118,11 +118,16 @@ function spinStop(it, reels, {positions, symbols}) {
             resultPos = [1, 3];
         }
 
-        let time = index * spinStopInterval;
+        let time = index * spinStopInterval[app.user.speed];
 
         if (reel.reelIdx === 2 && isMaybeBonus()) {
             time += maybeBonusFXDuration;
         }
+
+        results.forEach(({view}) => {
+            view.filters = [];
+            view.scale.set(1);
+        });
 
         await wait(time);
         reel.status = Status.Stop;
@@ -181,7 +186,7 @@ async function spinComplete(it, reels, {hasLink, symbols}) {
                 }
             });
 
-        await wait(500);
+        await wait(1000);
     }
 }
 
