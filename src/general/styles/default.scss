@@ -29,11 +29,17 @@ $black: #010101;
   position: relative;
   text-align: center;
 
+  @media screen and (max-width: 1000px) {
+    img {
+      width: 10em;
+    }
+  }
+
   div {
     position: absolute;
-    top: 50%;
+    top: 45%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -47.5%);
   }
 }
 

@@ -1,19 +1,24 @@
 import Swal from 'sweetalert2/dist/sweetalert2';
 import './styles/swal.scss';
 
-const background = '#212121';
+
+const defaultStyle = {
+    background: '#212121',
+};
+
 
 // error: User Access Tokens is empty
 // error: Maintain
 
 export function error({title}) {
     const config = {
+        ...defaultStyle,
+
         type: 'error',
         title,
         text: 'Something went wrong!',
         confirmButtonText: 'Go Back',
         confirmButtonColor: '#E30126',
-        background,
     };
 
     return Swal.fire(config)
@@ -22,11 +27,12 @@ export function error({title}) {
 
 export function loading({title}) {
     const config = {
+        ...defaultStyle,
+
         title,
         allowEscapeKey: false,
         allowOutsideClick: false,
         onBeforeOpen: () => Swal.showLoading(),
-        background,
     };
     return Swal.fire(config);
 }
@@ -37,24 +43,26 @@ export function close() {
 
 export function success({title}) {
     const config = {
+        ...defaultStyle,
+
         type: 'success',
         title,
         showConfirmButton: false,
         timer: 2000,
-        background,
     };
     return Swal.fire(config);
 }
 
 export function leave() {
     const config = {
+        ...defaultStyle,
+
         type: 'warning',
         title: 'Are you sure to exit?',
         confirmButtonText: 'Go Back',
         confirmButtonColor: '#d33',
         showCancelButton: true,
         cancelButtonColor: '#3085d6',
-        background,
     };
 
     return Swal.fire(config)
@@ -63,13 +71,14 @@ export function leave() {
 
 export function checkoutList({gold, gift, etc, bonus}) {
     const config = {
+        ...defaultStyle,
+
         title: 'Check Out',
         html: `
         <ul id="list">
         </ul>
         `,
         cancelButtonColor: '#3085d6',
-        background,
         onBeforeOpen,
     };
 
@@ -79,6 +88,7 @@ export function checkoutList({gold, gift, etc, bonus}) {
         Swal.showLoading();
 
         const content = Swal.getContent();
+
         const list = content.querySelector('#list');
 
         const host = 'http://dev01.ulg168.com/front/img/icon/usercoin/';
@@ -101,7 +111,6 @@ export function checkoutList({gold, gift, etc, bonus}) {
                 document.createElement('div');
 
             container.append(image, text);
-
             container.classList.add('text-center', 'number-font');
 
             const item =

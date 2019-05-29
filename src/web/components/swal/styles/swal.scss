@@ -2,8 +2,10 @@ $swal2-title-color: #FFF;
 $swal2-content-color: #FFF;
 $swal2-error: #E30126;
 
-@media only screen and (max-device-width: 812px) {
-  $swal2-width: 16em;
+#list {
+  @media screen and (max-width: 1000px) {
+    columns: 2;
+  }
 }
 
 @import "~sweetalert2/src/sweetalert2";
