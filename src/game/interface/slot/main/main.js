@@ -8,6 +8,7 @@ import anime from 'animejs';
 import {currencyFormat} from '../../../../general/utils';
 
 import {Text, Container} from 'pixi.js';
+import {pi} from 'mathjs';
 
 const {assign} = Object;
 
@@ -18,7 +19,7 @@ export function Main(parent) {
         it.getChildByName('status'),
     );
 
-    const spinButton = SpinButton(it);
+    it.spinButton = SpinButton(it);
 
     it.openMenu = function() {
         parent.menu.open();
@@ -42,7 +43,7 @@ export function Main(parent) {
                         currencyFormat(app.user[name]);
             });
 
-        spinButton.checkState();
+        it.spinButton.checkState();
     }
 }
 
@@ -227,6 +228,9 @@ function Options(view) {
             function update(index) {
                 app.user.auto = index;
 
+                view.spinButton
+                    .auto.set(app.user.autoOptions[index]);
+
                 refresh(app.user.auto);
             }
         }
@@ -290,7 +294,7 @@ function Options(view) {
 
             backFunc = async function() {
                 await setScale(false, ...targets);
-                await setIcons(true);
+                setIcons(true);
 
                 btns.forEach((btn) => btn.scale.set(1));
 
@@ -473,7 +477,7 @@ function setBehaviour(it) {
 }
 
 function SpinButton(view) {
-    const it = Clickable(
+    let it = Clickable(
         view.getChildByName('spin'),
     );
 
@@ -502,28 +506,81 @@ function SpinButton(view) {
 
     setBehaviour(it);
 
-    it.on('Click', onClick);
-
     let isBlocking = false;
     let whenAnim = false;
+    let count = 0;
 
-    it.checkState = checkState;
+    const countField =
+        defaultFont(new Text(), {
+            fontFamily: 'Candal',
+            fontSize: 34,
+            fill: '#FAFAFA',
+            dropShadow: false,
+        });
+    it.addChildAt(
+        countField,
+        it.getChildIndex(
+            it.getChildByName('hover'),
+        ),
+    );
+    countField.anchor
+        .set(0.5);
+    countField.position
+        .set(it._width / 2, it._height / 2);
+
+    const auto = {
+        get() {
+            return count;
+        },
+        set(newCount) {
+            count = newCount;
+            countField.text = newCount;
+        },
+    };
+
+    it = assign(it, {
+        auto,
+        checkState,
+    });
+
+    const img = it.getChildByName('normal');
+    img.originScale = {
+        x: img.scale.x,
+        y: img.scale.y,
+    };
+
+    it.on('Click', onClick);
 
     app.on('Idle', checkState);
 
     return it;
 
     function checkState() {
+        isBlocking = false;
+        anime.remove(img);
+
+        if (it.auto.get() > 0) {
+            onClick();
+            it.auto.set(it.auto.get() - 1);
+        } else {
+            countField.text = '';
+            anime({
+                targets: img,
+                rotation: 0,
+            });
+
+            app.user.auto = 0;
+        }
+
         if (app.user.cash <= 10) {
             color.saturate(-.9);
             isBlocking = true;
         } else {
             color.saturate(0);
-            isBlocking = false;
         }
     }
 
-    function onClick(evt) {
+    async function onClick() {
         if (isBlocking) {
             if (whenAnim) return;
 
@@ -552,9 +609,32 @@ function SpinButton(view) {
 
         isBlocking = true;
 
-        app.service
-            .sendOneRound({bet: 10})
-            .then((result) => app.emit('GameResult', result));
+        return play();
+    }
+
+    async function play() {
+        img.scale.x -= 0.1;
+        img.scale.y -= 0.1;
+        anime({
+            targets: img.scale,
+            ...(img.originScale),
+            easing: 'easeOutElastic(1, .5)',
+            duration: 300,
+        });
+
+        anime({
+            targets: img,
+            rotation: '-=' + 2 * pi,
+            loop: true,
+            easing: 'linear',
+            duration: 1000,
+        });
+
+        const result = await app.service.sendOneRound({
+            bet: app.user.betOptions[app.user.bet],
+        });
+
+        app.emit('GameResult', result);
     }
 }
 
