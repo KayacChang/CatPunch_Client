@@ -16,7 +16,7 @@ const toolDir = resolve(rootPath, 'tools');
 const productDir = resolve(rootPath, 'dist');
 
 //  Public Path
-const publicPath = '/';
+const publicPath = '/cat/';
 
 module.exports = {
     sourceDir,

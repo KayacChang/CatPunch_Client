@@ -94,7 +94,7 @@ module.exports = function(env) {
                             loader: 'file-loader',
                             options: {
                                 name: '[name].[ext]',
-                                publicPath: 'assets',
+                                publicPath: publicPath + 'assets',
                                 outputPath: 'assets',
                             },
                         },
@@ -107,7 +107,7 @@ module.exports = function(env) {
                             loader: 'file-loader',
                             options: {
                                 name: '[name].[ext]',
-                                publicPath: 'assets',
+                                publicPath: publicPath + 'assets',
                                 outputPath: 'assets',
                             },
                         },
@@ -120,7 +120,7 @@ module.exports = function(env) {
                             loader: 'file-loader',
                             options: {
                                 name: '[name].[ext]',
-                                publicPath: 'assets',
+                                publicPath: publicPath + 'assets',
                                 outputPath: 'assets',
                             },
                         },
@@ -133,7 +133,7 @@ module.exports = function(env) {
                             loader: 'file-loader',
                             options: {
                                 name: '[name].[ext]',
-                                publicPath: 'assets',
+                                publicPath: publicPath + 'assets',
                                 outputPath: 'assets',
                             },
                         },
