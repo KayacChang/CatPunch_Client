@@ -15,7 +15,8 @@ export function play(scene) {
         console.table(result);
 
         await spin(
-            slot, slot.reels,
+            scene,
+            slot.reels,
             {hasLink: result.hasLink, ...result.baseGame},
         );
 
@@ -61,7 +62,7 @@ export function play(scene) {
             symbols[1] = result.reSpin.multiply;
 
             await spin(
-                slot, [slot.reels[1]],
+                scene, [slot.reels[1]],
                 {hasLink: true, positions, symbols},
             );
         }
@@ -108,7 +109,8 @@ export function play(scene) {
                     .forEach(({anim}) => anim.visible = true);
 
                 await spin(
-                    slot, slot.reels.filter(({reelIdx}) => reelIdx !== 1),
+                    scene,
+                    slot.reels.filter(({reelIdx}) => reelIdx !== 1),
                     result,
                 );
             }

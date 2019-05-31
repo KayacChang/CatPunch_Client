@@ -6,6 +6,11 @@ module.exports = function(...args) {
         //  Mode    =========================================
         mode: 'development',
 
+        devServer: {
+            compress: true,
+            port: 8091,
+        },
+
         //  DevTool =========================================
         devtool: 'inline-source-map',
     };

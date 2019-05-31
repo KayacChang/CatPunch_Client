@@ -1,6 +1,6 @@
 import anime from 'animejs';
 import {wait} from '../../../../general/utils/time';
-import {nth} from 'ramda';
+import {nth, times} from 'ramda';
 import {floor, mod} from 'mathjs';
 
 import {
@@ -13,22 +13,25 @@ import {
 import {Status} from '../components/slot';
 
 import {setBevel, setGlow} from '../../../plugin/filter';
+import {playCoin} from '../components/coin';
 
 const maybeBonusIcon =
     symbolConfig.find(({maybeBonus}) => maybeBonus).id;
 
 const emptyIcon = symbolConfig.length;
 
-export async function spin(it, reels, result) {
-    spinStart(it, reels);
+export async function spin(scene, reels, result) {
+    const {slot} = scene;
+
+    spinStart(slot, reels);
 
     await wait(spinDuration[app.user.speed]);
 
-    await spinStop(it, reels, result);
+    await spinStop(slot, reels, result);
 
     await wait(500);
 
-    await spinComplete(it, reels, result);
+    await spinComplete(scene, reels, result);
 }
 
 async function spinStart(it, reels) {
@@ -155,15 +158,16 @@ function spinStop(it, reels, {positions, symbols}) {
     }
 }
 
-async function spinComplete(it, reels, {hasLink, symbols}) {
+async function spinComplete(scene, reels, {hasLink, symbols}) {
     console.log('Spin Complete...');
+    const {slot} = scene;
 
-    it.view.children
+    slot.view.children
         .filter(({name}) => name.includes('FXReel'))
         .forEach(({anim}) => anim.visible = false);
 
     if (hasLink) {
-        const mask = it.view.getChildByName('SlotBaseMask');
+        const mask = slot.view.getChildByName('SlotBaseMask');
 
         anime({
             targets: mask,
@@ -178,11 +182,11 @@ async function spinComplete(it, reels, {hasLink, symbols}) {
                     getSymbolName(symbols[reel.reelIdx]);
 
                 if (isNormalSymbol(symbolName)) {
-                    normalEffect(reel);
+                    normalEffect(reel, scene);
                 }
 
                 if (isSpecialSymbol(symbolName)) {
-                    specialEffect(it, reel, symbolName);
+                    specialEffect(slot, reel, symbolName);
                 }
             });
 
@@ -190,8 +194,7 @@ async function spinComplete(it, reels, {hasLink, symbols}) {
     }
 }
 
-
-function normalEffect(reel) {
+function normalEffect(reel, scene) {
     const symbol =
         reel.results
             .find((symbol) => symbol.pos === 2)
@@ -212,6 +215,10 @@ function normalEffect(reel) {
     });
 
     setBevel(symbol);
+
+    times(() =>
+        playCoin(scene, symbol.getGlobalPosition({}))
+    )(5);
 }
 
 function specialEffect(it, reel, symbolName) {

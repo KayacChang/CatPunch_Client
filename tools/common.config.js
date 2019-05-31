@@ -29,7 +29,6 @@ module.exports = function(env) {
         output: {
             path: productDir,
             filename: 'js/bundle.js',
-            publicPath: publicPath,
         },
 
         //  Optimization    ====================================
