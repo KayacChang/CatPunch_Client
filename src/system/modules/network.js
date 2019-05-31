@@ -13,7 +13,6 @@ export function Network() {
         headers: {
             'Content-Type': MEDIA_TYPE.JSON + '; ' + UTF8,
         },
-        timeout: 1500,
     });
 
     function fetchData(promise) {

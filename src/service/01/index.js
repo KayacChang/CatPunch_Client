@@ -54,7 +54,9 @@ export function Service(network) {
             throw new Error(`User Access Tokens is empty`);
         }
 
-        history.pushState(undefined, undefined, location.origin);
+        history.pushState(undefined, undefined,
+            location.origin + location.pathname,
+        );
 
         global.addEventListener('popstate', () => history.back());
 
