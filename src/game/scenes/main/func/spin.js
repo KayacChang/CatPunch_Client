@@ -13,7 +13,7 @@ import {
 import {Status} from '../components/slot';
 
 import {setBevel, setGlow} from '../../../plugin/filter';
-import {playCoin} from '../components/coin';
+import {Coin, playCoin} from '../components/coin';
 
 const maybeBonusIcon =
     symbolConfig.find(({maybeBonus}) => maybeBonus).id;
@@ -216,9 +216,13 @@ function normalEffect(reel, scene) {
 
     setBevel(symbol);
 
-    times(() =>
-        playCoin(scene, symbol.getGlobalPosition({}))
-    )(5);
+    const {x, y} = symbol.getGlobalPosition({});
+
+    playCoin(
+        scene,
+        {x: x + 100, y: y + 30},
+        times(Coin, 5),
+    );
 }
 
 function specialEffect(it, reel, symbolName) {

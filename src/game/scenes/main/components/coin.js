@@ -19,52 +19,56 @@ export function Coin() {
     return it;
 }
 
-export async function playCoin(scene, {x, y}) {
-    const coin = Coin();
+export async function playCoin(scene, {x, y}, coins) {
+    scene.addChild(...coins);
 
-    scene.addChild(coin);
-
-    coin.position.set(x, y);
+    coins.forEach(({position}) => position.set(x, y));
 
     anime({
-        targets: coin.scale,
-        x: [0.1, 0.2],
-        y: [0.1, 0.2],
+        targets: coins.map(({scale}) => scale),
+        x: [0.1, 0.15],
+        y: [0.1, 0.15],
         duration: 500,
     });
 
-    const x1 = coin.x + randomInt(-300, 300);
-    const y1 = coin.y - randomInt(300, 500);
-    const y2 = coin.y + randomInt(-150, 150);
+    const targetsX =
+        coins.map((coin) => coin.x + randomInt(-300, 300));
+
     anime
-        .timeline({targets: coin})
+        .timeline({targets: coins})
         .add({
-            x: x1,
+            x: (el, i) => targetsX[i],
             duration: 1000,
             easing: 'linear',
         });
 
-    await anime.timeline({targets: coin})
+    const targetsY1 =
+        coins.map((coin) => coin.y - randomInt(300, 500));
+    const targetsY2 =
+        coins.map((coin) => coin.y + randomInt(-150, 150));
+
+    await anime.timeline({targets: coins})
         .add({
-            y: y1,
-            duration: 250,
+            y: (el, i) => targetsY1[i],
+            duration: 450,
             easing: 'easeOutQuart',
         })
         .add({
-            y: y2,
-            duration: 750,
-            easing: function() {
-                return Easing.Bounce.Out;
-            },
+            y: (el, i) => targetsY2[i],
+            duration: 550,
+            easing: () => Easing.Bounce.Out,
         })
         .finished;
 
-    anime.timeline({targets: coin})
+    anime.timeline({targets: coins})
         .add({
             x: scene._width / 2,
             y: 1300,
             delay: randomInt(300, 600),
             duration: 500,
             easing: 'easeInExpo',
+            complete() {
+                scene.removeChild(...coins);
+            },
         });
 }
