@@ -1,6 +1,5 @@
 import {
     select,
-    clear,
 } from './general/utils/dom';
 
 import {App} from './system/application';
@@ -11,7 +10,9 @@ import alert from './web/components/swal';
 
 function startLoading(scene) {
     const comp = select('#app');
-    clear(comp);
+    const svg = select('#preload');
+    svg.remove();
+
     comp.appendChild(app.view);
 
     const loadScene = scene.create();

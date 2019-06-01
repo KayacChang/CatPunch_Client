@@ -9,9 +9,9 @@ function getWindowSize() {
     return getClientSize(document.documentElement);
 }
 
-// function isLandScape() {
-//     return matchMedia('all and (orientation:landscape)').matches;
-// }
+export function isLandScape() {
+    return matchMedia('all and (orientation:landscape)').matches;
+}
 
 function getExpectSize() {
     if (isMobile.phone) return getWindowSize();
