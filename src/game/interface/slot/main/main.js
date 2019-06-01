@@ -79,12 +79,19 @@ function Options(view) {
 
     btn.on('Click', () => setOptionMenu(true));
 
+    const block =
+        view.getChildByName('block');
+
+    block.on('pointerdown', () => setOptionMenu(false));
+
     return btn;
 
     function setOptionMenu(open) {
         setScale(open, menu);
         setScale(!open, btnIcon);
         setScale(!open, btnFrame);
+
+        block.interactive = open;
     }
 
     function setScale(open, ...targets) {
