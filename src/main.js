@@ -8,6 +8,8 @@ import {log} from './general/utils/dev';
 
 import alert from './web/components/swal';
 
+import {debounce} from 'lodash';
+
 function startLoading(scene) {
     const comp = select('#app');
     const svg = select('#preload');
@@ -18,6 +20,14 @@ function startLoading(scene) {
     const loadScene = scene.create();
     app.stage.addChild(loadScene);
     app.resize();
+
+    select('#mask')
+        .addEventListener('touchend',
+            debounce(() =>
+                scrollTo({
+                    top: 0,
+                    behavior: 'smooth',
+                }), 60));
 
     return loadScene;
 }

@@ -220,7 +220,7 @@ function normalEffect(reel, scene) {
 
     playCoin(
         scene,
-        {x: x + 100, y: y + 30},
+        {x: x + 100, y: y + 90},
         times(Coin, 5),
     );
 }

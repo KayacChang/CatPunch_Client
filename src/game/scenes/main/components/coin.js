@@ -38,24 +38,24 @@ export async function playCoin(scene, {x, y}, coins) {
         .timeline({targets: coins})
         .add({
             x: (el, i) => targetsX[i],
-            duration: 1000,
+            duration: 1200,
             easing: 'linear',
         });
 
     const targetsY1 =
         coins.map((coin) => coin.y - randomInt(300, 500));
     const targetsY2 =
-        coins.map((coin) => coin.y + randomInt(-150, 150));
+        coins.map((coin) => coin.y + randomInt(250, 400));
 
     await anime.timeline({targets: coins})
         .add({
             y: (el, i) => targetsY1[i],
-            duration: 450,
+            duration: 350,
             easing: 'easeOutQuart',
         })
         .add({
             y: (el, i) => targetsY2[i],
-            duration: 550,
+            duration: 850,
             easing: () => Easing.Bounce.Out,
         })
         .finished;

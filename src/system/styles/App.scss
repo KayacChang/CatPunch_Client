@@ -3,31 +3,39 @@
 //  Application =====================================
 #app {
   margin: auto;
-  transition: opacity .5s ease;
 
   canvas {
     @include full-size;
+    position: fixed;
+    top: 0
   }
 
   #mask {
     @include full-size;
+    height: 400%;
     background: $black;
+    //display: none;
 
-    #screen-rotation {
-      background: url('./screen-rotation.png') no-repeat fixed center;
-      animation: rotation 1.5s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
-    }
+    position: absolute;
+    top: 0;
+    z-index: 1;
+  }
+
+  #screen-rotation {
+    background: url('./screen-rotation.png') no-repeat fixed center;
+    animation: rotation 1.5s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+    position: absolute;
+    top: 0;
+    z-index: 2;
   }
 }
 
 //  When Portrait ======================================
 @media all and (orientation: portrait) {
-  #container {
-    visibility: hidden;
-  }
-
-  #screen-rotation {
-    @include full-size;
+  #app {
+    #screen-rotation {
+      @include full-size;
+    }
   }
 }
 
