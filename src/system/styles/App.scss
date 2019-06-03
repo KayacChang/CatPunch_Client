@@ -5,7 +5,8 @@
   margin: auto;
 
   canvas {
-    @include full-size;
+    width: auto;
+    height: 100%;
     position: fixed;
     top: 0
   }
@@ -13,28 +14,56 @@
   #mask {
     @include full-size;
     height: 400%;
-    background: $black;
-    //display: none;
 
     position: absolute;
     top: 0;
     z-index: 1;
+
+    opacity: .5;
   }
 
-  #screen-rotation {
-    background: url('./screen-rotation.png') no-repeat fixed center;
-    animation: rotation 1.5s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
-    position: absolute;
+  #icon {
+    @include full-size;
+    background: $black;
+    pointer-events: none;
+
+    position: fixed;
     top: 0;
-    z-index: 2;
+
+    #screen-rotation {
+      @include full-size;
+      display: none;
+      background: url('./screen-rotation.png') no-repeat center;
+      animation: rotation 1.5s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+    }
+
+    #screen-scroll {
+      @include full-size;
+      display: none;
+      background: url('./screen-scroll.png') no-repeat center;
+      animation: move 1.5s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+    }
   }
+
 }
 
 //  When Portrait ======================================
 @media all and (orientation: portrait) {
   #app {
-    #screen-rotation {
-      @include full-size;
+    #icon {
+      #screen-rotation {
+        display: block;
+      }
+    }
+  }
+}
+
+@media all and (orientation: landscape) {
+  #app {
+    #icon {
+      #screen-scroll {
+        display: block;
+      }
     }
   }
 }
@@ -47,5 +76,15 @@
 
   to {
     transform: rotate(-45deg);
+  }
+}
+
+@keyframes move {
+  from {
+    background-position-y: 50%;
+  }
+
+  to {
+    background-position-y: 25%;
   }
 }

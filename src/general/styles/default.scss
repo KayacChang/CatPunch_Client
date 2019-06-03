@@ -15,7 +15,8 @@ $black: #010101;
 //  Function =====================================
 .hidden {
   opacity: 0;
-  display: none;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .v-center {

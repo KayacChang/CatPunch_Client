@@ -8,6 +8,8 @@ import {Resource} from './modules/resource';
 import {resize} from './modules/screen';
 import {User} from './modules/user';
 
+import {debounce} from 'lodash';
+
 const {defineProperties, assign, freeze} = Object;
 
 export function App(Service) {
@@ -70,8 +72,8 @@ export function App(Service) {
     });
 
     //  Event Binding
-    global.addEventListener('resize', app.resize);
-    global.addEventListener('orientationchange', app.resize);
+    global.addEventListener('resize', debounce(app.resize, 200));
+    global.addEventListener('orientationchange', debounce(app.resize, 200));
 
     return freeze(app);
 }

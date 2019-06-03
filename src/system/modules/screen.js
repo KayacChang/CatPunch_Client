@@ -1,4 +1,8 @@
 import {isMobile} from 'pixi.js/lib/core/utils';
+import alert from '../../web/components/swal';
+import {debounce} from 'lodash';
+import {abs} from 'mathjs';
+import {select} from '../../general/utils/dom';
 
 function getClientSize(target) {
     const {clientWidth, clientHeight} = target;
@@ -41,11 +45,46 @@ function setStyleSize(target, {width, height}) {
     target.style.height = height + 'px';
 }
 
+export function enableFullScreenMask() {
+    const icon = select('#icon');
+    const mask = select('#mask');
+
+    if (document.documentElement.requestFullscreen) {
+        alert.request({title: 'Enable FullScreen Mode'})
+            .then((result) => {
+                if (result.value) app.view.requestFullscreen();
+            });
+    } else {
+        icon.classList.remove('hidden');
+        mask.classList.remove('hidden');
+
+        window.addEventListener('touchmove', handle());
+        window.addEventListener('resize', handle());
+    }
+
+    function handle() {
+        return debounce((evt) => {
+            requestAnimationFrame(() => {
+                const isMinimal = abs(outerHeight - innerHeight) <= 30;
+
+                const func =
+                    (el, className) => isMinimal ?
+                        el.classList.add(className) :
+                        el.classList.remove(className);
+
+                func(icon, 'hidden');
+                func(mask, 'hidden');
+            });
+        }, 200, {leading: true, trailing: true, maxWait: 60});
+    }
+}
+
 export function resize(app) {
     const size = getExpectSize();
 
     setStyleSize(app.view.parentElement, size);
     setSize(app.view, size);
+
     app.renderer
         .resize(size.width, size.height);
 

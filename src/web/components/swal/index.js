@@ -25,6 +25,19 @@ export function error({title}) {
         .then(() => history.back());
 }
 
+export function request({title}) {
+    const config = {
+        ...defaultStyle,
+
+        type: 'warning',
+        title,
+        confirmButtonText: 'Enable',
+        showCancelButton: true,
+    };
+
+    return Swal.fire(config);
+}
+
 export function loading({title}) {
     const config = {
         ...defaultStyle,
@@ -135,5 +148,5 @@ export function checkoutList({gold, gift, etc, bonus}) {
 
 export default {
     error, leave, loading, close,
-    success, checkoutList,
+    success, checkoutList, request,
 };

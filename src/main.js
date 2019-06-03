@@ -3,31 +3,26 @@ import {
 } from './general/utils/dom';
 
 import {App} from './system/application';
-import {Service} from './service/01/';
+import {Service} from './service/00/';
 import {log} from './general/utils/dev';
 
 import alert from './web/components/swal';
 
-import {debounce} from 'lodash';
+import {isMobile} from 'pixi.js/lib/core/utils';
+import {enableFullScreenMask} from './system/modules/screen';
 
 function startLoading(scene) {
     const comp = select('#app');
     const svg = select('#preload');
     svg.remove();
 
-    comp.appendChild(app.view);
+    comp.prepend(app.view);
 
     const loadScene = scene.create();
     app.stage.addChild(loadScene);
     app.resize();
 
-    select('#mask')
-        .addEventListener('touchend',
-            debounce(() =>
-                scrollTo({
-                    top: 0,
-                    behavior: 'smooth',
-                }), 60));
+    if (isMobile.phone) enableFullScreenMask();
 
     return loadScene;
 }

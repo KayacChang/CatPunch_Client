@@ -20,11 +20,3 @@ export function print(msg) {
     const log = createElement('p');
     log.textContent = msg;
 }
-
-export function addClass(target, className) {
-    target.classList.add(className);
-}
-
-export function removeClass(target, className) {
-    target.classList.remove(className);
-}
