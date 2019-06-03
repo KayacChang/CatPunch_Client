@@ -187,6 +187,8 @@ export function SpinButton(view) {
             });
 
             isRunning = true;
+
+            app.sound.play('spin');
         }
 
         const result = await app.service.sendOneRound({

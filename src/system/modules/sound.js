@@ -23,7 +23,5 @@ export function Sound({loader}) {
             .filter(predicate);
     }
 
-    mute(true);
-
     return {play, mute, volume, getBy};
 }

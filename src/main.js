@@ -3,7 +3,7 @@ import {
 } from './general/utils/dom';
 
 import {App} from './system/application';
-import {Service} from './service/00/';
+import {Service} from './service/01/';
 import {log} from './general/utils/dev';
 
 import alert from './web/components/swal';
@@ -68,6 +68,14 @@ async function main() {
             app.stage.removeChild(loadScene);
             app.resize();
             app.emit('Idle');
+
+            alert.request({title: 'Enable Sound'})
+                .then(({value}) => {
+                    if (value) {
+                        return app.sound.mute(false);
+                    }
+                    return app.sound.mute(true);
+                });
         });
     } catch (err) {
         console.error(err);
