@@ -8,7 +8,6 @@ import {log} from './general/utils/dev';
 
 import alert from './web/components/swal';
 
-import {isMobile} from 'pixi.js/lib/core/utils';
 import {enableFullScreenMask} from './system/modules/screen';
 
 function startLoading(scene) {
@@ -22,7 +21,7 @@ function startLoading(scene) {
     app.stage.addChild(loadScene);
     app.resize();
 
-    if (isMobile.phone) enableFullScreenMask();
+    enableFullScreenMask();
 
     return loadScene;
 }
@@ -30,6 +29,8 @@ function startLoading(scene) {
 async function main() {
     //  Init App
     try {
+        document.title = '來!貓下去';
+
         global.app = new App(Service);
 
         await app.service.login();
@@ -68,14 +69,6 @@ async function main() {
             app.stage.removeChild(loadScene);
             app.resize();
             app.emit('Idle');
-
-            alert.request({title: 'Enable Sound'})
-                .then(({value}) => {
-                    if (value) {
-                        return app.sound.mute(false);
-                    }
-                    return app.sound.mute(true);
-                });
         });
     } catch (err) {
         console.error(err);

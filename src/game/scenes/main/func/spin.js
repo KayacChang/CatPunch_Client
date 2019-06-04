@@ -135,6 +135,9 @@ function spinStop(it, reels, {positions, symbols}) {
         await wait(time);
         reel.status = Status.Stop;
 
+        setTimeout(() =>
+            app.sound.play('bounce'), 400);
+
         await anime({
             targets: reel.results,
             pos: (el, index) => resultPos[index],
@@ -143,8 +146,15 @@ function spinStop(it, reels, {positions, symbols}) {
             complete() {
                 fxReels
                     .forEach((reel) => reel.visible = false);
-                fxReels[2].visible =
-                    (reel.reelIdx === 1 && isMaybeBonus());
+
+                const flag = (reel.reelIdx === 1 && isMaybeBonus());
+
+                fxReels[2].visible = flag;
+
+                if (flag) {
+                    const sound = app.sound.play('maybeBonus');
+                    sound.rate(2);
+                }
 
                 anime.remove(reel);
 
@@ -176,6 +186,8 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
             duration: 500,
         });
 
+        let soundFlag = false;
+
         reels
             .forEach((reel) => {
                 const symbolName =
@@ -183,12 +195,17 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
 
                 if (isNormalSymbol(symbolName)) {
                     normalEffect(reel, scene);
+                    if (!soundFlag) {
+                        app.sound.play('normal');
+                        soundFlag = true;
+                    }
                 }
 
                 if (isSpecialSymbol(symbolName)) {
                     specialEffect(slot, reel, symbolName);
                 }
             });
+
 
         await wait(1000);
     }
@@ -242,6 +259,9 @@ function specialEffect(it, reel, symbolName) {
 
     anim.visible = true;
     anim.gotoAndPlay(0);
+    app.sound.play(
+        symbolName.replace(/@.*/, ''),
+    );
 }
 
 function isNormalSymbol(name) {

@@ -22,6 +22,7 @@ export function Neko(scene) {
         neko.anim.gotoAndStop(0);
 
         appearAnim.play();
+        app.sound.play('catAppear');
         return appearAnim.finished;
     }
 
@@ -32,5 +33,15 @@ export function Neko(scene) {
 
     function hit() {
         neko.anim.play();
+        app.sound.play('catHit1');
+
+        let soundFlag = false;
+
+        neko.anim.on('change', (current) => {
+            if (current > 10 && !soundFlag) {
+                app.sound.play('catHit2');
+                soundFlag = true;
+            }
+        });
     }
 }

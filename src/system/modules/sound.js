@@ -5,6 +5,8 @@ export function Sound({loader}) {
     function play(name) {
         const sound = loader.resources[name].data;
         sound.play();
+
+        return sound;
     }
 
     function mute(isMuted) {

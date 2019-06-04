@@ -47,6 +47,8 @@ export async function playCoin(scene, {x, y}, coins) {
     const targetsY2 =
         coins.map((coin) => coin.y + randomInt(250, 400));
 
+    setTimeout(() => app.sound.play('coinDrop'), 850);
+
     await anime.timeline({targets: coins})
         .add({
             y: (el, i) => targetsY1[i],

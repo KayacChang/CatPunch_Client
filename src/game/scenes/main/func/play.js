@@ -1,5 +1,5 @@
 import {spin} from './spin';
-import {clone, until} from 'ramda';
+import {clone} from 'ramda';
 import {wait} from '../../../../general/utils';
 import anime from 'animejs';
 import {freeGameEffect, reSpinEffect} from '../components/effects';
@@ -17,7 +17,7 @@ export function play(scene) {
         await spin(
             scene,
             slot.reels,
-            {hasLink: result.hasLink, ...result.baseGame},
+            result.normalGame,
         );
 
         if (result.earnPoints !== energy.scale) {
@@ -52,18 +52,9 @@ export function play(scene) {
 
             reSpinEffect(scene);
 
-            const {positions, symbols} = clone(result.baseGame);
-
-            positions[1] = until(
-                (pos) => reSpinTable[1][pos] !== 10,
-                () => random.integer(0, reSpinTable[1].length - 1),
-            )(1);
-
-            symbols[1] = result.reSpin.multiply;
-
             await spin(
                 scene, [slot.reels[1]],
-                {hasLink: true, positions, symbols},
+                result.reSpinGame,
             );
         }
 
@@ -85,28 +76,22 @@ export function play(scene) {
             });
 
             freeSpinIcon.stop();
-            const freeGameResults =
-                result.freeGame.eachPositions
-                    .map((positions, index) => {
-                        const symbols =
-                            result.freeGame.eachSymbols[index];
 
-                        const hasLink =
-                            result.freeGame.hasLinks[index];
+            slot.reelTables = freeGameTable;
 
-                        const multiply =
-                            result.freeGame.multiply[index];
+            const freeGame = result.freeGame;
+            for (const result of freeGame) {
+                const multiply =
+                    freeGame.indexOf(result) + 1;
 
-                        return {positions, symbols, hasLink, multiply};
-                    });
+                freeGameEffect(scene, multiply);
 
-            for (const result of freeGameResults) {
-                slot.reelTables = freeGameTable;
-                freeGameEffect(scene, result.multiply);
                 slot.view.children
                     .filter(({name}) =>
                         name === 'FXReel_L' || name === 'FXReel_R')
                     .forEach(({anim}) => anim.visible = true);
+
+                app.sound.play('maybeBonus');
 
                 await spin(
                     scene,
@@ -114,6 +99,7 @@ export function play(scene) {
                     result,
                 );
             }
+
             await energy.update(0);
         }
 
@@ -122,4 +108,15 @@ export function play(scene) {
         console.log('Round Complete...');
         app.emit('Idle');
     });
+
+    global.test = test;
+
+    function test(symbols) {
+        const positions =
+            normalTable.map((reel, index) => reel.indexOf(symbols[index]));
+
+        app.service
+            .sendOneRound({bet: 10, baseGame: {positions, symbols}})
+            .then((result) => app.emit('GameResult', result));
+    }
 }

@@ -6,7 +6,7 @@ import {Sound} from './modules/sound';
 import {Network} from './modules/network';
 import {Resource} from './modules/resource';
 import {resize} from './modules/screen';
-import {User} from './modules/user';
+
 
 import {debounce} from 'lodash';
 
@@ -28,7 +28,7 @@ export function App(Service) {
     //  Service
     const service = Service && Service(network);
     //  User
-    const user = User();
+    let user = undefined;
 
     //  Modules
     defineProperties(app, {
@@ -46,6 +46,7 @@ export function App(Service) {
         },
         user: {
             get: () => user,
+            set: (newUser) => user = newUser,
         },
     });
 

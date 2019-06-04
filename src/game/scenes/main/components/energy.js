@@ -41,11 +41,15 @@ export function EnergyBar(view) {
     };
 
     async function update(newScale) {
+        if (scale === newScale) return;
+
         energyHeadView.visible = (newScale !== 0);
 
         const target = {
             width: maskWidth[scale],
         };
+
+        app.sound.play('energy');
 
         return anime({
             targets: target,

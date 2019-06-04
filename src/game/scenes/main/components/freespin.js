@@ -2,9 +2,13 @@ import anime from 'animejs';
 import {degreeToRadian} from '../../../../general/utils/logic';
 
 export function FreeSpinIcon(view) {
+    let sound = undefined;
+
     return {shock, stop};
 
     function stop() {
+        sound.stop();
+
         anime.remove([view, view.scale]);
         anime({
             targets: view,
@@ -21,6 +25,8 @@ export function FreeSpinIcon(view) {
     }
 
     function shock() {
+        sound = app.sound.play('freeSpinAlert');
+
         anime({
             targets: view,
             rotation: [-15, 15].map(degreeToRadian),

@@ -1,11 +1,17 @@
 import Swal from 'sweetalert2/dist/sweetalert2';
 import './styles/swal.scss';
 
+import ALERT from './sounds/alert01.mp3';
+import SUCCESS from './sounds/success01.mp3';
 
 const defaultStyle = {
     background: '#212121',
 };
 
+function playAudio(url) {
+    return new Audio(url).play()
+        .catch((e) => console.error(e));
+}
 
 // error: User Access Tokens is empty
 // error: Maintain
@@ -35,6 +41,8 @@ export function request({title}) {
         showCancelButton: true,
     };
 
+    playAudio(ALERT);
+
     return Swal.fire(config);
 }
 
@@ -63,6 +71,9 @@ export function success({title}) {
         showConfirmButton: false,
         timer: 2000,
     };
+
+    playAudio(SUCCESS);
+
     return Swal.fire(config);
 }
 

@@ -1,7 +1,8 @@
 import {getSearchParams} from '../utils';
 import {clone} from 'ramda';
+import {User} from './user';
 
-const {entries, fromEntries} = Object;
+const {assign, entries, fromEntries} = Object;
 
 export function Service(network) {
     const tokens = {
@@ -26,11 +27,7 @@ export function Service(network) {
     ]);
     const accountBalance = {};
 
-    //  Test Worker
-    const worker = new Worker(
-        '../worker/test0.worker.js',
-        {type: 'module'},
-    );
+    const reelTables = {};
 
     return {
         login, init, refresh, exchange, checkout, sendOneRound,
@@ -91,6 +88,8 @@ export function Service(network) {
 
                 tokens.token = data['token'];
 
+                app.user = new User();
+
                 app.user.account = data['gameaccount'];
 
                 updateAccount(data['userCoinQuota']);
@@ -118,16 +117,16 @@ export function Service(network) {
                     throw new Error(error['Msg']);
                 }
 
-                app.user.cash = data['player']['money'];
-
                 app.user.id = Number(data['player']['id']);
 
-                const body = {type: 'init'};
+                app.user.cash = data['player']['money'];
 
-                worker.postMessage(body);
+                app.user.betOptions = data['betrate'];
 
-                return new Promise((resolve) => {
-                    worker.onmessage = (e) => resolve(e.data);
+                return assign(reelTables, {
+                    normalTable: data['reel']['normalreel'],
+                    freeGameTable: data['reel']['freereel'],
+                    reSpinTable: data['reel']['respinreel'],
                 });
             });
     }
@@ -205,18 +204,71 @@ export function Service(network) {
     }
 
     function sendOneRound(data) {
-        const body = {
+        const requestBody = {
             type: 'gameResult',
             ...tokens,
             ...env,
             ...data,
         };
 
-        worker.postMessage(body);
+        return network
+            .post('game/gameresult', requestBody)
+            .then(({data, error}) => {
+                if (error['ErrorCode'] !== 0) {
+                    throw new Error(error['Msg']);
+                }
 
-        return new Promise((resolve) => {
-            worker.onmessage = (e) => resolve(e.data);
-        });
+                return process(data);
+            });
+    }
+
+    function process(data) {
+        const totalWin = data['totalwinscore'];
+        const playerMoney = data['playermoney'];
+
+        const hasReSpin = Boolean(data['isrespin']);
+        const hasFreeGame = Boolean(data['isfreegame']);
+        const earnPoints = data['freecount'];
+
+        const normalGame = Result(data['normalresult']);
+
+        const reSpinGame = hasReSpin && Result(data['respin']);
+
+        if (hasReSpin) {
+            const {positions, symbols} = clone(normalGame);
+
+            positions[1] = reSpinGame.positions[0];
+
+            symbols[1] = reSpinGame.symbols[0];
+
+            reSpinGame.positions = positions;
+            reSpinGame.symbols = symbols;
+        }
+
+        const freeGame = hasFreeGame && data['freegame'].map(Result);
+
+        return {
+            playerMoney,
+            totalWin,
+            earnPoints,
+
+            normalGame,
+
+            hasReSpin,
+            reSpinGame,
+
+            hasFreeGame,
+            freeGame,
+        };
+    }
+
+    function Result(data) {
+        return {
+            hasLink: Boolean(data['islink']),
+            scores: data['scores'],
+            positions: data['plateindex'],
+            symbols: data['plate'],
+        };
     }
 }
 

@@ -7,10 +7,12 @@ export function User() {
     let cash = 0;
     let totalWin = 0;
 
-    const betOptions = [1.0, 10.0, 20.0, 50.0, 100.0];
+    let betOptions = [1.0, 10.0, 20.0, 50.0, 100.0];
     let bet = 0;
+
     const speedOptions = [1, 2, 3];
     let speed = 0;
+
     const autoOptions = [0, 25, 100, 500, 1000];
     let auto = 0;
 
@@ -44,12 +46,15 @@ export function User() {
         get betOptions() {
             return betOptions;
         },
+        set betOptions(options) {
+            betOptions = options;
+        },
+
         get bet() {
             return bet;
         },
         set bet(index) {
             bet = index;
-            console.log(`Bet: ${betOptions[index]}`);
         },
 
         get speedOptions() {
@@ -60,7 +65,6 @@ export function User() {
         },
         set speed(index) {
             speed = index;
-            console.log(`Speed: ${speedOptions[index]}`);
         },
 
         get autoOptions() {
@@ -71,7 +75,6 @@ export function User() {
         },
         set auto(index) {
             auto = index;
-            console.log(`Auto: ${autoOptions[index]}`);
         },
     });
 }

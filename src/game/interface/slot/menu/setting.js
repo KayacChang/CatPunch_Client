@@ -1,8 +1,9 @@
 import {Openable} from '../../components/Openable';
 import {Clickable, ToggleButton, RangeSlider} from '../../components';
 
-import {range} from 'lodash';
 import anime from 'animejs';
+
+import {range, map} from 'ramda';
 
 import {divide, round} from 'mathjs';
 import {setColorMatrix} from '../../../plugin/filter';
@@ -12,15 +13,30 @@ export function Setting(menu) {
         menu.getChildByName('setting'),
     );
 
+    const effectSwitch =
+        Toggle(setting, 'effects');
+    effectSwitch.set(!app.sound.mute());
+
+    const ambienceSwitch =
+        Toggle(setting, 'ambience');
+    ambienceSwitch.set(!app.sound.mute());
+
+    const volumeRange = map((num) => divide(num, 10))(range(0, 11));
     const volume =
         Slider(setting, 'volume', {
-            range: range(0, 1, 0.1),
-            onchange: (level) => app.sound.volume(level),
+            range: volumeRange,
+            onchange: (level) => {
+                app.sound.volume(volumeRange[level]);
+
+                app.sound.mute(level === 0);
+                effectSwitch.set(!app.sound.mute());
+                ambienceSwitch.set(!app.sound.mute());
+            },
         });
 
     const soundLevel =
         app.sound.mute() === true ?
-            0 : app.sound.volume();
+            0 : volumeRange.length - 1;
 
     volume.setLevel(soundLevel);
 
@@ -47,15 +63,6 @@ export function Setting(menu) {
         });
 
     betLevel.setLevel(app.user.bet);
-
-    const effectSwitch =
-        Toggle(setting, 'effects');
-    effectSwitch.set(!app.sound.mute());
-
-    const ambienceSwitch =
-        Toggle(setting, 'ambience');
-    ambienceSwitch.set(!app.sound.mute());
-
 
     setting.y -= 53;
     setting.open = open;

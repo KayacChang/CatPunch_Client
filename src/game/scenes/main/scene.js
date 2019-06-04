@@ -10,6 +10,7 @@ import {EnergyBar} from './components/energy';
 import {setBevel, setDropShadow} from '../../plugin/filter';
 
 import {play} from './func/play';
+import alert from '../../../web/components/swal';
 
 function initSlotMachine(scene, reelTables) {
     const slot =
@@ -86,16 +87,16 @@ export function create({normalTable, freeGameTable}) {
 
     play(scene);
 
-    global.play = (symbols) => {
-        const positions =
-            normalTable.map((reel, index) => reel.indexOf(symbols[index]));
-
-        app.service
-            .sendOneRound({bet: 10, baseGame: {positions, symbols}})
-            .then((result) => app.emit('GameResult', result));
-    };
-
     slot.view.once('Ready', () => app.emit('GameReady'));
+
+    alert.request({title: 'Enable Sound'})
+        .then(({value}) => {
+            app.sound.mute(!value);
+
+            const bgm = app.sound.play('mainBGM');
+
+            bgm.on('play', () => bgm.seek(0.05));
+        });
 
     return scene;
 }

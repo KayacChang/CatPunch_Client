@@ -46,6 +46,8 @@ function setStyleSize(target, {width, height}) {
 }
 
 export function enableFullScreenMask() {
+    if (!isMobile.phone) return;
+
     const icon = select('#icon');
     const mask = select('#mask');
 

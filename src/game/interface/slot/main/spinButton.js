@@ -78,12 +78,6 @@ export function SpinButton(view) {
         checkState,
     });
 
-    const img = it.getChildByName('normal');
-    img.originScale = {
-        x: img.scale.x,
-        y: img.scale.y,
-    };
-
     it.on('Click', onClick);
 
     app.on('Idle', checkState);
@@ -95,9 +89,10 @@ export function SpinButton(view) {
             play();
             it.auto.set(it.auto.get() - 1);
         } else {
-            anime.remove(img);
+            const icon = it.getChildByName('icon');
+            anime.remove(icon);
             anime({
-                targets: img,
+                targets: icon,
                 rotation: 0,
                 complete() {
                     isRunning = false;
@@ -146,6 +141,8 @@ export function SpinButton(view) {
                 },
             });
 
+            app.sound.play('cancel');
+
             return;
         }
 
@@ -161,18 +158,19 @@ export function SpinButton(view) {
 
     async function play() {
         if (!isRunning) {
-            img.scale.x -= 0.1;
-            img.scale.y -= 0.1;
+            it.scale.x -= 0.1;
+            it.scale.y -= 0.1;
 
             anime({
-                targets: img.scale,
-                ...(img.originScale),
+                targets: it.scale,
+                x: 1,
+                y: 1,
                 easing: 'easeOutElastic(1, .5)',
                 duration: 300,
             });
 
             anime({
-                targets: img,
+                targets: it.getChildByName('icon'),
                 rotation: '-=' + 2 * pi,
                 loop: true,
                 easing: 'linear',
