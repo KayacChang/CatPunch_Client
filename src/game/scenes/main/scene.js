@@ -62,7 +62,7 @@ function initSlotMachine(scene, reelTables) {
     }
 }
 
-export function create({normalTable, freeGameTable}) {
+export function create({normalTable, freeGameTable, earnPoints}) {
     const create = addPackage(app, 'main');
     const scene = create('MainScene');
 
@@ -71,6 +71,8 @@ export function create({normalTable, freeGameTable}) {
     const energy = EnergyBar(
         slot.view.getChildByName('EnergyBar'),
     );
+
+    energy.update(earnPoints);
 
     const freeSpinIcon = FreeSpinIcon(
         slot.view.getChildByName('Icon@freespin'),

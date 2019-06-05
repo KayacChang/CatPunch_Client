@@ -6,7 +6,6 @@ export function User() {
 
     let cash = 0;
     let totalWin = 0;
-    let lastWin = 0;
 
     let betOptions = [1.0, 10.0, 20.0, 50.0, 100.0];
     let bet = 0;
@@ -30,8 +29,6 @@ export function User() {
         set account(value) {
             account = value;
         },
-
-        //  Balance...
         get cash() {
             return cash;
         },
@@ -40,23 +37,11 @@ export function User() {
 
             app.emit('UserCashChange', cash);
         },
-
         get totalWin() {
             return totalWin;
         },
         set totalWin(value) {
             totalWin = value;
-        },
-
-        get lastWin() {
-            return lastWin;
-        },
-        set lastWin(value) {
-            lastWin = value;
-
-            totalWin += lastWin;
-
-            app.emit('UserLastWinChange', lastWin);
         },
 
         //  Setting...
@@ -72,7 +57,6 @@ export function User() {
         },
         set bet(index) {
             bet = index;
-            app.emit('UserBetChange', bet);
         },
 
         get speedOptions() {

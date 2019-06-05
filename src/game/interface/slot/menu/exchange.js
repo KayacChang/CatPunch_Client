@@ -1,7 +1,7 @@
 import anime from 'animejs';
 
 import {ToggleButton, Clickable, Openable} from '../../components';
-import alert from '../../../../web/components/swal';
+import alert, {checkoutList} from '../../../../web/components/swal';
 
 import {capitalize, currencyFormat} from '../../../../general/utils';
 
@@ -58,6 +58,13 @@ export function Exchange(menu) {
     return exchange;
 
     async function open() {
+        if (app.user.cash > 0) {
+            const data = await app.service.checkout();
+
+            checkoutList(data);
+        }
+        await app.service.refresh();
+
         refresh(app.service.accountBalance);
 
         exchange.visible = true;

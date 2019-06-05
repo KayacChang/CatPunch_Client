@@ -1,7 +1,8 @@
-import {defaultFont} from '../../components';
 import {currencyFormat} from '../../../../general/utils';
 import {SpinButton} from './spinButton';
 import {Options} from './option';
+import {Status} from './status';
+import {Clickable} from '../../components';
 
 export function Main(parent) {
     const it = parent.getChildByName('main');
@@ -12,10 +13,11 @@ export function Main(parent) {
 
     it.spinButton = SpinButton(it);
 
-    it.openMenu = function() {
-        parent.menu.open();
+    it.openMenu = function(section) {
+        parent.menu.open(section);
     };
 
+    MenuButton(it);
     Options(it);
 
     it.updateStatus = updateStatus;
@@ -38,23 +40,12 @@ export function Main(parent) {
     }
 }
 
-function Status(view) {
-    view.children
-        .filter(({content}) => content !== undefined)
-        .forEach((field) => {
-            const [type, name] = field.name.split('@');
+function MenuButton(view) {
+    const it = Clickable(
+        view.getChildByName('btn@menu'),
+    );
 
-            if (type === 'label') {
-                defaultFont(field.content, {fontFamily: 'Basic'});
-            } else if (type === 'output') {
-                defaultFont(field.content, {fontFamily: 'Candal'});
-
-                field.content.text =
-                    (name === 'bet') ?
-                        app.user.betOptions[app.user.bet] :
-                        currencyFormat(app.user[name]);
-            }
-        });
-
-    return view;
+    it.on('Click', () => view.openMenu());
 }
+
+

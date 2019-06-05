@@ -1,4 +1,5 @@
 import {clone} from 'ramda';
+import {User} from './user';
 
 export function Service(network) {
     // type 1 - 金幣      gold
@@ -36,6 +37,8 @@ export function Service(network) {
         const body = {
             type: 'login',
         };
+
+        app.user = new User();
 
         it.postMessage(body);
 

@@ -31,8 +31,6 @@ export function EnergyBar(view) {
         0,
     ];
 
-    update(scale);
-
     return {
         update,
         get scale() {

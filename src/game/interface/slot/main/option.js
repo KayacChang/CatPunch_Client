@@ -86,7 +86,7 @@ export function Options(view) {
             setAuto,
             setBet,
             setAudio,
-            setMenu,
+            setExchange,
         ];
 
         let backFunc = setBack;
@@ -158,7 +158,7 @@ export function Options(view) {
                 setAuto,
                 setBet,
                 setAudio,
-                setMenu,
+                setExchange,
             ];
 
             backFunc = setBack;
@@ -312,8 +312,8 @@ export function Options(view) {
             setOptionMenu(false);
         }
 
-        function setMenu() {
-            view.openMenu();
+        function setExchange() {
+            view.openMenu('exchange');
             setOptionMenu(false);
         }
 

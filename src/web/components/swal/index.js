@@ -10,7 +10,7 @@ const defaultStyle = {
 
 function playAudio(url) {
     return new Audio(url).play()
-        .catch((e) => console.error(e));
+        .catch((err) => console.log(err));
 }
 
 // error: User Access Tokens is empty

@@ -4,7 +4,7 @@ import {
 
 import {App} from './system/application';
 import {Service} from './service/01/';
-import {log} from './general/utils/dev';
+// import {log} from './general/utils/dev';
 
 import alert from './web/components/swal';
 
@@ -49,8 +49,8 @@ async function main() {
         const UserInterface = await import('./game/interface/slot');
 
         app.on('loading', ({progress}, {name}) => {
-            log(`Progress: ${progress} %`);
-            log(`Resource: ${name}`);
+            // log(`Progress: ${progress} %`);
+            // log(`Resource: ${name}`);
 
             loadScene.update(progress);
         });

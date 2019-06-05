@@ -123,11 +123,20 @@ export function Service(network) {
 
                 app.user.betOptions = data['betrate'];
 
-                return assign(reelTables, {
+                assign(reelTables, {
                     normalTable: data['reel']['normalreel'],
                     freeGameTable: data['reel']['freereel'],
                     reSpinTable: data['reel']['respinreel'],
                 });
+
+                const initData = {
+                    earnPoints: data['gameattach']['freecount'],
+                };
+
+                return {
+                    ...reelTables,
+                    ...initData,
+                };
             });
     }
 
@@ -205,7 +214,8 @@ export function Service(network) {
 
     function sendOneRound(data) {
         const requestBody = {
-            type: 'gameResult',
+            'type': 'gameResult',
+            'playerid': app.user.id,
             ...tokens,
             ...env,
             ...data,

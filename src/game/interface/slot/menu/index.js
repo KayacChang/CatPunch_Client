@@ -176,15 +176,6 @@ function Nav(menu, sections) {
 
                 menu.section = target;
 
-                if (name === 'exchange') {
-                    if (app.user.cash > 0) {
-                        const data = await app.service.checkout();
-
-                        checkoutList(data);
-                    }
-                    await app.service.refresh();
-                }
-
                 updateState();
                 return target.open();
             }
