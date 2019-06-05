@@ -13,7 +13,7 @@ function playAudio(url) {
         .catch((err) => console.log(err));
 }
 
-// error: User Access Tokens is empty
+// error: Index Access Tokens is empty
 // error: Maintain
 
 export function error({title}) {

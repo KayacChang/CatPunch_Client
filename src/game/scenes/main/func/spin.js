@@ -188,26 +188,29 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
 
         let soundFlag = false;
 
-        reels
-            .forEach((reel) => {
-                const symbolName =
-                    getSymbolName(symbols[reel.reelIdx]);
+        const effects = [];
+        for (const reel of reels) {
+            const symbolName =
+                getSymbolName(symbols[reel.reelIdx]);
 
-                if (isNormalSymbol(symbolName)) {
-                    normalEffect(reel, scene);
-                    if (!soundFlag) {
-                        app.sound.play('normal');
-                        soundFlag = true;
-                    }
+            if (isNormalSymbol(symbolName)) {
+                effects.push(
+                    normalEffect(reel, scene),
+                );
+                if (!soundFlag) {
+                    app.sound.play('normal');
+                    soundFlag = true;
                 }
+            }
 
-                if (isSpecialSymbol(symbolName)) {
-                    specialEffect(slot, reel, symbolName);
-                }
-            });
+            if (isSpecialSymbol(symbolName)) {
+                effects.push(
+                    specialEffect(slot, reel, symbolName, scene),
+                );
+            }
+        }
 
-
-        await wait(1000);
+        await Promise.all(effects);
     }
 }
 
@@ -235,14 +238,14 @@ function normalEffect(reel, scene) {
 
     const {x, y} = symbol.getGlobalPosition({});
 
-    playCoin(
+    return playCoin(
         scene,
         {x: x + 100, y: y + 90},
         times(Coin, 5),
     );
 }
 
-function specialEffect(it, reel, symbolName) {
+function specialEffect(it, reel, symbolName, scene) {
     reel.results
         .find((symbol) => symbol.pos === 2)
         .visible = false;
@@ -261,6 +264,17 @@ function specialEffect(it, reel, symbolName) {
     anim.gotoAndPlay(0);
     app.sound.play(
         symbolName.replace(/@.*/, ''),
+    );
+
+    let {x, y} = effect.getGlobalPosition({});
+
+    x += effect._width / 2;
+    y += effect._height / 2;
+
+    return playCoin(
+        scene,
+        {x: x + 100, y: y + 90},
+        times(Coin, 5),
     );
 }
 

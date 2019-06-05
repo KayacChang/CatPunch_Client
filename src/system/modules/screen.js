@@ -1,5 +1,5 @@
 import {isMobile} from 'pixi.js/lib/core/utils';
-import alert from '../../web/components/swal';
+// import alert from '../../web/components/swal';
 import {debounce} from 'lodash';
 import {abs} from 'mathjs';
 import {select} from '../../general/utils/dom';
@@ -18,7 +18,7 @@ export function isLandScape() {
 }
 
 function getExpectSize() {
-    if (isMobile.phone) return getWindowSize();
+    // if (isMobile.phone) return getWindowSize();
 
     const size = getWindowSize();
 
@@ -45,29 +45,40 @@ function setStyleSize(target, {width, height}) {
     target.style.height = height + 'px';
 }
 
-export function enableFullScreenMask() {
+export async function enableFullScreenMask() {
     if (!isMobile.phone) return;
 
     const icon = select('#icon');
     const mask = select('#mask');
 
-    if (document.documentElement.requestFullscreen) {
-        alert.request({title: 'Enable FullScreen Mode'})
-            .then((result) => {
-                if (result.value) app.view.requestFullscreen();
-            });
-    } else {
-        icon.classList.remove('hidden');
-        mask.classList.remove('hidden');
+    // const scroll = select('#screen-scroll');
+    // const rotation = select('#screen-rotation');
 
-        window.addEventListener('touchmove', handle());
-        window.addEventListener('resize', handle());
-    }
+    // if (document.documentElement.requestFullscreen) {
+    //     icon.classList.remove('hidden');
+    //     scroll.classList.add('hidden');
+    //
+    //     window.addEventListener('resize', () =>
+    //         icon.classList.toggle('hidden', isDisplayNone(rotation)),
+    //     );
+    //
+    //   const {value} = await alert.request({title: 'Enable FullScreen Mode'});
+    //     if (value) return select('#app').requestFullscreen();
+    // } else {
+    icon.classList.remove('hidden');
+    mask.classList.remove('hidden');
+
+    window.addEventListener('touchmove', handle());
+    window.addEventListener('resize', handle());
+    window.addEventListener('orientationchange', handle());
+
+    // }
 
     function handle() {
-        return debounce((evt) => {
+        return debounce(() => {
             requestAnimationFrame(() => {
-                const isMinimal = abs(outerHeight - innerHeight) <= 30;
+                const isMinimal =
+                    (isMobile.apple.device) ? forApple() : forAndroid();
 
                 const func =
                     (el, className) => isMinimal ?
@@ -79,6 +90,21 @@ export function enableFullScreenMask() {
             });
         }, 200, {leading: true, trailing: true, maxWait: 60});
     }
+
+    function forApple() {
+        return abs(outerHeight - innerHeight) <= 30;
+    }
+
+    function forAndroid() {
+        if (!isLandScape()) return false;
+
+        const {clientHeight} = document.documentElement;
+        return abs(innerHeight - clientHeight) >= 30;
+    }
+
+    // function isDisplayNone(element) {
+    //     return getComputedStyle(element, null).display === 'none';
+    // }
 }
 
 export function resize(app) {

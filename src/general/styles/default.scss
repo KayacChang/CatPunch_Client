@@ -16,6 +16,7 @@ $black: #010101;
 .hidden {
   opacity: 0;
   visibility: hidden;
+  display: none;
   pointer-events: none;
 }
 
@@ -24,6 +25,7 @@ $black: #010101;
 
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .text-center {

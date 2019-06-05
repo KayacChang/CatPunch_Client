@@ -1,5 +1,5 @@
 import {clone} from 'ramda';
-import {User} from './user';
+import {User} from '../user';
 
 export function Service(network) {
     // type 1 - 金幣      gold

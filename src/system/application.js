@@ -27,7 +27,7 @@ export function App(Service) {
     const network = Network();
     //  Service
     const service = Service && Service(network);
-    //  User
+    //  Index
     let user = undefined;
 
     //  Modules

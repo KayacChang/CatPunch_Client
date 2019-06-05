@@ -20,6 +20,8 @@ export function play(scene) {
             result.normalGame,
         );
 
+        app.user.lastWin = result.normalGame.scores;
+
         if (result.earnPoints !== energy.scale) {
             await energy.update(result.earnPoints);
         }
@@ -56,6 +58,8 @@ export function play(scene) {
                 scene, [slot.reels[1]],
                 result.reSpinGame,
             );
+
+            app.user.lastWin = result.reSpinGame.scores;
         }
 
         if (energy.scale === 10) {
@@ -81,6 +85,7 @@ export function play(scene) {
 
             const freeGame = result.freeGame;
             for (const result of freeGame) {
+                console.table(result);
                 const multiply =
                     freeGame.indexOf(result) + 1;
 
@@ -98,6 +103,8 @@ export function play(scene) {
                     slot.reels.filter(({reelIdx}) => reelIdx !== 1),
                     result,
                 );
+
+                app.user.lastWin = result.scores;
             }
 
             await energy.update(0);
@@ -105,18 +112,9 @@ export function play(scene) {
 
         slot.reelTables = normalTable;
 
+        app.user.cash = result.cash;
+
         console.log('Round Complete...');
         app.emit('Idle');
     });
-
-    global.test = test;
-
-    function test(symbols) {
-        const positions =
-            normalTable.map((reel, index) => reel.indexOf(symbols[index]));
-
-        app.service
-            .sendOneRound({bet: 10, baseGame: {positions, symbols}})
-            .then((result) => app.emit('GameResult', result));
-    }
 }

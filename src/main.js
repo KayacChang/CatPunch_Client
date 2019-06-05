@@ -21,8 +21,6 @@ function startLoading(scene) {
     app.stage.addChild(loadScene);
     app.resize();
 
-    enableFullScreenMask();
-
     return loadScene;
 }
 
@@ -57,6 +55,7 @@ async function main() {
 
         await Promise.all([
             app.resource.load(MainScene, UserInterface),
+            enableFullScreenMask(),
         ]);
 
         const ui = UserInterface.create();

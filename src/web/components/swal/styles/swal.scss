@@ -3,7 +3,7 @@ $swal2-content-color: #FFF;
 $swal2-error: #E30126;
 
 #list {
-  @media screen and (max-width: 1000px) {
+  @media only screen and (max-width: 1000px) {
     columns: 2;
   }
 }

@@ -1,6 +1,6 @@
 import {getSearchParams} from '../utils';
 import {clone} from 'ramda';
-import {User} from './user';
+import {User} from '../user';
 
 const {assign, entries, fromEntries} = Object;
 
@@ -234,10 +234,11 @@ export function Service(network) {
 
     function process(data) {
         const totalWin = data['totalwinscore'];
-        const playerMoney = data['playermoney'];
+        const cash = data['playermoney'];
 
         const hasReSpin = Boolean(data['isrespin']);
         const hasFreeGame = Boolean(data['isfreegame']);
+
         const earnPoints = data['freecount'];
 
         const normalGame = Result(data['normalresult']);
@@ -258,7 +259,7 @@ export function Service(network) {
         const freeGame = hasFreeGame && data['freegame'].map(Result);
 
         return {
-            playerMoney,
+            cash,
             totalWin,
             earnPoints,
 

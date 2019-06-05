@@ -211,7 +211,7 @@ export function SpinButton(view) {
         }
 
         const result = await app.service.sendOneRound({
-            bet: app.user.betOptions[app.user.bet],
+            bet: app.user.bet,
         });
 
         app.emit('GameResult', result);

@@ -11,6 +11,8 @@ export function Menu(parent) {
     const menu = Openable(
         parent.getChildByName('menu'),
     );
+    menu.interactive = true;
+
     const background =
         menu.getChildByName('background');
     background.scale.set(0);
