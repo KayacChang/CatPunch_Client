@@ -227,8 +227,8 @@ export function Options(view) {
             const targets =
                 options.map((option, index) =>
                     numbers.find(({name}) =>
-                        name.split('@')[1] === index + ''),
-                );
+                        name.split('@')[1] === index + ''))
+                    .filter(Boolean);
 
             btnsFunc =
                 targets.map((num) => {

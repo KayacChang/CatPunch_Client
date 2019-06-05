@@ -78,6 +78,9 @@ export function SpinButton(view) {
         checkState,
     });
 
+    const circle = it.getChildByName('circle');
+    const arrow = it.getChildByName('arrow');
+
     it.on('Click', onClick);
 
     app.on('Idle', checkState);
@@ -89,11 +92,19 @@ export function SpinButton(view) {
             play();
             it.auto.set(it.auto.get() - 1);
         } else {
-            const icon = it.getChildByName('icon');
-            anime.remove(icon);
+            anime.remove([circle, arrow]);
+
             anime({
-                targets: icon,
+                targets: circle,
                 rotation: 0,
+                alpha: 0,
+            });
+
+            anime({
+                targets: arrow,
+                rotation: 0,
+                alpha: 1,
+
                 complete() {
                     isRunning = false;
                     app.user.auto = 0;
@@ -170,7 +181,17 @@ export function SpinButton(view) {
             });
 
             anime({
-                targets: it.getChildByName('icon'),
+                targets: arrow,
+                alpha: 0,
+            });
+
+            anime({
+                targets: circle,
+                alpha: 1,
+            });
+
+            anime({
+                targets: [circle, arrow],
                 rotation: '-=' + 2 * pi,
                 loop: true,
                 easing: 'linear',

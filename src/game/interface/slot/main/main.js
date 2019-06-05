@@ -50,7 +50,9 @@ function Status(view) {
                 defaultFont(field.content, {fontFamily: 'Candal'});
 
                 field.content.text =
-                    currencyFormat(app.user[name]);
+                    (name === 'bet') ?
+                        app.user.betOptions[app.user.bet] :
+                        currencyFormat(app.user[name]);
             }
         });
 
