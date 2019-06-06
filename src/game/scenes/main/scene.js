@@ -93,9 +93,7 @@ export function create({normalTable, freeGameTable}) {
         .then(({value}) => {
             app.sound.mute(!value);
 
-            const bgm = app.sound.play('mainBGM');
-
-            bgm.on('play', () => bgm.seek(0.05));
+            app.sound.play('mainBGM');
         });
 
     return scene;

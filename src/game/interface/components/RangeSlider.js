@@ -21,7 +21,7 @@ export function RangeSlider(it, parent) {
 
     function onDragStart(event) {
         it.getPos = () =>
-            event.data.getLocalPosition(parent);
+            event.index.getLocalPosition(parent);
     }
 
     function onDragEnd() {

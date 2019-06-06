@@ -122,7 +122,7 @@ export function Information(menu) {
         }
 
         function getPos(event) {
-            return event.data.getLocalPosition(it);
+            return event.index.getLocalPosition(it);
         }
 
         async function onScrollEnd() {

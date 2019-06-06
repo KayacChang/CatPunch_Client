@@ -1,5 +1,5 @@
 import {loaders} from 'pixi.js';
-import {where} from '../../general/utils/logic';
+
 import {Howl} from 'howler';
 
 import {load as loadFont} from 'webfontloader';
@@ -7,7 +7,7 @@ import {load as loadFont} from 'webfontloader';
 export function Resource({loader}) {
     loader
     //  For Sound Loading
-        .pre(HowlerLoader)
+        .pre(SoundHandler)
         //  For Font Loading
         .pre(WebFontLoader);
 
@@ -25,7 +25,26 @@ export function Resource({loader}) {
     function load(...scenes) {
         scenes
             .map(({reserve}) => reserve())
-            .forEach((task) => loader.add(task));
+            .forEach((tasks) => {
+                const soundTasks =
+                    tasks
+                        .filter(({type}) => type === 'sound')
+                        .map((res) => {
+                            const task = new loaders.Resource(
+                                res.name, '', {
+                                    loadType: loaders.Resource.LOAD_TYPE.AUDIO,
+                                });
+
+                            task.metadata = res;
+
+                            return task;
+                        });
+
+                const normals =
+                    tasks.filter(({type}) => type !== 'sound');
+
+                return loader.add([...normals, ...soundTasks]);
+            });
 
         return new Promise((resolve) => loader.load(resolve));
     }
@@ -33,44 +52,42 @@ export function Resource({loader}) {
     function reset() {
         loader.reset();
     }
-}
 
-function HowlerLoader(resource, next) {
-    if (check(resource)) return next();
+    function SoundHandler(resource, next) {
+        if (check(resource)) return next();
 
-    const {LOADING} = loaders.Resource.STATUS_FLAGS;
-    resource._setFlag(LOADING, true);
+        const {LOADING} = loaders.Resource.STATUS_FLAGS;
+        resource._setFlag(LOADING, true);
 
-    const sound = new Howl({
-        ...resource.metadata,
-        src: [resource.url],
-        onload,
-        onloaderror,
-    });
+        const task = resource.metadata;
 
-    resource.type = loaders.Resource.TYPE.AUDIO;
+        resource.data = new Howl({
+            ...task,
+            onload,
+            onloaderror,
+        });
 
-    resource.data = sound;
+        function check(resource) {
+            return (
+                !resource ||
+                resource.loadType !== loaders.Resource.LOAD_TYPE.AUDIO
+            );
+        }
 
-    function check(resource) {
-        return (
-            !resource ||
-            where(resource.extension)
-                .isNotIn(['wav', 'ogg', 'mp3', 'mpeg'])
-        );
-    }
+        function onload() {
+            resource.complete();
 
-    function onload() {
-        resource.complete();
-        next();
-    }
+            next();
+        }
 
-    function onloaderror(id, message) {
-        console.error(resource);
-        resource.abort(message);
-        next();
+        function onloaderror(id, message) {
+            console.error(resource);
+            resource.abort(message);
+            next();
+        }
     }
 }
+
 
 function WebFontLoader(resource, next) {
     if (check()) return next();

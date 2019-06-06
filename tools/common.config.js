@@ -126,7 +126,7 @@ module.exports = function(env) {
                     ],
                 },
                 {
-                    test: /\.(mp3|wav)$/,
+                    test: /\.(mp3|ogg|webm|wav)$/,
                     use: [
                         {
                             loader: 'file-loader',
