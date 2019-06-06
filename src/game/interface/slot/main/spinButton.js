@@ -210,6 +210,8 @@ export function SpinButton(view) {
             app.sound.play('spin');
         }
 
+        app.user.cash -= app.user.betOptions[app.user.bet];
+
         const result = await app.service.sendOneRound({
             bet: app.user.bet,
         });

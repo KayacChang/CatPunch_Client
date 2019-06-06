@@ -43,7 +43,7 @@ export function Options(view) {
 
     block.on('pointerdown', () => setOptionMenu(false));
 
-    return btn;
+    return menu;
 
     function setOptionMenu(open) {
         setScale(open, menu);
@@ -76,8 +76,8 @@ export function Options(view) {
         const btns =
             getChildren('btn')
                 .map((it) => {
-                    Clickable(it);
-                    setBehaviour(it);
+                    it = Clickable(it);
+                    it = setBehaviour(it);
                     return it;
                 });
 
@@ -220,9 +220,10 @@ export function Options(view) {
 
         async function setOptionItems(options, func) {
             const targets =
-                options.map((option, index) =>
-                    numbers.find(({name}) =>
-                        name.split('@')[1] === index + ''))
+                options
+                    .map((option, index) =>
+                        numbers.find(({name}) =>
+                            name.split('@')[1] === index + ''))
                     .filter(Boolean);
 
             btnsFunc =

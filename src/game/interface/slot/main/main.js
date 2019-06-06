@@ -18,7 +18,8 @@ export function Main(parent) {
     };
 
     MenuButton(it);
-    Options(it);
+
+    it.optionMenu = Options(it);
 
     it.updateStatus = updateStatus;
 

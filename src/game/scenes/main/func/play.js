@@ -114,7 +114,25 @@ export function play(scene) {
 
         app.user.cash = result.cash;
 
+        betLock(result.earnPoints > 0);
+
         console.log('Round Complete...');
         app.emit('Idle');
     });
+
+    function betLock(flag) {
+        const {optionMenu} = app.control.main;
+
+        const betButton =
+            optionMenu.getChildByName('btn@2');
+        betButton.interactive = !flag;
+
+        const betFrame =
+            optionMenu.getChildByName('frame@2');
+        betFrame.alpha = flag ? 0.3 : 1;
+
+        const betIcon =
+            optionMenu.getChildByName('img@bet');
+        betIcon.tint = flag ? 0x7B7B7B : 0xFFFFFF;
+    }
 }

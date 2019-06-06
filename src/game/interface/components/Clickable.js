@@ -1,6 +1,8 @@
 import {throttle} from 'lodash';
 import {isMobile} from 'pixi.js/lib/core/utils';
 
+const {assign} = Object;
+
 export function Clickable(it) {
     it.buttonMode = true;
     it.interactive = true;
@@ -14,6 +16,16 @@ export function Clickable(it) {
         it.on('pointerdown', throttleFunc(onClick));
         it.on('pointerup', throttleFunc(onNormal));
     }
+
+    it = assign(it, {
+        get enable() {
+            return it.interactive;
+        },
+        set enable(flag) {
+            it.interactive = flag;
+            debugger;
+        },
+    });
 
     return it;
 

@@ -37,6 +37,8 @@ export function create() {
 
     it.main = Main(it);
 
+    app.control = it;
+
     return it;
 }
 

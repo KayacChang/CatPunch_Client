@@ -126,11 +126,9 @@ export function Service(network) {
                 assign(reelTables, {
                     normalTable: data['reel']['normalreel'],
                     freeGameTable: data['reel']['freereel'],
-                    reSpinTable: data['reel']['respinreel'],
                 });
 
                 const initData = {
-                    earnPoints: data['gameattach']['freecount'],
                 };
 
                 return {

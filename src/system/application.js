@@ -27,8 +27,10 @@ export function App(Service) {
     const network = Network();
     //  Service
     const service = Service && Service(network);
-    //  Index
+    //  User
     let user = undefined;
+    //  Control
+    let control = undefined;
 
     //  Modules
     defineProperties(app, {
@@ -47,6 +49,10 @@ export function App(Service) {
         user: {
             get: () => user,
             set: (newUser) => user = newUser,
+        },
+        control: {
+            get: () => control,
+            set: (newControl) => control = newControl,
         },
     });
 
