@@ -10,7 +10,6 @@ import MAIN_ATLAS0_4_URL from './assets/sprite_sheets/main@atlas0_4.png';
 import MAIN_ATLAS0_5_URL from './assets/sprite_sheets/main@atlas0_5.png';
 import MAIN_ATLAS0_6_URL from './assets/sprite_sheets/main@atlas0_6.png';
 import MAIN_ATLAS0_7_URL from './assets/sprite_sheets/main@atlas0_7.png';
-import MAIN_ATLAS0_8_URL from './assets/sprite_sheets/main@atlas0_8.png';
 
 import EFFECT_TEXT_URL from './assets/fonts/effect-text.json';
 import './assets/fonts/effect-text.png';
@@ -81,7 +80,6 @@ export function reserve() {
         {name: 'main@atlas0_5.png', url: MAIN_ATLAS0_5_URL},
         {name: 'main@atlas0_6.png', url: MAIN_ATLAS0_6_URL},
         {name: 'main@atlas0_7.png', url: MAIN_ATLAS0_7_URL},
-        {name: 'main@atlas0_8.png', url: MAIN_ATLAS0_8_URL},
         {name: 'effect-text', url: EFFECT_TEXT_URL},
         {name: 'effect-number', url: FONT_EXPORT_URL},
 

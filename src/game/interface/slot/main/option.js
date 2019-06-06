@@ -1,5 +1,5 @@
 import {Clickable, defaultFont} from '../../components';
-import {setBlur, setDropShadow} from '../../../plugin/filter';
+import {setDropShadow} from '../../../plugin/filter';
 import {setBehaviour} from './button';
 import anime from 'animejs';
 
@@ -142,11 +142,6 @@ export function Options(view) {
 
                     return frame;
                 });
-
-        setBlur(
-            menu.getChildByName('blur'),
-            {strength: 12, quality: 8, kernelSize: 15},
-        );
 
         setAudio(app.sound.mute());
 
