@@ -1,6 +1,6 @@
 import anime from 'animejs';
 import {wait} from '../../../../general/utils/time';
-import {nth, times} from 'ramda';
+import {nth} from 'ramda';
 import {floor, mod} from 'mathjs';
 
 import {
@@ -13,7 +13,6 @@ import {
 import {Status} from '../components/slot';
 
 import {setBevel, setGlow} from '../../../plugin/filter';
-import {Coin, playCoin} from '../components/coin';
 
 const maybeBonusIcon =
     symbolConfig.find(({maybeBonus}) => maybeBonus).id;
@@ -188,15 +187,13 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
 
         let soundFlag = false;
 
-        const effects = [];
-        for (const reel of reels) {
+        reels.map((reel) => {
             const symbolName =
                 getSymbolName(symbols[reel.reelIdx]);
 
             if (isNormalSymbol(symbolName)) {
-                effects.push(
-                    normalEffect(reel, scene),
-                );
+                normalEffect(reel);
+
                 if (!soundFlag) {
                     app.sound.play('normal');
                     soundFlag = true;
@@ -204,17 +201,13 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
             }
 
             if (isSpecialSymbol(symbolName)) {
-                effects.push(
-                    specialEffect(slot, reel, symbolName, scene),
-                );
+                specialEffect(slot, reel, symbolName);
             }
-        }
-
-        await Promise.all(effects);
+        });
     }
 }
 
-function normalEffect(reel, scene) {
+function normalEffect(reel) {
     const symbol =
         reel.results
             .find((symbol) => symbol.pos === 2)
@@ -235,17 +228,9 @@ function normalEffect(reel, scene) {
     });
 
     setBevel(symbol);
-
-    const {x, y} = symbol.getGlobalPosition({});
-
-    return playCoin(
-        scene,
-        {x: x + 100, y: y + 90},
-        times(Coin, 5),
-    );
 }
 
-function specialEffect(it, reel, symbolName, scene) {
+function specialEffect(it, reel, symbolName) {
     reel.results
         .find((symbol) => symbol.pos === 2)
         .visible = false;
@@ -264,17 +249,6 @@ function specialEffect(it, reel, symbolName, scene) {
     anim.gotoAndPlay(0);
     app.sound.play(
         symbolName.replace(/@.*/, ''),
-    );
-
-    let {x, y} = effect.getGlobalPosition({});
-
-    x += effect._width / 2;
-    y += effect._height / 2;
-
-    return playCoin(
-        scene,
-        {x: x + 100, y: y + 90},
-        times(Coin, 5),
     );
 }
 

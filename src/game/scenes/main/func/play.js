@@ -1,14 +1,23 @@
 import {spin} from './spin';
-import {clone} from 'ramda';
+import {clone, times} from 'ramda';
 import {wait} from '../../../../general/utils';
 import anime from 'animejs';
-import {freeGameEffect, reSpinEffect} from '../components/effects';
+import {
+    freeGameEffect,
+    reSpinEffect,
+    scoresEffect,
+} from '../components/effects';
+import {Coin, playCoin} from '../components/coin';
 
 export function play(scene) {
     const {
         slot, energy, neko, freeSpinIcon,
         normalTable, freeGameTable,
     } = scene;
+
+    const coinPos =
+        slot.view.children
+            .filter(({name}) => name.includes('Coin'));
 
     app.on('GameResult', async (result) => {
         console.log('Result =============');
@@ -20,7 +29,9 @@ export function play(scene) {
             result.normalGame,
         );
 
-        app.user.lastWin = result.normalGame.scores;
+        if (result.normalGame.scores && !result.hasReSpin) {
+            await showScores(result.normalGame.scores);
+        }
 
         if (result.earnPoints !== energy.scale) {
             await energy.update(result.earnPoints);
@@ -52,6 +63,13 @@ export function play(scene) {
                 duration: 750,
             });
 
+            slot.view
+                .getChildByName('FXReel_M')
+                .anim
+                .visible = true;
+
+            app.sound.play('maybeBonus');
+
             reSpinEffect(scene);
 
             await spin(
@@ -59,7 +77,7 @@ export function play(scene) {
                 result.reSpinGame,
             );
 
-            app.user.lastWin = result.reSpinGame.scores;
+            await showScores(result.reSpinGame.scores);
         }
 
         if (energy.scale === 10) {
@@ -104,7 +122,7 @@ export function play(scene) {
                     result,
                 );
 
-                app.user.lastWin = result.scores;
+                if (result.scores) await showScores(result.scores);
             }
 
             await energy.update(0);
@@ -134,5 +152,25 @@ export function play(scene) {
         const betIcon =
             optionMenu.getChildByName('img@bet');
         betIcon.tint = flag ? 0x7B7B7B : 0xFFFFFF;
+    }
+
+    async function showScores(scores) {
+        const coinEffect =
+            slot.reels
+                .map((reel) => {
+                    const coins = times(Coin, scores);
+                    const pos = coinPos[reel.reelIdx];
+
+                    return playCoin(scene, pos, coins);
+                });
+
+        const effect =
+            scoresEffect(scene, scores);
+
+        await Promise.all([
+            ...coinEffect, effect,
+        ]);
+
+        app.user.lastWin = scores;
     }
 }

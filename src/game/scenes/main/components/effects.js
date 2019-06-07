@@ -437,6 +437,100 @@ export function numberIncrementEffect(scene, num) {
     }
 }
 
+export async function scoresEffect(scene, scores) {
+    const number =
+        new extras.BitmapText('0', {
+            font: '48px Effect',
+        });
+
+    const it = new Container();
+    it.addChild(number);
+
+    number.anchor.set(.5);
+
+    updatePos();
+
+    const proxy = {
+        get number() {
+            return Number(number.text);
+        },
+        set number(num) {
+            number.text = `${num}`;
+            updatePos();
+        },
+    };
+
+    const config = {
+        alphaIn: [0, 1],
+        alphaOut: 0,
+        scaleIn: [0.2, 1],
+        scaleOut: 3,
+        durationIn: 800,
+        durationOut: 600,
+        delay: (el, i) => 350 * i,
+    };
+
+    await fadeIn();
+
+    await anime({
+        targets: proxy,
+        number: scores,
+        round: 1,
+        easing: 'easeInOutQuart',
+        duration: 1000,
+    }).finished;
+
+    return fadeOut();
+
+    function fadeIn() {
+        scene.addChild(it);
+
+        anime({
+            targets: number,
+            alpha: config.alphaIn,
+            duration: config.durationIn,
+            delay: config.delay,
+        });
+
+        return anime({
+            targets: number.scale,
+            x: config.scaleIn,
+            y: config.scaleIn,
+            duration: config.durationIn,
+            delay: config.delay,
+        }).finished;
+    }
+
+    function fadeOut() {
+        anime({
+            targets: it,
+            alpha: config.alphaOut,
+            easing: 'easeInExpo',
+            duration: config.durationOut,
+            delay: config.delay,
+        });
+
+        return anime({
+            targets: it.scale,
+            x: config.scaleOut,
+            y: config.scaleOut,
+            easing: 'easeInExpo',
+            duration: config.durationOut,
+            delay: config.delay,
+            complete() {
+                scene.removeChild(it);
+            },
+        }).finished;
+    }
+
+    function updatePos() {
+        it.position.set(
+            scene._width / 2,
+            scene._height / 2,
+        );
+    }
+}
+
 function TextEffect4(targets) {
     const config = {
         alphaIn: [0, 1],

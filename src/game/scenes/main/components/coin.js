@@ -66,7 +66,7 @@ export async function playCoin(scene, {x, y}, coins) {
         .add({
             x: scene._width / 2,
             y: 1300,
-            delay: randomInt(300, 600),
+            delay: randomInt(300, 1000),
             duration: 500,
             easing: 'easeInExpo',
             complete() {
