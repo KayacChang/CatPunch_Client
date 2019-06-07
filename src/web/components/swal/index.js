@@ -24,7 +24,7 @@ export function error({title}) {
         title,
         text: 'Something went wrong!',
         confirmButtonText: 'Go Back',
-        confirmButtonColor: '#E30126',
+        confirmButtonColor: '#DC3446',
     };
 
     return Swal.fire(config)
@@ -38,7 +38,9 @@ export function request({title}) {
         type: 'warning',
         title,
         confirmButtonText: 'Enable',
+        confirmButtonColor: '#007BFF',
         showCancelButton: true,
+        cancelButtonColor: '#DC3446',
     };
 
     playAudio(ALERT);
@@ -84,9 +86,9 @@ export function leave() {
         type: 'warning',
         title: 'Are you sure to exit?',
         confirmButtonText: 'Go Back',
-        confirmButtonColor: '#d33',
+        confirmButtonColor: '#DC3446',
         showCancelButton: true,
-        cancelButtonColor: '#3085d6',
+        cancelButtonColor: '#007BFF',
     };
 
     return Swal.fire(config)
@@ -102,7 +104,7 @@ export function checkoutList({gold, gift, etc, bonus}) {
         <ul id="list">
         </ul>
         `,
-        cancelButtonColor: '#3085d6',
+        cancelButtonColor: '#007BFF',
         onBeforeOpen,
     };
 

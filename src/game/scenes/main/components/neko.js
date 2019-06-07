@@ -1,7 +1,13 @@
 import {wait} from '../../../../general/utils/time';
+import {setOutline} from '../../../plugin/filter';
 
 export function Neko(scene) {
     const neko = scene.getChildByName('anim@neko');
+
+    setOutline(neko, {
+        thickness: 3,
+        quality: 1,
+    });
 
     const appearAnim = scene.getTransition('neko_appear');
     const disappearAnim = scene.getTransition('neko_disappear');
@@ -15,7 +21,11 @@ export function Neko(scene) {
         disappear();
     });
 
-    return {appear, hit};
+    return {
+        appear,
+        disappear,
+        hit,
+    };
 
     function appear() {
         neko.visible = true;

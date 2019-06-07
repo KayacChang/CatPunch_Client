@@ -29,12 +29,12 @@ export function play(scene) {
             result.normalGame,
         );
 
-        if (result.normalGame.scores && !result.hasReSpin) {
-            await showScores(result.normalGame.scores);
-        }
-
         if (result.earnPoints !== energy.scale) {
             await energy.update(result.earnPoints);
+        }
+
+        if (result.normalGame.scores && !result.hasReSpin) {
+            await showScores(result.normalGame.scores);
         }
 
         if (result.hasReSpin) {

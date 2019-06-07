@@ -66,7 +66,7 @@ export async function playCoin(scene, {x, y}, coins) {
         .add({
             x: scene._width / 2,
             y: 1300,
-            delay: randomInt(300, 1000),
+            delay: anime.stagger(60, {easing: 'easeInCubic'}),
             duration: 500,
             easing: 'easeInExpo',
             complete() {

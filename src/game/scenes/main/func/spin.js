@@ -13,6 +13,7 @@ import {
 import {Status} from '../components/slot';
 
 import {setBevel, setGlow} from '../../../plugin/filter';
+import {bubbleEffect} from '../components/effects';
 
 const maybeBonusIcon =
     symbolConfig.find(({maybeBonus}) => maybeBonus).id;
@@ -57,7 +58,10 @@ async function spinStart(it, reels) {
 
             effect.children
                 .filter(({name}) => name.includes('anim'))
-                .forEach(({anim}) => anim.visible = false);
+                .forEach(({anim}) => {
+                    anim.visible = false;
+                    anim.filters = [];
+                });
         });
 
     for (const reel of reels) {
@@ -205,6 +209,54 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
             }
         });
     }
+
+    const midReel =
+        reels.find(({reelIdx}) => reelIdx === 1);
+
+    if (midReel && getSymbolName(symbols[1]) === 'neko') {
+        const symbol =
+            midReel.results
+                .find((symbol) => symbol.pos === 2)
+                .view;
+
+        anime({
+            targets: symbol.scale,
+            x: [
+                {value: 1.1, duration: 1000},
+                {value: 1, duration: 500},
+            ],
+            y: [
+                {value: 1.1, duration: 1000, delay: 120},
+                {value: 1, duration: 500},
+            ],
+            easing: 'easeOutElastic(5, .2)',
+        });
+
+        const glow =
+            setGlow(symbol, {
+                distance: 15,
+                outerStrength: 0.1,
+                innerStrength: 0.1,
+                color: 0x0288D1,
+            });
+
+        anime({
+            targets: glow,
+            outerStrength: [0.1, 8],
+            direction: 'alternate',
+            duration: 750,
+            complete() {
+                symbol.filters = [];
+            },
+        });
+
+        setBevel(symbol);
+
+        app.sound.play('catAppear');
+        app.sound.play('normal');
+
+        await bubbleEffect(scene);
+    }
 }
 
 function normalEffect(reel) {
@@ -244,6 +296,27 @@ function specialEffect(it, reel, symbolName) {
         effect.getChildByName(`anim@${symbolName}`).anim;
 
     setBevel(anim, {thickness: 1, lightAlpha: 0.4});
+
+
+    if (symbolName === 'neko') {
+        const glow =
+            setGlow(anim, {
+                distance: 15,
+                outerStrength: 0.1,
+                innerStrength: 0.1,
+                color: 0x0288D1,
+            });
+
+        anime({
+            targets: glow,
+            outerStrength: [0.1, 8],
+            direction: 'alternate',
+            duration: 750,
+            complete() {
+                anim.filters = [];
+            },
+        });
+    }
 
     anim.visible = true;
     anim.gotoAndPlay(0);

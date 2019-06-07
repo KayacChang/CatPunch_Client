@@ -7,6 +7,8 @@ import '../assets/fonts/font-export.png';
 import COIN_DATA from '../assets/coin/coin';
 import '../assets/coin/coin.png';
 
+import BUBBLE_URL from '../assets/symbols/bubble.png';
+
 import {sounds} from './sound';
 import {sheets} from './spritesheet';
 
@@ -30,6 +32,8 @@ export function reserve() {
 
         {name: 'symbols', url: SYMBOLS},
         {name: 'coin', url: COIN_DATA},
+
+        {name: 'bubble', url: BUBBLE_URL},
 
         ...(sounds),
         ...(sheets),

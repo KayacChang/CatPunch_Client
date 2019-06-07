@@ -11,6 +11,7 @@ import {
 import {
     random, randomInt, pi,
 } from 'mathjs';
+import {setBevel, setGlow, setOutline} from '../../../plugin/filter';
 
 function setFlex(elements, options = {}) {
     const padding = options.padding || 0;
@@ -46,6 +47,9 @@ export function freeGameEffect(scene, multiply) {
 
     const it = new Container();
     it.addChild(title, content);
+
+    setBevel(it);
+    setOutline(it);
 
     scene.addChild(it);
 
@@ -93,6 +97,9 @@ export function reSpinEffect(scene) {
 
     const it = new Container();
     it.addChild(title);
+
+    setBevel(it);
+    setOutline(it);
 
     scene.addChild(it);
 
@@ -145,6 +152,9 @@ export function bigWinEffect(scene) {
 
     const it = new Container();
     it.addChild(title1, title2);
+
+    setBevel(it);
+    setOutline(it);
 
     scene.addChild(it);
 
@@ -352,7 +362,6 @@ export function numberIncrementEffect(scene, num) {
     const it = new Container();
     it.addChild(number);
 
-
     updatePos();
 
     const proxy = {
@@ -445,6 +454,9 @@ export async function scoresEffect(scene, scores) {
 
     const it = new Container();
     it.addChild(number);
+
+    setBevel(it);
+    setOutline(it);
 
     number.anchor.set(.5);
 
@@ -579,4 +591,95 @@ function TextEffect4(targets) {
             .finished;
 
     return Promise.all([alpha, scale]);
+}
+
+export function bubbleEffect(scene) {
+    const {texture} = app.resource.get('bubble');
+
+    const bubbles = times(Bubble, 12);
+
+    scene.addChild(...bubbles);
+
+    const targetsX =
+        bubbles.map((it) => it.x + randomInt(-700, 800));
+
+    const targetsY1 =
+        bubbles.map((it) => it.y + randomInt(150, 500));
+
+    const targetPos =
+        scene.toLocal(
+            scene.slot.view
+                .getChildByName(`energy@${scene.energy.scale}`)
+                .getGlobalPosition({}),
+        );
+
+    anime
+        .timeline({
+            targets: bubbles,
+            delay: anime.stagger(30, {from: 'center'}),
+        })
+        .add({
+            x: (el, i) => targetsX[i],
+            easing: 'easeOutCubic',
+        })
+        .add({
+            x: targetPos.x,
+            duration: 550,
+            easing: 'easeInCubic',
+        });
+
+    anime
+        .timeline({
+            targets: bubbles,
+            delay: anime.stagger(30, {from: 'center'}),
+        })
+        .add({
+            y: (el, i) => targetsY1[i],
+            easing: 'easeOutCirc',
+        })
+        .add({
+            y: targetPos.y,
+            duration: 550,
+            easing: 'easeInCirc',
+        });
+
+    return anime
+        .timeline({
+            targets: bubbles.map(({scale}) => scale),
+            delay: anime.stagger(30, {from: 'center'}),
+        })
+        .add({
+            y: [0.1, 0.5],
+            x: [0.1, 0.5],
+        })
+        .add({
+            y: 0, x: 0,
+            duration: 540,
+            easing: 'easeInExpo',
+            complete() {
+                scene.removeChild(...bubbles);
+            },
+        }).finished;
+
+    function Bubble() {
+        const it = new Sprite(texture);
+
+        it.position.set(
+            scene._width / 2, scene._height / 2,
+        );
+        it.anchor.set(.5);
+
+        it.scale.set(0);
+
+        setGlow(it, {
+            innerStrength: 2,
+            outerStrength: 1,
+            distance: 8,
+            color: 0xB3E5FC,
+        });
+
+        setBevel(it);
+
+        return it;
+    }
 }

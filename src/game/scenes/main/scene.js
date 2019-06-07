@@ -7,7 +7,11 @@ import {Neko} from './components/neko';
 import {FreeSpinIcon} from './components/freespin';
 import {EnergyBar} from './components/energy';
 
-import {setBevel, setDropShadow} from '../../plugin/filter';
+import {
+    setBevel,
+    setDropShadow,
+    setGlow,
+} from '../../plugin/filter';
 
 import {play} from './func/play';
 import alert from '../../../web/components/swal';
@@ -21,6 +25,11 @@ function initSlotMachine(scene, reelTables) {
         });
 
     setBevel(slot.view, {thickness: 5});
+
+    const title =
+        slot.view.getChildByName('Title');
+
+    setBevel(title);
 
     slot.reels
         .forEach((reel) =>
@@ -36,6 +45,13 @@ function initSlotMachine(scene, reelTables) {
         slot.view.children
             .map((target) => {
                 if (target.name.includes('FXReel')) {
+                    setGlow(target, {
+                        innerStrength: 1,
+                        outerStrength: 1,
+                        distance: 6,
+                        color: 0xFCFFA3,
+                    });
+
                     return whenAnimComplete(target);
                 } else if (target.name.includes('Effect')) {
                     return target.children.map(whenAnimComplete);

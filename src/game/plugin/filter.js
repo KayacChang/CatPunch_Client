@@ -64,7 +64,7 @@ export function setZoom(view, options) {
     return it;
 }
 
-export function setOutline(view, options) {
+export function setOutline(view, options = {}) {
     const {thickness, color, quality} = options;
     const it = new OutlineFilter(
         thickness || 1,
@@ -85,7 +85,7 @@ export function setAdvancedBloom(view, options) {
     return it;
 }
 
-export function setGlow(view, options) {
+export function setGlow(view, options = {}) {
     const {
         distance,
         outerStrength,
