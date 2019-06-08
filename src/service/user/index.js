@@ -36,6 +36,8 @@ export function User() {
             return cash;
         },
         set cash(value) {
+            if (value === cash) return;
+
             cash = value;
 
             app.emit('UserCashChange', cash);
@@ -54,8 +56,6 @@ export function User() {
         set lastWin(value) {
             lastWin = value;
 
-            totalWin += lastWin;
-
             app.emit('UserLastWinChange', lastWin);
         },
 
@@ -71,6 +71,8 @@ export function User() {
             return bet;
         },
         set bet(index) {
+            if (index === bet) return;
+
             bet = index;
             app.emit('UserBetChange', bet);
         },

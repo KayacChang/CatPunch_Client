@@ -4,7 +4,7 @@ import {
 
 import {App} from './system/application';
 import {Service} from './service/01/';
-// import {log} from './general/utils/dev';
+import {log} from './general/utils/dev';
 
 import alert from './web/components/swal';
 
@@ -31,9 +31,7 @@ async function main() {
 
         global.app = new App(Service);
 
-        await app.service.login();
-
-        const initData = await app.service.init();
+        enableFullScreenMask();
 
         // Import Load Scene
         const LoadScene = await import('./game/scenes/load/scene');
@@ -42,21 +40,24 @@ async function main() {
 
         const loadScene = startLoading(LoadScene);
 
-        //  Import Main Scene
-        const MainScene = await import('./game/scenes/main');
-        const UserInterface = await import('./game/interface/slot');
-
         app.on('loading', ({progress}, {name}) => {
-            // log(`Progress: ${progress} %`);
-            // log(`Resource: ${name}`);
+            log(`Progress: ${progress} %`);
+            log(`Resource: ${name}`);
 
             loadScene.update(progress);
         });
 
-        await Promise.all([
-            app.resource.load(MainScene, UserInterface),
-            enableFullScreenMask(),
-        ]);
+        await app.service.login();
+
+        //  Import Main Scene
+        const [MainScene, UserInterface, initData] =
+            await Promise.all([
+                import('./game/scenes/main'),
+                import('./game/interface/slot'),
+                app.service.init(),
+            ]);
+
+        await app.resource.load(MainScene, UserInterface);
 
         const ui = UserInterface.create();
         const scene = MainScene.create(initData);

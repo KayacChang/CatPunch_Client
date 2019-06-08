@@ -1,11 +1,17 @@
 import {defaultFont} from '../../components';
-import {currencyFormat} from '../../../../general/utils';
+import {
+    currencyFormat,
+    currencyValue,
+    signFormat,
+} from '../../../../general/utils';
+import anime from 'animejs';
 
 export function Status(view) {
     setFont(view);
 
     Cash(
         view.getChildByName('field@cash'),
+        view.getChildByName('effect@cash'),
     );
 
     Bet(
@@ -27,21 +33,69 @@ function setFont(view) {
 
             if (type === 'label') {
                 defaultFont(field.content, {fontFamily: 'Basic'});
-            } else if (type === 'field') {
+            } else if (type === 'field' || type === 'effect') {
                 defaultFont(field.content, {fontFamily: 'Candal'});
             }
         });
 }
 
-function Cash(it) {
+function Cash(it, effect) {
+    const proxy = {
+        get cash() {
+            return currencyValue(it.content.text);
+        },
+        set cash(newCash) {
+            it.content.text = currencyFormat(newCash);
+        },
+    };
+
     update(app.user.cash);
 
     app.on('UserCashChange', update);
 
-    return it;
+    return proxy;
 
     function update(cash) {
-        it.content.text = currencyFormat(cash);
+        showEffect(cash - proxy.cash);
+
+        anime({
+            targets: proxy,
+            cash,
+            easing: 'linear',
+            duration: 720,
+        });
+    }
+
+    function showEffect(diff) {
+        if (diff <= 0) return;
+
+        const {style} = effect.content;
+
+        style.fill = '#30D158';
+
+        effect.content.text = signFormat(diff);
+
+        anime({
+            targets: effect,
+            y: -30,
+            easing: 'easeOutExpo',
+        });
+
+        anime
+            .timeline({
+                targets: effect,
+            })
+            .add({
+                alpha: 1,
+                easing: 'easeOutExpo',
+            })
+            .add({
+                alpha: 0,
+                easing: 'easeOutExpo',
+                complete() {
+                    effect.y = 30;
+                },
+            });
     }
 }
 
@@ -60,13 +114,29 @@ function Bet(it) {
 }
 
 function Win(it) {
-    update(app.user.lastWin);
+    const proxy = {
+        get scores() {
+            return currencyValue(it.content.text);
+        },
+        set scores(newScores) {
+            it.content.text = currencyFormat(newScores);
+        },
+    };
+
+    proxy.scores = app.user.lastWin;
 
     app.on('UserLastWinChange', update);
 
-    return it;
+    return proxy;
 
     function update(scores) {
-        it.content.text = currencyFormat(scores);
+        if (scores === 0) return;
+
+        anime({
+            targets: proxy,
+            scores,
+            easing: 'linear',
+            duration: 720,
+        });
     }
 }

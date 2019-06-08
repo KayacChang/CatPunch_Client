@@ -1,9 +1,11 @@
 import anime from 'animejs';
 import {degreeToRadian} from '../../../../general/utils/logic';
-import {setBevel, setOutline} from '../../../plugin/filter';
+import {setBevel, setColorMatrix, setOutline} from '../../../plugin/filter';
 
 export function FreeSpinIcon(view) {
     let sound = undefined;
+
+    const color = setColorMatrix(view);
 
     setBevel(view);
     setOutline(view);
@@ -12,6 +14,8 @@ export function FreeSpinIcon(view) {
 
     function stop() {
         sound.stop();
+
+        color.brightness(1);
 
         anime.remove([view, view.scale]);
         anime({
@@ -46,6 +50,10 @@ export function FreeSpinIcon(view) {
             direction: 'alternate',
             duration: 500,
             loop: true,
+            update(anim) {
+                const value = 1 + (anim.progress / 100);
+                color.brightness(value);
+            },
         });
     }
 }

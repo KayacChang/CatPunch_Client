@@ -1,5 +1,4 @@
 import {isMobile} from 'pixi.js/lib/core/utils';
-// import alert from '../../web/components/swal';
 import {debounce} from 'lodash';
 import {abs} from 'mathjs';
 import {select} from '../../general/utils/dom';
@@ -18,8 +17,6 @@ export function isLandScape() {
 }
 
 function getExpectSize() {
-    // if (isMobile.phone) return getWindowSize();
-
     const size = getWindowSize();
 
     const expectRadio = (16 / 9);
@@ -45,34 +42,18 @@ function setStyleSize(target, {width, height}) {
     target.style.height = height + 'px';
 }
 
-export async function enableFullScreenMask() {
+export function enableFullScreenMask() {
     if (!isMobile.phone) return;
 
     const icon = select('#icon');
     const mask = select('#mask');
 
-    // const scroll = select('#screen-scroll');
-    // const rotation = select('#screen-rotation');
-
-    // if (document.documentElement.requestFullscreen) {
-    //     icon.classList.remove('hidden');
-    //     scroll.classList.add('hidden');
-    //
-    //     window.addEventListener('resize', () =>
-    //         icon.classList.toggle('hidden', isDisplayNone(rotation)),
-    //     );
-    //
-    //   const {value} = await alert.request({title: 'Enable FullScreen Mode'});
-    //     if (value) return select('#app').requestFullscreen();
-    // } else {
     icon.classList.remove('hidden');
     mask.classList.remove('hidden');
 
     window.addEventListener('touchmove', handle());
     window.addEventListener('resize', handle());
     window.addEventListener('orientationchange', handle());
-
-    // }
 
     function handle() {
         return debounce(() => {
@@ -101,10 +82,6 @@ export async function enableFullScreenMask() {
         const {clientHeight} = document.documentElement;
         return abs(innerHeight - clientHeight) >= 30;
     }
-
-    // function isDisplayNone(element) {
-    //     return getComputedStyle(element, null).display === 'none';
-    // }
 }
 
 export function resize(app) {

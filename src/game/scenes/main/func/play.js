@@ -23,6 +23,12 @@ export function play(scene) {
         console.log('Result =============');
         console.table(result);
 
+        const normalWin = result.normalGame.scores;
+        const reSpinWin = result.hasReSpin ? result.reSpinGame.scores : 0;
+        const freeWin = result.hasFreeGame ?
+            result.freeGame.reduce((a, b) => a.scores + b.scores) : 0;
+        const totalWin = normalWin + reSpinWin + freeWin;
+
         await spin(
             scene,
             slot.reels,
@@ -34,7 +40,9 @@ export function play(scene) {
         }
 
         if (result.normalGame.scores && !result.hasReSpin) {
-            await showScores(result.normalGame.scores);
+            await showScores(normalWin);
+            app.user.lastWin = normalWin;
+            app.user.cash += normalWin;
         }
 
         if (result.hasReSpin) {
@@ -77,7 +85,9 @@ export function play(scene) {
                 result.reSpinGame,
             );
 
-            await showScores(result.reSpinGame.scores);
+            await showScores(reSpinWin);
+            app.user.lastWin = reSpinWin;
+            app.user.cash += reSpinWin;
         }
 
         if (energy.scale === 10) {
@@ -102,6 +112,7 @@ export function play(scene) {
             slot.reelTables = freeGameTable;
 
             const freeGame = result.freeGame;
+            let totalScores = 0;
             for (const result of freeGame) {
                 console.table(result);
                 const multiply =
@@ -122,17 +133,22 @@ export function play(scene) {
                     result,
                 );
 
-                if (result.scores) await showScores(result.scores);
+                totalScores += result.scores;
+                if (result.scores) {
+                    await showScores(result.scores);
+                    app.user.lastWin = totalScores;
+                }
             }
 
             await energy.update(0);
         }
 
+        app.user.cash = result.cash;
+        app.user.totalWin += totalWin;
+
         slot.reelTables = normalTable;
 
-        app.user.cash = result.cash;
-
-        betLock(result.earnPoints > 0);
+        betLock(energy.scale > 0);
 
         console.log('Round Complete...');
         app.emit('Idle');
@@ -170,7 +186,5 @@ export function play(scene) {
         await Promise.all([
             ...coinEffect, effect,
         ]);
-
-        app.user.lastWin = scores;
     }
 }

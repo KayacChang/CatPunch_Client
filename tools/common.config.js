@@ -34,6 +34,7 @@ module.exports = function(env) {
         //  Optimization    ====================================
         optimization: {
             usedExports: true,
+            sideEffects: false,
             concatenateModules: true,
 
             splitChunks: {
