@@ -94,19 +94,18 @@ function spinStop(it, reels, {positions, symbols}) {
         );
     }
 
-    async function stop(reel) {
-        const index = reel.reelIdx;
+    async function stop(reel, index) {
         const results = reel.results;
 
-        const position = positions[index];
+        const position = positions[reel.reelIdx];
 
         let resultPos = [2, 4];
 
         const reelTable =
             reel.reelTable.filter((num) => num !== 10);
 
-        if (symbols[index] !== 10) {
-            results[0].icon = symbols[index];
+        if (symbols[reel.reelIdx] !== 10) {
+            results[0].icon = symbols[reel.reelIdx];
             results[1].icon = nth(
                 mod(position + 1, reelTable.length),
                 reelTable,

@@ -25,5 +25,9 @@ export function Sound({loader}) {
             .filter(predicate);
     }
 
+    document.addEventListener('visibilitychange', () => {
+        mute(document.hidden);
+    });
+
     return {play, mute, volume, getBy};
 }
