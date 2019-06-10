@@ -1,4 +1,3 @@
-
 import {
     divide, mod, floor, nth,
 } from '../../../../../general/utils';
@@ -127,7 +126,7 @@ export function SlotMachine(
         const displayLength =
             symbols.length * stopPerSymbol;
 
-        const motionBlur = setMotionBlur(view);
+        let motionBlur = undefined;
 
         let axis = 0;
 
@@ -149,6 +148,12 @@ export function SlotMachine(
 
                         if (symbol.pos === 0) symbol.visible = true;
                     });
+                    //
+                } else if (status === Status.Start) {
+                    motionBlur = setMotionBlur(view);
+                    //
+                } else if (status === Status.Stop) {
+                    view.filters = undefined;
                     //
                 }
             },

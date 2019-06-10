@@ -11,8 +11,6 @@ import {filters} from 'pixi.js';
 const {BlurFilter, ColorMatrixFilter} = filters;
 
 function setFilter(view, filter) {
-    if (isMobile.phone) return {};
-
     if (!view.filters) view.filters = [];
 
     view.filters = [filter, ...view.filters];
@@ -23,12 +21,16 @@ function setFilter(view, filter) {
 export function setColorMatrix(view) {
     const it = new ColorMatrixFilter();
 
-    setFilter(view, it);
+    if (!view.filters) view.filters = [];
+
+    if (!isMobile.phone) view.filters.push(it);
 
     return it;
 }
 
 export function setBlur(view, options = {}) {
+    if (isMobile.phone) return {};
+
     const {
         strength,
         quality,
@@ -51,6 +53,8 @@ export function setBlur(view, options = {}) {
 }
 
 export function setZoom(view, options) {
+    if (isMobile.phone) return {};
+
     const {
         strength,
         center,
@@ -69,6 +73,8 @@ export function setZoom(view, options) {
 }
 
 export function setOutline(view, options = {}) {
+    if (isMobile.phone) return {};
+
     const {thickness, color, quality} = options;
     const it = new OutlineFilter(
         thickness || 1,
@@ -82,6 +88,8 @@ export function setOutline(view, options = {}) {
 }
 
 export function setAdvancedBloom(view, options) {
+    if (isMobile.phone) return {};
+
     const it = new AdvancedBloomFilter(options);
 
     setFilter(view, it);
@@ -90,6 +98,8 @@ export function setAdvancedBloom(view, options) {
 }
 
 export function setGlow(view, options = {}) {
+    if (isMobile.phone) return {};
+
     const {
         distance,
         outerStrength,
@@ -112,6 +122,8 @@ export function setGlow(view, options = {}) {
 }
 
 export function setBevel(view, options) {
+    if (isMobile.phone) return {};
+
     const it = new BevelFilter(options);
 
     setFilter(view, it);
@@ -120,6 +132,8 @@ export function setBevel(view, options) {
 }
 
 export function setDropShadow(view, options) {
+    if (isMobile.phone) return {};
+
     const it = new DropShadowFilter(options);
 
     setFilter(view, it);
@@ -128,6 +142,8 @@ export function setDropShadow(view, options) {
 }
 
 export function setGodray(view, options = {}) {
+    if (isMobile.phone) return {};
+
     const {angle, gain, lacunrity, parallel, time, center} = options;
 
     const it = new GodrayFilter({
@@ -145,6 +161,8 @@ export function setGodray(view, options = {}) {
 }
 
 export function setBulgePinch(view, {center, radius, strength}) {
+    if (isMobile.phone) return {};
+
     const it = new BulgePinchFilter(center, radius, strength);
 
     setFilter(view, it);
