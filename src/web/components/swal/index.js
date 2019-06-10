@@ -85,7 +85,7 @@ export function leave() {
 
         type: 'warning',
         title: 'Are you sure to exit?',
-        confirmButtonText: 'Go Back',
+        confirmButtonText: 'Exit',
         confirmButtonColor: '#DC3446',
         showCancelButton: true,
         cancelButtonColor: '#007BFF',

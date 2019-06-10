@@ -1,7 +1,7 @@
 import anime from 'animejs';
 
 import {ToggleButton, Clickable, Openable} from '../../components';
-import alert, {checkoutList} from '../../../../web/components/swal';
+import alert from '../../../../web/components/swal';
 
 import {capitalize, currencyFormat} from '../../../../general/utils';
 
@@ -59,9 +59,14 @@ export function Exchange(menu) {
 
     async function open() {
         if (app.user.cash > 0) {
+            const {value} =
+                await alert.request({title: 'Are You Sure To Checkout?'});
+
+            if (!value) return;
+
             const data = await app.service.checkout();
 
-            checkoutList(data);
+            alert.checkoutList(data);
         }
         await app.service.refresh();
 

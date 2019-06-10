@@ -17,8 +17,6 @@ const {
 
 //  Exports
 module.exports = function(env) {
-    env = {...env, SERVICE_URL: 'http://192.168.1.14:8000'};
-
     return {
         //  Entry   ===========================================
         entry: [

@@ -9,6 +9,12 @@ module.exports = function(env) {
         'Node': process.env.NODE_ENV,
         'Webpack': env.mode,
     });
+
+    env.SERVICE_URL =
+        (env.mode === 'development') ?
+            'http://192.168.1.14:8000' :
+            'http://13.112.112.160:8000';
+
     log(env);
     log('===================================================');
 

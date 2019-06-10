@@ -1,7 +1,7 @@
 //  Imports
 
 //  Exports
-module.exports = function(...args) {
+module.exports = function(env) {
     return {
         //  Mode    =========================================
         mode: 'development',
