@@ -4,11 +4,15 @@ import {
     OutlineFilter, ZoomBlurFilter, GodrayFilter,
 } from 'pixi-filters';
 
+import {isMobile} from '../../general/utils';
+
 import {filters} from 'pixi.js';
 
 const {BlurFilter, ColorMatrixFilter} = filters;
 
 function setFilter(view, filter) {
+    if (isMobile.phone) return {};
+
     if (!view.filters) view.filters = [];
 
     view.filters = [filter, ...view.filters];
@@ -151,9 +155,9 @@ export function setBulgePinch(view, {center, radius, strength}) {
 export function setMotionBlur(view) {
     const it = new MotionBlurFilter();
 
-    setFilter(view, it);
-
     it.update = update;
+
+    setFilter(view, it);
 
     return it;
 

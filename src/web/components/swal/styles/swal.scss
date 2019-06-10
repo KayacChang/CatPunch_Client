@@ -2,8 +2,15 @@ $swal2-title-color: #FFF;
 $swal2-content-color: #FFF;
 $swal2-error: #E30126;
 
-#list {
-  @media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1000px) {
+  .swal2-header .swal2-icon {
+    margin: 1.25em auto 1em;
+  }
+  #swal2-title {
+    font-size: 1.25em;
+  }
+
+  #list {
     columns: 2;
   }
 }

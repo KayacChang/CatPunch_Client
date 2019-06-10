@@ -16,7 +16,7 @@ export function App(Service) {
         new Application({
             resolution: devicePixelRatio,
             antialias: true,
-            forceFXAA: true,
+            // forceFXAA: true,
             powerPreference: isMobile.phone && 'high-performance',
         });
 

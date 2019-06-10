@@ -1,14 +1,11 @@
 import anime from 'animejs';
 import {degreeToRadian} from '../../../../general/utils';
-import {setBevel, setColorMatrix, setOutline} from '../../../plugin/filter';
+import {setColorMatrix} from '../../../plugin/filter';
 
 export function FreeSpinIcon(view) {
     let sound = undefined;
 
     const color = setColorMatrix(view);
-
-    setBevel(view);
-    setOutline(view);
 
     return {shock, stop};
 

@@ -21,6 +21,8 @@ function startLoading(scene) {
     app.stage.addChild(loadScene);
     app.resize();
 
+    enableFullScreenMask();
+
     return loadScene;
 }
 
@@ -30,8 +32,6 @@ async function main() {
         document.title = '來!貓下去';
 
         global.app = new App(Service);
-
-        enableFullScreenMask();
 
         // Import Load Scene
         const LoadScene = await import('./game/scenes/load/scene');

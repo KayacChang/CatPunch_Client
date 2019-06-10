@@ -130,8 +130,6 @@ function Win(it) {
     return proxy;
 
     function update(scores) {
-        if (scores === 0) return;
-
         anime({
             targets: proxy,
             scores,

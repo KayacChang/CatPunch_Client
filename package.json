@@ -60,7 +60,7 @@
     "numeral": "^2.0.6",
     "pixi-filters": "^2.7.1",
     "pixi.js": "^4.8.7",
-    "pixi_fairygui": "^0.3.52",
+    "pixi_fairygui": "^0.3.53",
     "ramda": "^0.26.1",
     "random-js": "^2.0.0",
     "sweetalert2": "^8.11.5",

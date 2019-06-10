@@ -212,6 +212,7 @@ export function SpinButton(view) {
         }
 
         app.user.cash -= app.user.betOptions[app.user.bet];
+        app.user.lastWin = 0;
 
         const result = await app.service.sendOneRound({
             bet: app.user.bet,

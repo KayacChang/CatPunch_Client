@@ -4,7 +4,7 @@ import {ToggleButton, Clickable, Openable} from '../../components';
 import alert from '../../../../web/components/swal';
 
 import {
-    capitalize, currencyFormat, log10, ceil,
+    capitalize, currencyFormat, log10,
 } from '../../../../general/utils';
 
 export function Exchange(menu) {
@@ -251,7 +251,7 @@ export function Exchange(menu) {
         }
 
         function pop() {
-            set(ceil(amount / 10));
+            set(Math.trunc(amount / 10));
         }
     }
 
@@ -303,10 +303,23 @@ export function Exchange(menu) {
 
         btn.on('pointerdown', click);
 
+        btn.on('pointerup', reset);
+
+        const text =
+            pad.getChildByName(`text@${num}`).content;
+
+        reset();
+
         return btn;
 
         function click() {
             amount.push(num);
+
+            text.style.fill = '#FFB300';
+        }
+
+        function reset() {
+            text.style.fill = '#FAFAFA';
         }
     }
 

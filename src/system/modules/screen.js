@@ -66,6 +66,8 @@ export function enableFullScreenMask() {
 
                 func(icon, 'hidden');
                 func(mask, 'hidden');
+
+                scrollTo(0, 0);
             });
         }, 200, {leading: true, trailing: true, maxWait: 60});
     }

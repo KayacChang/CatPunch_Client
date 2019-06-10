@@ -1,6 +1,8 @@
 import {setDropShadow} from '../../../plugin/filter';
 import anime from 'animejs';
 
+import {isMobile} from '../../../../general/utils';
+
 export function setBehaviour(it) {
     const hoverMaskView = it.getChildByName('hover');
     const downMaskView = it.getChildByName('down');
@@ -55,6 +57,7 @@ export function setBehaviour(it) {
     return it;
 
     function onNormal() {
+        if (isMobile.phone) return;
         anime({
             targets: shadow,
             easing: 'easeInOutSine',
@@ -75,6 +78,7 @@ export function setBehaviour(it) {
     }
 
     function onHover() {
+        if (isMobile.phone) return;
         anime({
             targets: shadow,
             easing: 'easeInOutSine',
@@ -95,6 +99,7 @@ export function setBehaviour(it) {
     }
 
     function onClick({data}) {
+        if (isMobile.phone) return;
         const {x, y} = data.getLocalPosition(it);
         downMaskView.position.set(x, y);
         downMaskView.alpha = 0.3;
