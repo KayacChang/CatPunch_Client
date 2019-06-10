@@ -3,6 +3,23 @@ import {setDropShadow} from '../../../plugin/filter';
 import {setBehaviour} from './button';
 import anime from 'animejs';
 
+function setScale(open, ...targets) {
+    const tasks =
+        targets.map((it) => {
+            const state =
+                open ? it.originScale : {x: 0, y: 0};
+
+            return anime({
+                targets: it.scale,
+                ...(state),
+                duration: 260,
+                easing: 'easeOutExpo',
+            }).finished;
+        });
+
+    return Promise.all(tasks);
+}
+
 export function Options(view) {
     const btn = Clickable(
         view.getChildByName('btn@option'),
@@ -53,23 +70,8 @@ export function Options(view) {
         app.sound.play('option');
 
         block.interactive = open;
-    }
 
-    function setScale(open, ...targets) {
-        const tasks =
-            targets.map((it) => {
-                const state =
-                    open ? it.originScale : {x: 0, y: 0};
-
-                return anime({
-                    targets: it.scale,
-                    ...(state),
-                    duration: 260,
-                    easing: 'easeOutExpo',
-                }).finished;
-            });
-
-        return Promise.all(tasks);
+        menu.checkState();
     }
 
     function OptionMenu(menu) {
@@ -80,6 +82,8 @@ export function Options(view) {
                     it = setBehaviour(it);
                     return it;
                 });
+
+        menu.btns = btns;
 
         let btnsFunc = [
             setSpeed,
@@ -145,7 +149,19 @@ export function Options(view) {
 
         setAudio(app.sound.mute());
 
+        menu.checkState = checkState;
+
         return menu;
+
+        function checkState() {
+            btns.forEach((btn) => {
+                const index = btn.name.split('@')[1];
+
+                frames[index].alpha = btn.enable ? 1 : 0.3;
+
+                icons[index].tint = btn.enable ? 0xFFFFFF : 0x7B7B7B;
+            });
+        }
 
         function resetFunc() {
             btnsFunc = [
@@ -219,6 +235,9 @@ export function Options(view) {
         }
 
         async function setOptionItems(options, func) {
+            const btnState = btns.map(({enable}) => enable);
+            btns.forEach((btn) => btn.enable = true);
+
             const targets =
                 options
                     .map((option, index) =>
@@ -262,7 +281,10 @@ export function Options(view) {
                 await setScale(false, ...targets);
                 setIcons(true);
 
-                btns.forEach((btn) => btn.scale.set(1));
+                btns.forEach((btn, index) => {
+                    btn.scale.set(1);
+                    btn.enable = btnState[index];
+                });
 
                 resetFunc();
             };

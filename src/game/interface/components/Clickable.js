@@ -1,7 +1,7 @@
 import {throttle} from 'lodash';
 import {isMobile} from 'pixi.js/lib/core/utils';
 
-const {assign} = Object;
+const {defineProperties} = Object;
 
 export function Clickable(it) {
     it.buttonMode = true;
@@ -17,17 +17,16 @@ export function Clickable(it) {
         it.on('pointerup', throttleFunc(onNormal));
     }
 
-    it = assign(it, {
-        get enable() {
-            return it.interactive;
-        },
-        set enable(flag) {
-            it.interactive = flag;
-            debugger;
+    return defineProperties(it, {
+        enable: {
+            get() {
+                return it.interactive;
+            },
+            set(flag) {
+                it.interactive = flag;
+            },
         },
     });
-
-    return it;
 
     function onHover(...args) {
         it.emit('Hover', ...args);

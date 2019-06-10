@@ -9,7 +9,10 @@ const defaultStyle = {
 };
 
 function playAudio(url) {
-    return new Audio(url).play()
+    if (app.sound.mute()) return;
+
+    return new Audio(url)
+        .play()
         .catch((err) => console.log(err));
 }
 

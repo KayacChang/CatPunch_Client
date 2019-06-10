@@ -30,6 +30,7 @@ const fontsConfig = {
 const sounds = [
     {
         type: 'sound',
+        subType: 'effects',
         name: 'spin',
         src: [
             SPIN_WEBM,
@@ -39,6 +40,7 @@ const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'option',
         src: [
             MENU_WEBM,
@@ -48,6 +50,7 @@ const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'click',
         src: [
             CLICK_WEBM,
@@ -58,6 +61,7 @@ const sounds = [
     {
 
         type: 'sound',
+        subType: 'effects',
         name: 'cancel',
         src: [
             CANCEL_WEBM,

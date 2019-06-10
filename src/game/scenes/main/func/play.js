@@ -158,16 +158,9 @@ export function play(scene) {
         const {optionMenu} = app.control.main;
 
         const betButton =
-            optionMenu.getChildByName('btn@2');
-        betButton.interactive = !flag;
+            optionMenu.btns[2];
 
-        const betFrame =
-            optionMenu.getChildByName('frame@2');
-        betFrame.alpha = flag ? 0.3 : 1;
-
-        const betIcon =
-            optionMenu.getChildByName('img@bet');
-        betIcon.tint = flag ? 0x7B7B7B : 0xFFFFFF;
+        betButton.enable = !flag;
     }
 
     async function showScores(scores) {

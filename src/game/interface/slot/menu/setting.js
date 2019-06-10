@@ -15,10 +15,11 @@ export function Setting(menu) {
 
     const effectSwitch =
         Toggle(setting, 'effects');
-    effectSwitch.set(!app.sound.mute());
 
     const ambienceSwitch =
         Toggle(setting, 'ambience');
+
+    effectSwitch.set(!app.sound.mute());
     ambienceSwitch.set(!app.sound.mute());
 
     const volumeRange = map((num) => divide(num, 10))(range(0, 11));
@@ -34,19 +35,11 @@ export function Setting(menu) {
             },
         });
 
-    const soundLevel =
-        app.sound.mute() === true ?
-            0 : volumeRange.length - 1;
-
-    volume.setLevel(soundLevel);
-
     const auto =
         Slider(setting, 'auto', {
             range: app.user.autoOptions,
             onchange: (level) => app.user.auto = level,
         });
-
-    auto.setLevel(app.user.auto);
 
     const speed =
         Slider(setting, 'speed', {
@@ -54,15 +47,11 @@ export function Setting(menu) {
             onchange: (level) => app.user.speed = level,
         });
 
-    speed.setLevel(app.user.speed);
-
     const betLevel =
         Slider(setting, 'betLevel', {
             range: app.user.betOptions,
             onchange: (level) => app.user.bet = level,
         });
-
-    betLevel.setLevel(app.user.bet);
 
     setting.y -= 53;
     setting.open = open;
@@ -72,6 +61,16 @@ export function Setting(menu) {
 
     function open() {
         setting.visible = true;
+
+        const soundLevel =
+            app.sound.mute() === true ?
+                0 : volumeRange.length - 1;
+        volume.setLevel(soundLevel);
+
+        speed.setLevel(app.user.speed);
+        betLevel.setLevel(app.user.bet);
+        auto.setLevel(app.user.auto);
+
         return anime({
             targets: setting,
             alpha: 1, y: 0,
@@ -104,7 +103,7 @@ function Toggle(setting, target) {
         setting.getChildByName(`frame@${target}`),
     );
 
-    toggle.on('Change', update);
+    toggle.on('Change', () => update(toggle.checked));
 
     update(toggle.checked);
 
@@ -115,10 +114,8 @@ function Toggle(setting, target) {
         update(toggle.checked);
     }
 
-    function update({checked}) {
-        app.sound
-            .getBy(({name}) => name.includes(target))
-            .forEach(({data}) => data.mute = checked);
+    function update(checked) {
+        app.sound[target] = checked;
 
         const x = (checked) ?
             toggle.x + (toggle.width / 2) : toggle.x - 4;

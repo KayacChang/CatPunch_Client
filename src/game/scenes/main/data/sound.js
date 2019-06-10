@@ -83,6 +83,7 @@ import COIN_DROP_OGG
 export const sounds = [
     {
         type: 'sound',
+        subType: 'ambience',
         name: 'mainBGM',
         src: [
             NORMAL_BGM_WEBM,
@@ -93,6 +94,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'freeSpinAlert',
         src: [
             FREE_SPIN_ALERT_WEBM,
@@ -103,6 +105,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'catAppear',
         src: [
             CAT_APPEAR_WEBM,
@@ -112,6 +115,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'catHit1',
         src: [
             CAT_HIT_1_WEBM,
@@ -121,6 +125,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'catHit2',
         src: [
             CAT_HIT_2_WEBM,
@@ -130,6 +135,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'maybeBonus',
         src: [
             MAYBE_BONUS_WEBM,
@@ -139,6 +145,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'normal',
         src: [
             NORMAL_CONNECT_WEBM,
@@ -148,6 +155,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'koi',
         src: [
             WILD_KOI_CONNECT_WEBM,
@@ -157,6 +165,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'neko',
         src: [
             WILD_NEKO_CONNECT_WEBM,
@@ -166,6 +175,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'taiko',
         src: [
             WILD_TAIKO_CONNECT_WEBM,
@@ -175,6 +185,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'bounce',
         src: [
             REEL_BOUNCE_WEBM,
@@ -184,6 +195,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'energy',
         src: [
             ENERGY_WEBM,
@@ -193,6 +205,7 @@ export const sounds = [
     },
     {
         type: 'sound',
+        subType: 'effects',
         name: 'coinDrop',
         src: [
             COIN_DROP_WEBM,

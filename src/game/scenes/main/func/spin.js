@@ -154,8 +154,7 @@ function spinStop(it, reels, {positions, symbols}) {
                 fxReels[2].visible = flag;
 
                 if (flag) {
-                    const sound = app.sound.play('maybeBonus');
-                    sound.rate(2);
+                    app.sound.play('maybeBonus', 1.5);
                 }
 
                 anime.remove(reel);
@@ -172,6 +171,8 @@ function spinStop(it, reels, {positions, symbols}) {
 
 async function spinComplete(scene, reels, {hasLink, symbols}) {
     console.log('Spin Complete...');
+    app.sound.stop('maybeBonus');
+
     const {slot} = scene;
 
     slot.view.children
