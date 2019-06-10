@@ -1,7 +1,8 @@
 import {extras} from 'pixi.js';
-import {randomInt} from 'mathjs';
 import anime from 'animejs';
 import Easing from 'easing-functions';
+
+import {randomInt} from '../../../../general/utils';
 
 export function Coin() {
     const spriteSheet = app.resource.get('coin').spritesheet;

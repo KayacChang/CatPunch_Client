@@ -1,5 +1,7 @@
-import {divide, mod, floor} from 'mathjs';
-import {nth} from 'ramda';
+
+import {
+    divide, mod, floor, nth,
+} from '../../../../../general/utils';
 
 import {
     TextureManager,

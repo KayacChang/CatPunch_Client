@@ -1,5 +1,5 @@
 import {getSearchParams} from '../utils';
-import {clone} from 'ramda';
+import {clone} from '../../general/utils';
 import {User} from '../user';
 
 const {assign, entries, fromEntries} = Object;

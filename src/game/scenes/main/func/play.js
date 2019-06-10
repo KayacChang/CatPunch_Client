@@ -1,6 +1,7 @@
 import {spin} from './spin';
-import {clone, times} from 'ramda';
-import {wait} from '../../../../general/utils';
+import {
+    wait, clone, times,
+} from '../../../../general/utils';
 import anime from 'animejs';
 import {
     freeGameEffect,

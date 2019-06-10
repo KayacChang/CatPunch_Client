@@ -1,7 +1,5 @@
-import {isMobile} from 'pixi.js/lib/core/utils';
-import {debounce} from 'lodash';
-import {abs} from 'mathjs';
-import {select} from '../../general/utils/dom';
+
+import {debounce, abs, select, isMobile} from '../../general/utils';
 
 function getClientSize(target) {
     const {clientWidth, clientHeight} = target;

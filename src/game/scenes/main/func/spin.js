@@ -1,7 +1,7 @@
 import anime from 'animejs';
-import {wait} from '../../../../general/utils/time';
-import {nth} from 'ramda';
-import {floor, mod} from 'mathjs';
+import {
+    wait, nth, floor, mod,
+} from '../../../../general/utils';
 
 import {
     spinDuration,

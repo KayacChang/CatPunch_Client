@@ -7,8 +7,7 @@ import {Network} from './modules/network';
 import {Resource} from './modules/resource';
 import {resize} from './modules/screen';
 
-
-import {debounce} from 'lodash';
+import {debounce, isMobile} from '../general/utils';
 
 const {defineProperties, assign, freeze} = Object;
 
@@ -17,6 +16,8 @@ export function App(Service) {
         new Application({
             resolution: devicePixelRatio,
             antialias: true,
+            forceFXAA: true,
+            powerPreference: isMobile.phone && 'high-performance',
         });
 
     //  Resource

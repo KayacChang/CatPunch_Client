@@ -2,7 +2,7 @@ import {Random, MersenneTwister19937} from 'random-js';
 import {
     all, equals, filter,
     includes, range, __, head, reject, any,
-} from 'ramda';
+} from '../../general/utils';
 
 const normalTable = [
     // eslint-disable-next-line max-len

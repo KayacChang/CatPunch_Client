@@ -3,10 +3,8 @@ import {Clickable, ToggleButton, RangeSlider} from '../../components';
 
 import anime from 'animejs';
 
-import {range, map} from 'ramda';
-
-import {divide, round} from 'mathjs';
 import {setColorMatrix} from '../../../plugin/filter';
+import {divide, round, range, map} from '../../../../general/utils';
 
 export function Setting(menu) {
     const setting = Openable(

@@ -3,7 +3,7 @@ import {Exchange} from './exchange';
 import {Setting} from './setting';
 import anime from 'animejs';
 import {Information} from './information';
-import alert, {checkoutList, leave} from '../../../../web/components/swal';
+import alert from '../../../../web/components/swal';
 
 const {entries} = Object;
 
@@ -193,9 +193,9 @@ function Nav(menu, sections) {
 
                     const data = await app.service.checkout();
 
-                    await checkoutList(data);
+                    await alert.checkoutList(data);
                 }
-                return leave();
+                return alert.leave();
             }
         }
     }

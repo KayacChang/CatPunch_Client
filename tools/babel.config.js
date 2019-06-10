@@ -22,6 +22,8 @@ module.exports = function(api) {
 
     //  Return =====================================
     const presets = [flow];
-    const plugins = [dynamicImport];
+    const plugins = [
+        dynamicImport,
+    ];
     return {presets, plugins};
 };

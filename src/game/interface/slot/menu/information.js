@@ -1,7 +1,7 @@
 import {Clickable, Openable} from '../../components';
 import anime from 'animejs';
 
-import {abs, sign} from 'mathjs';
+import {abs, sign} from '../../../../general/utils';
 
 export function Information(menu) {
     const information = Openable(

@@ -1,16 +1,13 @@
 import {Container, Sprite, extras, particles} from 'pixi.js';
 
-import {map, times} from 'ramda';
-
 import anime from 'animejs';
 import {
     currencyFormat, currencyValue, wait,
     degreeToRadian, radianToDegree,
+    map, times,
+    random, randomInt, pi,
 } from '../../../../general/utils';
 
-import {
-    random, randomInt, pi,
-} from 'mathjs';
 import {setBevel, setGlow, setOutline} from '../../../plugin/filter';
 
 function setFlex(elements, options = {}) {

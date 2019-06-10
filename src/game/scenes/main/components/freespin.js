@@ -1,5 +1,5 @@
 import anime from 'animejs';
-import {degreeToRadian} from '../../../../general/utils/logic';
+import {degreeToRadian} from '../../../../general/utils';
 import {setBevel, setColorMatrix, setOutline} from '../../../plugin/filter';
 
 export function FreeSpinIcon(view) {

@@ -3,9 +3,9 @@ import anime from 'animejs';
 import {ToggleButton, Clickable, Openable} from '../../components';
 import alert from '../../../../web/components/swal';
 
-import {capitalize, currencyFormat} from '../../../../general/utils';
-
-const {log10, trunc} = Math;
+import {
+    capitalize, currencyFormat, log10, ceil,
+} from '../../../../general/utils';
 
 export function Exchange(menu) {
     const exchange = Openable(
@@ -251,7 +251,7 @@ export function Exchange(menu) {
         }
 
         function pop() {
-            set(trunc(amount / 10));
+            set(ceil(amount / 10));
         }
     }
 

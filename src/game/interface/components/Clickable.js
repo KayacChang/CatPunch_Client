@@ -1,5 +1,4 @@
-import {throttle} from 'lodash';
-import {isMobile} from 'pixi.js/lib/core/utils';
+import {throttle, isMobile} from '../../../general/utils';
 
 const {defineProperties} = Object;
 

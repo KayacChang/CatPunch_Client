@@ -2,8 +2,9 @@ import {Clickable, defaultFont} from '../../components';
 import {Container, Text} from 'pixi.js';
 import {setColorMatrix} from '../../../plugin/filter';
 import anime from 'animejs';
-import {pi} from 'mathjs';
 import {setBehaviour} from './button';
+
+import {pi} from '../../../../general/utils';
 
 const {assign} = Object;
 
