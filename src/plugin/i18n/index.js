@@ -51,7 +51,7 @@ function init() {
         .init({
             debug: true,
 
-            fallbackLng: 'en',
+            fallbackLng: 'zh-TW',
 
             detection: detectorOptions,
             backend: backendOptions,
