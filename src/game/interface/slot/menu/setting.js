@@ -4,12 +4,17 @@ import {Clickable, ToggleButton, RangeSlider} from '../../components';
 import anime from 'animejs';
 
 import {setColorMatrix} from '../../../plugin/filter';
-import {divide, round, range, map} from '../../../../general/utils';
+import {divide, round, range, map} from '../../../../general';
 
 export function Setting(menu) {
     const setting = Openable(
         menu.getChildByName('setting'),
     );
+
+    setting.getChildByName('title')
+        .text = translate(`common:setting.title`);
+
+    setLabel(setting, 'audio');
 
     const effectSwitch =
         Toggle(setting, 'effects');
@@ -33,6 +38,8 @@ export function Setting(menu) {
             },
         });
 
+    setLabel(setting, 'spin');
+
     const auto =
         Slider(setting, 'auto', {
             range: app.user.autoOptions,
@@ -44,6 +51,8 @@ export function Setting(menu) {
             range: app.user.speedOptions,
             onchange: (level) => app.user.speed = level,
         });
+
+    setLabel(setting, 'bet');
 
     const betLevel =
         Slider(setting, 'betLevel', {
@@ -90,7 +99,14 @@ export function Setting(menu) {
     }
 }
 
+function setLabel(setting, target) {
+    setting.getChildByName(`label@${target}`)
+        .text = translate(`common:setting.${target}`);
+}
+
 function Toggle(setting, target) {
+    setLabel(setting, target);
+
     const ball =
         setting.getChildByName(`ball@${target}`);
 
@@ -134,6 +150,8 @@ function Toggle(setting, target) {
 }
 
 function Slider(setting, target, {range, onchange}) {
+    setLabel(setting, target);
+
     const frame = Clickable(
         setting.getChildByName(`frame@${target}`),
     );

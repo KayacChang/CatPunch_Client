@@ -6,7 +6,7 @@ import {App} from './system/application';
 import {Service} from './service/01/';
 import {log} from './general/utils/dev';
 
-import alert from './web/components/swal';
+import i18n from './plugin/i18n';
 
 import {enableFullScreenMask} from './system/modules/screen';
 
@@ -29,7 +29,10 @@ function startLoading(scene) {
 async function main() {
     //  Init App
     try {
-        document.title = '來!貓下去';
+        document.title = 'For Every Gamer | 61 Studio';
+
+        const translate = await i18n.init();
+        global.translate = translate;
 
         global.app = new App(Service);
 
@@ -59,7 +62,7 @@ async function main() {
 
         await app.resource.load(MainScene, UserInterface);
 
-        const ui = UserInterface.create();
+        const ui = UserInterface.create(initData);
         const scene = MainScene.create(initData);
         scene.addChild(ui);
 
@@ -68,11 +71,17 @@ async function main() {
         app.once('GameReady', () => {
             app.stage.removeChild(loadScene);
             app.resize();
+
+            document.title = translate('title');
+
             app.emit('Idle');
         });
     } catch (err) {
         console.error(err);
-        alert.error({title: err.message});
+
+        const msg = {title: err.message};
+
+        app.alert.error(msg);
     }
 }
 

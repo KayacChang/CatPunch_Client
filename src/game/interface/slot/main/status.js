@@ -3,11 +3,11 @@ import {
     currencyFormat,
     currencyValue,
     signFormat,
-} from '../../../../general/utils';
+} from '../../../../general';
 import anime from 'animejs';
 
 export function Status(view) {
-    setFont(view);
+    init(view);
 
     Cash(
         view.getChildByName('field@cash'),
@@ -25,14 +25,17 @@ export function Status(view) {
     return view;
 }
 
-function setFont(view) {
+function init(view) {
     view.children
         .filter(({content}) => content !== undefined)
         .forEach((field) => {
-            const [type] = field.name.split('@');
+            const [type, name] = field.name.split('@');
 
             if (type === 'label') {
                 defaultFont(field.content, {fontFamily: 'Basic'});
+
+                field.content.text = translate(`common:status.${name}`);
+                //
             } else if (type === 'field' || type === 'effect') {
                 defaultFont(field.content, {fontFamily: 'Candal'});
             }

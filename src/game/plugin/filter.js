@@ -4,7 +4,7 @@ import {
     OutlineFilter, ZoomBlurFilter, GodrayFilter,
 } from 'pixi-filters';
 
-import {isMobile} from '../../general/utils';
+import {isMobile} from '../../general';
 
 import {filters} from 'pixi.js';
 

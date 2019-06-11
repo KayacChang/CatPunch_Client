@@ -3,7 +3,6 @@ import {Exchange} from './exchange';
 import {Setting} from './setting';
 import anime from 'animejs';
 import {Information} from './information';
-import alert from '../../../../web/components/swal';
 
 const {entries} = Object;
 
@@ -185,17 +184,17 @@ function Nav(menu, sections) {
             if (name === 'home') {
                 if (app.user.cash > 0) {
                     const {value} =
-                        await alert.request(
-                            {title: 'Are You Sure To Checkout?'},
+                        await app.alert.request(
+                            {title: translate(`common:message.checkout`)},
                         );
 
                     if (!value) return;
 
                     const data = await app.service.checkout();
 
-                    await alert.checkoutList(data);
+                    await app.alert.checkoutList(data);
                 }
-                return alert.leave();
+                return app.alert.leave();
             }
         }
     }

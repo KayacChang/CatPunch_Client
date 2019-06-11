@@ -1,16 +1,18 @@
 import anime from 'animejs';
 
 import {ToggleButton, Clickable, Openable} from '../../components';
-import alert from '../../../../web/components/swal';
 
 import {
-    capitalize, currencyFormat, log10,
-} from '../../../../general/utils';
+    currencyFormat, log10,
+} from '../../../../general';
 
 export function Exchange(menu) {
     const exchange = Openable(
         menu.getChildByName('exchange'),
     );
+
+    exchange.getChildByName('title').content.text =
+        translate('common:exchange.title');
 
     const pad =
         exchange.getChildByName('NumberPad');
@@ -19,9 +21,7 @@ export function Exchange(menu) {
         .filter(({name}) => name.includes('num'))
         .forEach(NumberButton);
 
-    const currency = Currency(
-        exchange.getChildByName('output@currency'),
-    );
+    const currency = Currency(exchange);
 
     const dropdown = DropDown(
         exchange.getChildByName('dropdown@currency'),
@@ -47,9 +47,7 @@ export function Exchange(menu) {
         exchange.getChildByName('btn@confirm'),
     );
 
-    const amount = Amount(
-        exchange.getChildByName('output@amount'),
-    );
+    const amount = Amount(exchange);
 
     exchange.y -= 53;
     exchange.open = open;
@@ -60,13 +58,13 @@ export function Exchange(menu) {
     async function open() {
         if (app.user.cash > 0) {
             const {value} =
-                await alert.request({title: 'Are You Sure To Checkout?'});
+                await app.alert.request({title: 'Are You Sure To Checkout?'});
 
             if (!value) return;
 
             const data = await app.service.checkout();
 
-            alert.checkoutList(data);
+            app.alert.checkoutList(data);
         }
         await app.service.refresh();
 
@@ -107,10 +105,19 @@ export function Exchange(menu) {
             .content.text = currencyFormat(app.user.cash);
     }
 
-    function Currency({content}) {
+    function Currency(view) {
+        const tag = 'currency';
+
+        setLabel(tag);
+
+        const output =
+            view.getChildByName(`output@${tag}`).content;
+
         const currencies = app.service.currencies;
 
         let selected = '1';
+
+        update();
 
         return {get, set};
 
@@ -124,9 +131,13 @@ export function Exchange(menu) {
             amount.set(0);
 
             selected = value;
-            content.text = capitalize(
-                currencies.get(selected).name,
-            );
+
+            update();
+        }
+
+        function update() {
+            output.text =
+                translate(`common:currency.${currencies.get(selected).name}`);
         }
     }
 
@@ -148,7 +159,7 @@ export function Exchange(menu) {
             .filter(({name}) => name.includes('item'))
             .map(({content}, index) => {
                 content.text =
-                    capitalize(currencies[index].name);
+                    translate(`common:currency.${currencies[index].name}`);
             });
 
         const btns =
@@ -220,11 +231,27 @@ export function Exchange(menu) {
         }
     }
 
-    function Amount({content}) {
+    function setLabel(tag) {
+        exchange
+            .getChildByName(`label@${tag}`).content
+            .text = translate(`common:exchange.${tag}`);
+    }
+
+    function Amount(view) {
+        const amountTag = 'amount';
         let amount = 0;
 
+        setLabel(amountTag);
+
+        const amountField =
+            view.getChildByName(`output@${amountTag}`).content;
+
+        const cashTag = 'cash';
+
+        setLabel(cashTag);
+
         const cashField =
-            exchange.getChildByName('output@cash').content;
+            view.getChildByName(`output@${cashTag}`).content;
 
         set(amount);
 
@@ -232,13 +259,12 @@ export function Exchange(menu) {
 
         function set(val) {
             amount = val;
-            content.text = currencyFormat(amount);
+            amountField.text = currencyFormat(amount);
 
             const selected = currency.get();
             const {rate} = app.service.currencies.get(selected);
 
-            cashField.text =
-                currencyFormat(amount * rate);
+            cashField.text = currencyFormat(amount * rate);
         }
 
         function get() {
@@ -259,12 +285,18 @@ export function Exchange(menu) {
         btn = Clickable(btn);
         btn.on('pointerdown', click);
 
+        const [, name] = btn.name.split('@');
+
+        exchange
+            .getChildByName(`label@${name}`)
+            .text = translate(`common:button.${name}`);
+
         return btn;
 
         function click() {
             if (amount.get() <= 0) return;
 
-            alert.loading({title: 'Wait...'});
+            app.alert.loading({title: 'Wait...'});
 
             app.service
                 .exchange({
@@ -275,9 +307,9 @@ export function Exchange(menu) {
                     amount.set(0);
                     refresh(accountBalance);
 
-                    alert.close();
+                    app.alert.close();
                 })
-                .then(() => alert.success({
+                .then(() => app.alert.success({
                     title: `Cash Received: ${app.user.cash}`,
                 }))
                 .then(() => menu.close());
@@ -287,6 +319,13 @@ export function Exchange(menu) {
     function RefreshButton(btn) {
         btn = Clickable(btn);
         btn.on('pointerdown', click);
+
+        const [, name] = btn.name.split('@');
+
+        exchange
+            .getChildByName(`label@${name}`)
+            .text = translate(`common:button.${name}`);
+
         return btn;
 
         function click() {
@@ -327,6 +366,12 @@ export function Exchange(menu) {
         btn = Clickable(btn);
         btn.on('pointerdown', click);
 
+        const [, name] = btn.name.split('@');
+
+        pad
+            .getChildByName(`label@${name}`)
+            .text = translate(`common:button.${name}`);
+
         return btn;
 
         function click() {
@@ -337,6 +382,12 @@ export function Exchange(menu) {
     function CleanButton(btn) {
         btn = Clickable(btn);
         btn.on('pointerdown', click);
+
+        const [, name] = btn.name.split('@');
+
+        exchange
+            .getChildByName(`label@${name}`)
+            .text = translate(`common:button.${name}`);
 
         return btn;
 

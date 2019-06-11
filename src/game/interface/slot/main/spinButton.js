@@ -4,7 +4,7 @@ import {setColorMatrix} from '../../../plugin/filter';
 import anime from 'animejs';
 import {setBehaviour} from './button';
 
-import {pi} from '../../../../general/utils';
+import {pi} from '../../../../general';
 
 const {assign} = Object;
 

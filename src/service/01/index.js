@@ -1,5 +1,5 @@
-import {getSearchParams} from '../utils';
-import {clone} from '../../general/utils';
+import {getSearchParam} from '../utils';
+import {clone} from '../../general';
 import {User} from '../user';
 
 const {assign, entries, fromEntries} = Object;
@@ -43,7 +43,7 @@ export function Service(network) {
 
     function construct() {
         const token =
-            getSearchParams('token') || sessionStorage.getItem('accounttoken');
+            getSearchParam('token') || sessionStorage.getItem('accounttoken');
 
         if (!token) {
             // @TODO Maybe Popup an Alert before redirect to game hall.
@@ -128,13 +128,7 @@ export function Service(network) {
                     freeGameTable: data['reel']['freereel'],
                 });
 
-                const initData = {
-                };
-
-                return {
-                    ...reelTables,
-                    ...initData,
-                };
+                return {...reelTables};
             });
     }
 

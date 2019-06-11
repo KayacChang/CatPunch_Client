@@ -7,7 +7,9 @@ import {Network} from './modules/network';
 import {Resource} from './modules/resource';
 import {resize} from './modules/screen';
 
-import {debounce, isMobile} from '../general/utils';
+import Swal from '../plugin/swal';
+
+import {debounce, isMobile} from '../general';
 
 const {defineProperties, assign, freeze} = Object;
 
@@ -27,6 +29,8 @@ export function App(Service) {
     const network = Network();
     //  Service
     const service = Service && Service(network);
+    //  Alert
+    const alert = Swal();
     //  User
     let user = undefined;
     //  Control
@@ -45,6 +49,9 @@ export function App(Service) {
         },
         service: {
             get: () => service,
+        },
+        alert: {
+            get: () => alert,
         },
         user: {
             get: () => user,

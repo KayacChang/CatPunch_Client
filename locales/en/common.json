@@ -1,0 +1,57 @@
+{
+  "button": {
+    "back": "Go Back",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "refresh": "Refresh",
+    "delete": "Delete",
+    "exit": "Exit"
+  },
+  "status": {
+    "cash": "CASH",
+    "win": "WIN",
+    "bet": "BET"
+  },
+  "currency": {
+    "gold": "Gold",
+    "gift": "Gift",
+    "etc": "Etc",
+    "bonus": "Bonus"
+  },
+  "message": {
+    "checkout": "Are you sure to checkout?",
+    "checkoutTitle": "Check Out",
+
+    "exit": "Are you sure to exit?",
+
+    "audio": "Enable game audio?"
+  },
+  "exchange": {
+    "title": "EXCHANGE",
+
+    "cash": "Cash",
+    "amount": "Amount",
+    "currency": "Currency"
+  },
+  "information": {
+    "title": "INFORMATION"
+  },
+  "setting": {
+    "title": "SETTING",
+
+    "audio": "Audio",
+    "volume": "Volume",
+    "effects": "Effects Sound",
+    "ambience": "Ambience Sound",
+
+    "spin": "Spin",
+    "auto": "Auto",
+    "speed": "Speed",
+
+    "bet": "Bet",
+    "betLevel": "Bet Level"
+  },
+  "error": {
+    "unspecific": "Something went wrong. Please call customer service for more details."
+  }
+}

@@ -2,7 +2,7 @@ import {extras} from 'pixi.js';
 import anime from 'animejs';
 import Easing from 'easing-functions';
 
-import {randomInt} from '../../../../general/utils';
+import {randomInt} from '../../../../general';
 
 export function Coin() {
     const spriteSheet = app.resource.get('coin').spritesheet;

@@ -1,7 +1,7 @@
 import anime from 'animejs';
 import {
     wait, nth, floor, mod,
-} from '../../../../general/utils';
+} from '../../../../general';
 
 import {
     spinDuration,

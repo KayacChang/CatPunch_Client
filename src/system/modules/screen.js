@@ -1,5 +1,5 @@
 
-import {debounce, abs, select, isMobile} from '../../general/utils';
+import {debounce, abs, select, isMobile} from '../../general';
 
 function getClientSize(target) {
     const {clientWidth, clientHeight} = target;

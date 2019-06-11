@@ -6,7 +6,7 @@ import {
     degreeToRadian, radianToDegree,
     map, times,
     random, randomInt, pi,
-} from '../../../../general/utils';
+} from '../../../../general';
 
 import {setBevel, setGlow, setOutline} from '../../../plugin/filter';
 

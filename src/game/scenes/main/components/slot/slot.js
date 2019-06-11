@@ -1,6 +1,6 @@
 import {
     divide, mod, floor, nth,
-} from '../../../../../general/utils';
+} from '../../../../../general';
 
 import {
     TextureManager,

@@ -1,12 +1,15 @@
 import {Clickable, Openable} from '../../components';
 import anime from 'animejs';
 
-import {abs, sign} from '../../../../general/utils';
+import {abs, sign} from '../../../../general';
 
 export function Information(menu) {
     const information = Openable(
         menu.getChildByName('information'),
     );
+
+    information.getChildByName('title')
+        .text = translate(`common:information.title`);
 
     const pageTab = Pages([0, 1, 2, 3, 4, 5]);
 

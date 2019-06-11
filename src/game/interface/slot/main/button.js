@@ -1,7 +1,7 @@
 import {setDropShadow} from '../../../plugin/filter';
 import anime from 'animejs';
 
-import {isMobile} from '../../../../general/utils';
+import {isMobile} from '../../../../general';
 
 export function setBehaviour(it) {
     const hoverMaskView = it.getChildByName('hover');

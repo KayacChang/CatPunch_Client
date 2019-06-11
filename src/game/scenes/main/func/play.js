@@ -1,7 +1,7 @@
 import {spin} from './spin';
 import {
     wait, clone, times,
-} from '../../../../general/utils';
+} from '../../../../general';
 import anime from 'animejs';
 import {
     freeGameEffect,

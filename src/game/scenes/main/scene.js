@@ -14,7 +14,6 @@ import {
 } from '../../plugin/filter';
 
 import {play} from './func/play';
-import alert from '../../../web/components/swal';
 
 function initSlotMachine(scene, reelTables) {
     const slot =
@@ -105,7 +104,7 @@ export function create({normalTable, freeGameTable}) {
 
     slot.view.once('Ready', () => app.emit('GameReady'));
 
-    alert.request({title: 'Enable Sound'})
+    app.alert.request({title: translate(`common:message.audio`)})
         .then(({value}) => {
             app.sound.mute(!value);
 

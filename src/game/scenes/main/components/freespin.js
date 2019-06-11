@@ -1,5 +1,5 @@
 import anime from 'animejs';
-import {degreeToRadian} from '../../../../general/utils';
+import {degreeToRadian} from '../../../../general';
 import {setColorMatrix} from '../../../plugin/filter';
 
 export function FreeSpinIcon(view) {

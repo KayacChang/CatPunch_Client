@@ -1,4 +1,4 @@
-import {throttle, isMobile} from '../../../general/utils';
+import {throttle, isMobile} from '../../../general';
 
 const {defineProperties} = Object;
 
