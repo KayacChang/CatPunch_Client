@@ -1,6 +1,5 @@
 import {Clickable, defaultFont} from '../../components';
 import {Container, Text} from 'pixi.js';
-import {setColorMatrix} from '../../../plugin/filter';
 import anime from 'animejs';
 import {setBehaviour} from './button';
 
@@ -12,6 +11,8 @@ export function SpinButton(view) {
     let it = Clickable(
         view.getChildByName('spin'),
     );
+
+    const img = it.getChildByName('frame');
 
     const block =
         view.getChildByName('block');
@@ -33,8 +34,6 @@ export function SpinButton(view) {
     msg.alpha = 0;
     msg.pivot.set(comp.width / 2, comp.height / 2);
     view.addChild(comp);
-
-    const color = setColorMatrix(it);
 
     setBehaviour(it);
 
@@ -120,11 +119,11 @@ export function SpinButton(view) {
             });
         }
 
-        if (app.user.cash <= 10) {
-            color.saturate(-.9);
+        if (cashLessThanBet()) {
+            img.tint = 0x999999;
             isBlocking = true;
         } else {
-            color.saturate(0);
+            img.tint = 0xFFFFFF;
             isBlocking = false;
         }
     }
@@ -166,6 +165,10 @@ export function SpinButton(view) {
         }
 
         return play();
+    }
+
+    function cashLessThanBet() {
+        return app.user.cash < app.user.betOptions[app.user.bet];
     }
 
     async function play() {

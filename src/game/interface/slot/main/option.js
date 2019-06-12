@@ -72,6 +72,8 @@ export function Options(view) {
         block.interactive = open;
 
         menu.checkState();
+
+        view.updateStatus();
     }
 
     function OptionMenu(menu) {
