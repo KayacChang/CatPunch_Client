@@ -20,6 +20,9 @@ export function Menu(parent) {
         menu.getChildByName('hr');
     hr.scale.x = 0;
 
+    const navBackground =
+        menu.getChildByName('nav@background');
+
     const exchange = Exchange(menu);
     const setting = Setting(menu);
     const information = Information(menu);
@@ -38,8 +41,7 @@ export function Menu(parent) {
     nav.y = 0;
     nav.alpha = 0;
 
-    menu.section = setting;
-    menu.open = open;
+    menu.open = openNav;
     menu.close = close;
 
     app.on('Idle', onIdle);
@@ -49,17 +51,21 @@ export function Menu(parent) {
     function onIdle() {
         if (app.user.cash > 10) return;
 
-        open('exchange');
+        openNav('exchange');
     }
 
-    async function open(name = 'setting') {
+    async function openNav(section) {
         menu.visible = true;
         menu.alpha = 1;
 
+        menu.section = undefined;
+        nav.tab.alpha = 0;
+        nav.btns.forEach((btn) => btn.icon.alpha = 0.5);
+
         await anime.timeline()
             .add({
-                targets: background.scale,
-                x: 1, y: 1,
+                targets: navBackground,
+                x: '-=' + navBackground.width,
                 duration: 500,
                 easing: 'easeInOutExpo',
             })
@@ -71,16 +77,7 @@ export function Menu(parent) {
                 easing: 'easeOutQuad',
             }).finished;
 
-        if (name) menu.section = sections.get(name);
-        await nav.updateState();
-        menu.section.open();
-
-        anime({
-            targets: hr.scale,
-            x: 1,
-            duration: 300,
-            easing: 'easeOutQuad',
-        });
+        if (section) nav.open(sections.get(section));
     }
 
     function close() {
@@ -94,7 +91,15 @@ export function Menu(parent) {
             easing: 'easeOutQuart',
         });
 
-        anime.timeline()
+        anime({
+            targets: navBackground,
+            x: '+=' + navBackground.width,
+            duration: 500,
+            easing: 'easeInOutExpo',
+        });
+
+        anime
+            .timeline()
             .add({
                 targets: nav,
                 alpha: 0,
@@ -118,6 +123,12 @@ export function Menu(parent) {
 function Nav(menu, sections) {
     const nav = menu.getChildByName('nav');
 
+    const background =
+        menu.getChildByName('background');
+
+    const hr =
+        menu.getChildByName('hr');
+
     BackButton(
         nav.getChildByName('back'),
         menu,
@@ -125,12 +136,17 @@ function Nav(menu, sections) {
 
     const tab = nav.getChildByName('tab');
 
+    nav.tab = tab;
+
     const navBtns =
         nav.children
             .filter(({name}) => name.includes('btn'))
             .map(NavButton);
+    nav.btns = navBtns;
 
     nav.updateState = updateState;
+
+    nav.open = open;
 
     return nav;
 
@@ -152,6 +168,7 @@ function Nav(menu, sections) {
         return anime({
             targets: tab,
             y: targetBtn.y,
+            alpha: 0.9,
             duration: 300,
             easing: 'easeOutQuart',
         }).finished;
@@ -170,15 +187,12 @@ function Nav(menu, sections) {
 
         async function click() {
             if (sections.has(name)) {
+                if (menu.section) await menu.section.close();
+
                 const target = sections.get(name);
                 if (menu.section === target) return;
 
-                await menu.section.close();
-
-                menu.section = target;
-
-                updateState();
-                return target.open();
+                return open(target);
             }
 
             if (name === 'home') {
@@ -197,6 +211,29 @@ function Nav(menu, sections) {
                 return app.alert.leave();
             }
         }
+    }
+
+    async function open(section) {
+        menu.section = section;
+        updateState();
+
+        if (background.scale.x < 1) {
+            await anime.timeline()
+                .add({
+                    targets: background.scale,
+                    x: 1, y: 1,
+                    duration: 500,
+                    easing: 'easeInOutExpo',
+                })
+                .add({
+                    targets: hr.scale,
+                    x: 1,
+                    duration: 300,
+                    easing: 'easeOutQuad',
+                });
+        }
+
+        return section.open();
     }
 
     function BackButton(btn, menu) {
