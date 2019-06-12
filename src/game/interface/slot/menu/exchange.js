@@ -43,7 +43,7 @@ export function Exchange(menu) {
         exchange.getChildByName('btn@refresh'),
     );
 
-    ConfirmButton(
+    const confirmBtn = ConfirmButton(
         exchange.getChildByName('btn@confirm'),
     );
 
@@ -58,9 +58,10 @@ export function Exchange(menu) {
     async function open() {
         if (app.user.cash > 0) {
             const {value} =
-                await app.alert.request({title: 'Are You Sure To Checkout?'});
+                await app.alert
+                    .request({title: translate('common:message.checkout')});
 
-            if (!value) return;
+            if (!value) return menu.close();
 
             const data = await app.service.checkout();
 
@@ -119,10 +120,14 @@ export function Exchange(menu) {
 
         update();
 
-        return {get, set};
+        return {get, name, set};
 
         function get() {
             return selected;
+        }
+
+        function name() {
+            return currencies.get(selected).name;
         }
 
         function set(value) {
@@ -137,7 +142,7 @@ export function Exchange(menu) {
 
         function update() {
             output.text =
-                translate(`common:currency.${currencies.get(selected).name}`);
+                translate(`common:currency.${name()}`);
         }
     }
 
@@ -246,12 +251,22 @@ export function Exchange(menu) {
         const amountField =
             view.getChildByName(`output@${amountTag}`).content;
 
+        const amountHelper =
+            view.getChildByName(`help@${amountTag}`);
+
+        amountHelper.text = '';
+
         const cashTag = 'cash';
 
         setLabel(cashTag);
 
         const cashField =
             view.getChildByName(`output@${cashTag}`).content;
+
+        const specialCurrencies =
+            [...app.service.currencies.values()]
+                .filter(({rate}) => rate === 0.5)
+                .map(({type}) => type);
 
         set(amount);
 
@@ -265,6 +280,44 @@ export function Exchange(menu) {
             const {rate} = app.service.currencies.get(selected);
 
             cashField.text = currencyFormat(amount * rate);
+
+            if (checkOdd()) {
+                const currencyName =
+                    translate(`common:currency.${currency.name()}`);
+                amountHelper.text =
+                    translate(
+                        'common:helper.amountIsOdd',
+                        {currency: currencyName},
+                    );
+
+                confirmBtn.enable = false;
+                confirmBtn.tint = 0x999999;
+                //
+            } else if (checkBalance()) {
+                amountHelper.text =
+                    translate('common:helper.insufficientBalance');
+
+                confirmBtn.enable = false;
+                confirmBtn.tint = 0x999999;
+            } else {
+                amountHelper.text = '';
+                confirmBtn.enable = true;
+                confirmBtn.tint = 0xFFFFFF;
+            }
+        }
+
+        function checkBalance() {
+            const balance = app.service.accountBalance[currency.name()];
+            return amount > balance;
+        }
+
+        function checkOdd() {
+            const checkCurrencies =
+                specialCurrencies.includes(currency.get());
+
+            const isOdd = amount % 2 !== 0;
+
+            return checkCurrencies && isOdd;
         }
 
         function get() {
@@ -287,16 +340,20 @@ export function Exchange(menu) {
 
         const [, name] = btn.name.split('@');
 
-        exchange
-            .getChildByName(`label@${name}`)
-            .text = translate(`common:button.${name}`);
+        btn.label =
+            exchange.getChildByName(`label@${name}`);
+
+        btn.label.text = translate(`common:button.${name}`);
 
         return btn;
 
         function click() {
             if (amount.get() <= 0) return;
 
-            app.alert.loading({title: 'Wait...'});
+            const balance = app.service.accountBalance[currency.name()];
+            if (amount.get() > balance) return;
+
+            app.alert.loading({title: translate('common:message.wait')});
 
             app.service
                 .exchange({
@@ -310,7 +367,9 @@ export function Exchange(menu) {
                     app.alert.close();
                 })
                 .then(() => app.alert.success({
-                    title: `Cash Received: ${app.user.cash}`,
+                    title: translate(
+                        'common:message.receive', {cash: app.user.cash},
+                    ),
                 }))
                 .then(() => menu.close());
         }

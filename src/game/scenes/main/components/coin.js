@@ -27,8 +27,8 @@ export async function playCoin(scene, {x, y}, coins) {
 
     anime({
         targets: coins.map(({scale}) => scale),
-        x: [0.1, 0.15],
-        y: [0.1, 0.15],
+        x: [0.1, 0.25],
+        y: [0.1, 0.25],
         duration: 500,
     });
 

@@ -21,10 +21,13 @@
   "message": {
     "checkout": "确定要进行结算吗?",
     "checkoutTitle": "結算",
+    "receive": "兑得点数: {{cash}}",
 
     "exit": "确定要离开游戏吗?",
 
-    "audio": "启用游戏音效?"
+    "audio": "启用游戏音效?",
+
+    "wait": "请稍候..."
   },
   "exchange": {
     "title": "兑换",
@@ -32,6 +35,10 @@
     "currency": "币别",
     "amount": "数量",
     "cash": "点数"
+  },
+  "helper": {
+    "amountIsOdd": "兑换 {{currency}} 数量不可为奇数.",
+    "insufficientBalance": "帐户馀额不足."
   },
   "information": {
     "title": "说明"

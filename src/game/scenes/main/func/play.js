@@ -193,7 +193,7 @@ export function play(scene) {
     async function showBigWinEffect(scores) {
         const odds = scores / app.user.betOptions[app.user.bet];
 
-        if (odds < 100) return;
+        if (odds <= 8) return;
 
         await bigWinEffect(scene, scores);
     }

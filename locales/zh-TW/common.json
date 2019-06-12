@@ -21,10 +21,13 @@
   "message": {
     "checkout": "確定要進行結算嗎?",
     "checkoutTitle": "結算",
+    "receive": "兌得點數: {{cash}}",
 
     "exit": "確定要離開遊戲嗎?",
 
-    "audio": "啟用遊戲音效?"
+    "audio": "啟用遊戲音效?",
+
+    "wait": "請稍候..."
   },
   "exchange": {
     "title": "兌換",
@@ -32,6 +35,10 @@
     "currency": "幣別",
     "amount": "數量",
     "cash": "點數"
+  },
+  "helper": {
+    "amountIsOdd": "兌換 {{currency}} 數量不可為奇數.",
+    "insufficientBalance": "帳戶餘額不足."
   },
   "information": {
     "title": "說明"

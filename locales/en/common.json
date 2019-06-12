@@ -21,10 +21,13 @@
   "message": {
     "checkout": "Are you sure to checkout?",
     "checkoutTitle": "Check Out",
+    "receive": "Cash Received: {{cash}}",
 
     "exit": "Are you sure to exit?",
 
-    "audio": "Enable game audio?"
+    "audio": "Enable game audio?",
+
+    "wait": "Wait..."
   },
   "exchange": {
     "title": "EXCHANGE",
@@ -32,6 +35,10 @@
     "cash": "Cash",
     "amount": "Amount",
     "currency": "Currency"
+  },
+  "helper": {
+    "amountIsOdd": "{{currency}} can't be odd number.",
+    "insufficientBalance": "Balance is out of credit."
   },
   "information": {
     "title": "INFORMATION"

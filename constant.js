@@ -25,7 +25,8 @@ const gameID = 'A173D52E01A6EB65A5D6EDFB71A8C39C';
 const loginType = 3;
 
 //  Server URL
-const devServerURL = 'http://192.168.1.14:8000';
+const devServerURL = 'http://13.112.112.160:8000';
+// 'http://192.168.1.14:8000';
 const prodServerURL = 'http://13.112.112.160:8000';
 
 module.exports = {

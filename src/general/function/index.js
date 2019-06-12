@@ -11,10 +11,12 @@ import __ from 'ramda/src/__';
 import head from 'ramda/src/head';
 import reject from 'ramda/src/reject';
 import any from 'ramda/src/any';
+import keys from 'ramda/src/keys';
+import pipe from 'ramda/src/pipe';
 
 export {
     range, map, nth,
-    times, clone,
-    all, equals, filter,
+    times, clone, pipe,
+    all, equals, filter, keys,
     includes, __, head, reject, any,
 };

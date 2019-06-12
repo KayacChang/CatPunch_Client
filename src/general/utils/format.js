@@ -1,7 +1,7 @@
 import numeral from 'numeral';
 
 export function currencyFormat(num) {
-    return numeral(num).format('$0,0.00');
+    return numeral(num).format('$0,0');
 }
 
 export function currencyValue(num) {
