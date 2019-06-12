@@ -11,8 +11,8 @@ export function Service(network) {
     };
 
     const env = {
-        'logintype': 3,
-        'gametypeid': 'A173D52E01A6EB65A5D6EDFB71A8C39C',
+        'logintype': process.env.LOGIN_TYPE,
+        'gametypeid': process.env.GAME_ID,
     };
 
     // type 1 - 金幣      gold
