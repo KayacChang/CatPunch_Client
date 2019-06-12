@@ -21,6 +21,13 @@ export function Main(parent) {
 
     it.optionMenu = Options(it);
 
+    it.block =
+        it.getChildByName('block');
+
+    it.block.on('pointerdown', () => {
+        it.optionMenu.setOptionMenu(false);
+    });
+
     it.updateStatus = updateStatus;
 
     return it;

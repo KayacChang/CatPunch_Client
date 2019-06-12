@@ -23,6 +23,12 @@ export function Menu(parent) {
     const navBackground =
         menu.getChildByName('nav@background');
 
+    const block =
+        menu.getChildByName('block');
+    block.on('pointerdown', () => close());
+
+    menu.block = block;
+
     const exchange = Exchange(menu);
     const setting = Setting(menu);
     const information = Information(menu);
@@ -62,6 +68,8 @@ export function Menu(parent) {
         nav.tab.alpha = 0;
         nav.btns.forEach((btn) => btn.icon.alpha = 0.5);
 
+        block.interactive = true;
+
         await anime.timeline()
             .add({
                 targets: navBackground,
@@ -77,12 +85,17 @@ export function Menu(parent) {
                 easing: 'easeOutQuad',
             }).finished;
 
-        if (section) nav.open(sections.get(section));
+        if (section) {
+            await nav.open(sections.get(section));
+        }
     }
 
     function close() {
+        if (!menu.visible) return;
+
         parent.main.updateStatus();
-        menu.section.close();
+
+        if (menu.section) menu.section.close();
 
         anime({
             targets: hr.scale,
@@ -214,6 +227,8 @@ function Nav(menu, sections) {
     }
 
     async function open(section) {
+        menu.block.interactive = false;
+
         menu.section = section;
         updateState();
 

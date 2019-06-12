@@ -55,10 +55,7 @@ export function Options(view) {
 
     btn.on('Click', () => setOptionMenu(true));
 
-    const block =
-        view.getChildByName('block');
-
-    block.on('pointerdown', () => setOptionMenu(false));
+    menu.setOptionMenu = setOptionMenu;
 
     return menu;
 
@@ -69,7 +66,7 @@ export function Options(view) {
 
         app.sound.play('option');
 
-        block.interactive = open;
+        view.block.interactive = open;
 
         menu.checkState();
 
