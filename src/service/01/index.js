@@ -220,11 +220,11 @@ export function Service(network) {
                     throw new Error(error['Msg']);
                 }
 
-                return process(data);
+                return handle(data);
             });
     }
 
-    function process(data) {
+    function handle(data) {
         const totalWin = data['totalwinscore'];
         const cash = data['playermoney'];
 
