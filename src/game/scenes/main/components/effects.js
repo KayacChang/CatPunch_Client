@@ -126,7 +126,7 @@ export function reSpinEffect(scene) {
         .then(() => scene.removeChild(it));
 }
 
-export function bigWinEffect(scene) {
+export function bigWinEffect(scene, scores) {
     const sheet = app.resource.get('effect-text').spritesheet;
 
     const bigSprites = map(
@@ -196,6 +196,12 @@ export function bigWinEffect(scene) {
             y: config.scaleIn,
             duration: config.durationIn,
             delay: config.delay,
+            begin(anim) {
+                anim.animatables
+                    .forEach((el, index) =>
+                        setTimeout(() =>
+                            app.sound.play('popup'), 350 * index));
+            },
         }).finished;
 
     const maskIn =
@@ -207,7 +213,7 @@ export function bigWinEffect(scene) {
             delay: config.delay,
         }).finished;
 
-    const numberEffect = numberIncrementEffect(scene, 1000);
+    const numberEffect = numberIncrementEffect(scene, scores);
 
     return Promise
         .all([alphaIn, scaleIn, maskIn])
@@ -267,6 +273,11 @@ export function coinEffect(scene) {
 
     app.ticker.add(update);
 
+    app.sound.play('explosion');
+
+    const soundID =
+        setInterval(() => app.sound.play('coinScore'), 320);
+
     return wait(3000)
         .then(fadeOut)
         .then(reset);
@@ -281,6 +292,7 @@ export function coinEffect(scene) {
     }
 
     function reset() {
+        clearInterval(soundID);
         app.ticker.remove(update);
         scene.removeChild(it);
     }
@@ -393,6 +405,13 @@ export function numberIncrementEffect(scene, num) {
             easing: 'easeInOutQuart',
             delay: 850,
             duration: 3000,
+            begin() {
+                wait(850)
+                    .then(() => app.sound.play('maybeBonus'));
+            },
+            complete() {
+                app.sound.stop('maybeBonus');
+            },
         }).finished;
     }
 
@@ -413,6 +432,8 @@ export function numberIncrementEffect(scene, num) {
             duration: config.durationIn,
             delay: config.delay,
         });
+
+        app.sound.play('popup');
     }
 
     function fadeOut() {

@@ -24,6 +24,12 @@ import FREE_SPIN_ALERT_MP3
     from '../assets/sounds/mp3/FreeSpinAlert.mp3';
 import COIN_DROP_MP3
     from '../assets/sounds/mp3/CoinDrop.mp3';
+import COIN_SCORE_MP3
+    from '../assets/sounds/mp3/CoinScore.mp3';
+import POPUP_MP3
+    from '../assets/sounds/mp3/Popup.mp3';
+import EXPLOSION_MP3
+    from '../assets/sounds/mp3/Explosion.mp3';
 
 import NORMAL_BGM_WEBM
     from '../assets/sounds/webm/Normal_BGM.webm';
@@ -51,6 +57,12 @@ import FREE_SPIN_ALERT_WEBM
     from '../assets/sounds/webm/FreeSpinAlert.webm';
 import COIN_DROP_WEBM
     from '../assets/sounds/webm/CoinDrop.webm';
+import COIN_SCORE_WEBM
+    from '../assets/sounds/webm/CoinScore.webm';
+import POPUP_WEBM
+    from '../assets/sounds/webm/Popup.webm';
+import EXPLOSION_WEBM
+    from '../assets/sounds/webm/Explosion.webm';
 
 import NORMAL_BGM_OGG
     from '../assets/sounds/ogg/Normal_BGM.ogg';
@@ -78,7 +90,12 @@ import FREE_SPIN_ALERT_OGG
     from '../assets/sounds/ogg/FreeSpinAlert.ogg';
 import COIN_DROP_OGG
     from '../assets/sounds/ogg/CoinDrop.ogg';
-
+import COIN_SCORE_OGG
+    from '../assets/sounds/ogg/CoinScore.ogg';
+import POPUP_OGG
+    from '../assets/sounds/ogg/Popup.ogg';
+import EXPLOSION_OGG
+    from '../assets/sounds/ogg/Explosion.ogg';
 
 export const sounds = [
     {
@@ -211,6 +228,36 @@ export const sounds = [
             COIN_DROP_WEBM,
             COIN_DROP_OGG,
             COIN_DROP_MP3,
+        ],
+    },
+    {
+        type: 'sound',
+        subType: 'effects',
+        name: 'coinScore',
+        src: [
+            COIN_SCORE_WEBM,
+            COIN_SCORE_OGG,
+            COIN_SCORE_MP3,
+        ],
+    },
+    {
+        type: 'sound',
+        subType: 'effects',
+        name: 'popup',
+        src: [
+            POPUP_WEBM,
+            POPUP_OGG,
+            POPUP_MP3,
+        ],
+    },
+    {
+        type: 'sound',
+        subType: 'effects',
+        name: 'explosion',
+        src: [
+            EXPLOSION_WEBM,
+            EXPLOSION_OGG,
+            EXPLOSION_MP3,
         ],
     },
 ];

@@ -1,9 +1,10 @@
 import {spin} from './spin';
 import {
-    wait, clone, times,
+    wait, clone, times, ceil,
 } from '../../../../general';
 import anime from 'animejs';
 import {
+    bigWinEffect,
     freeGameEffect,
     reSpinEffect,
     scoresEffect,
@@ -44,6 +45,8 @@ export function play(scene) {
             await showScores(normalWin);
             app.user.lastWin = normalWin;
             app.user.cash += normalWin;
+
+            await showBigWinEffect(normalWin);
         }
 
         if (result.hasReSpin) {
@@ -89,6 +92,8 @@ export function play(scene) {
             await showScores(reSpinWin);
             app.user.lastWin = reSpinWin;
             app.user.cash += reSpinWin;
+
+            await showBigWinEffect(reSpinWin);
         }
 
         if (energy.scale === 10) {
@@ -141,6 +146,8 @@ export function play(scene) {
                 }
             }
 
+            await showBigWinEffect(totalScores);
+
             await energy.update(0);
         }
 
@@ -168,7 +175,8 @@ export function play(scene) {
         const coinEffect =
             slot.reels
                 .map((reel) => {
-                    const coins = times(Coin, scores);
+                    const coins = times(Coin, ceil(scores / 10) + 1);
+
                     const pos = coinPos[reel.reelIdx];
 
                     return playCoin(scene, pos, coins);
@@ -180,5 +188,13 @@ export function play(scene) {
         await Promise.all([
             ...coinEffect, effect,
         ]);
+    }
+
+    async function showBigWinEffect(scores) {
+        const odds = scores / app.user.betOptions[app.user.bet];
+
+        if (odds < 100) return;
+
+        await bigWinEffect(scene, scores);
     }
 }
