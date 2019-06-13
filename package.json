@@ -1,7 +1,7 @@
 {
-  "name": "BaseSlot",
+  "name": "CatPunch",
   "version": "1.0.0",
-  "description": "Slot Game made by JavaScript",
+  "description": "Slot Game CatPunch made by Kayac",
   "scripts": {
     "dos2unix": "find src -type f -exec sed -i 's/^M$//' {} +",
     "clean": "rm -rf dist",
