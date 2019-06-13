@@ -163,10 +163,9 @@ export function play(scene) {
     });
 
     function betLock(flag) {
-        const {optionMenu} = app.control.main;
+        const {btns} = app.control.main.option.menu;
 
-        const betButton =
-            optionMenu.btns[2];
+        const betButton = btns[2];
 
         betButton.enable = !flag;
     }

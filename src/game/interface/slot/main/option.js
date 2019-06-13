@@ -57,14 +57,14 @@ export function Options(view) {
 
     menu.setOptionMenu = setOptionMenu;
 
-    return menu;
+    return {menu, btn};
 
     function setOptionMenu(open) {
+        app.sound.play('option');
+
         setScale(open, menu);
         setScale(!open, btnIcon);
         setScale(!open, btnFrame);
-
-        app.sound.play('option');
 
         view.block.interactive = open;
 

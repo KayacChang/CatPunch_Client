@@ -3,6 +3,8 @@ import anime from 'animejs';
 
 import {abs, sign} from '../../../../general';
 
+import RULE_01_URL from '../../../rule/gameRule01.png';
+
 export function Information(menu) {
     const information = Openable(
         menu.getChildByName('information'),
@@ -33,7 +35,11 @@ export function Information(menu) {
 
     return information;
 
-    function open() {
+    async function open() {
+        const data = await app.resource.fetch(RULE_01_URL);
+
+        console.log(data);
+
         information.visible = true;
         return anime({
             targets: information,
@@ -86,8 +92,6 @@ export function Information(menu) {
 
         setControl(true);
 
-        window.movePage = movePage;
-
         return {movePage};
 
         function setControl(flag) {
@@ -106,7 +110,7 @@ export function Information(menu) {
             }
         }
 
-        function round3(num) {
+        function round5(num) {
             return Math.round(num, 5);
         }
 
@@ -118,8 +122,8 @@ export function Information(menu) {
             getScrollDistance = (event) => {
                 const newPos = getPos(event);
                 return {
-                    x: round3(newPos.x - originPos.x),
-                    y: round3(newPos.y - originPos.y),
+                    x: round5(newPos.x - originPos.x),
+                    y: round5(newPos.y - originPos.y),
                 };
             };
         }

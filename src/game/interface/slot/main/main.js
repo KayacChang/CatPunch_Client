@@ -13,19 +13,19 @@ export function Main(parent) {
 
     it.spinButton = SpinButton(it);
 
+    it.menuBtn = MenuButton(it);
+
     it.openMenu = function(section) {
         parent.menu.open(section);
     };
 
-    MenuButton(it);
-
-    it.optionMenu = Options(it);
+    it.option = Options(it);
 
     it.block =
         it.getChildByName('block');
 
     it.block.on('pointerdown', () => {
-        it.optionMenu.setOptionMenu(false);
+        it.option.menu.setOptionMenu(false);
     });
 
     it.updateStatus = updateStatus;
@@ -43,8 +43,6 @@ export function Main(parent) {
                         app.user.betOptions[app.user.bet] :
                         currencyFormat(app.user[name]);
             });
-
-        it.spinButton.checkState();
     }
 }
 
@@ -54,6 +52,8 @@ function MenuButton(view) {
     );
 
     it.on('Click', () => view.openMenu());
+
+    return it;
 }
 
 

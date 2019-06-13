@@ -667,8 +667,8 @@ export function bubbleEffect(scene) {
             delay: anime.stagger(30, {from: 'center'}),
         })
         .add({
-            y: [0.1, 0.5],
-            x: [0.1, 0.5],
+            y: [0.1, 0.75],
+            x: [0.1, 0.75],
         })
         .add({
             y: 0, x: 0,

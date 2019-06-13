@@ -277,11 +277,12 @@ export function Exchange(menu) {
             amountField.text = currencyFormat(amount);
 
             const selected = currency.get();
-            const {rate} = app.service.currencies.get(selected);
 
-            cashField.text = currencyFormat(amount * rate);
-
-            if (checkOdd()) {
+            if (checkIsZero()) {
+                confirmBtn.enable = false;
+                confirmBtn.tint = 0x999999;
+                //
+            } else if (checkOdd()) {
                 const currencyName =
                     translate(`common:currency.${currency.name()}`);
                 amountHelper.text =
@@ -292,6 +293,8 @@ export function Exchange(menu) {
 
                 confirmBtn.enable = false;
                 confirmBtn.tint = 0x999999;
+
+                cashField.text = '-';
                 //
             } else if (checkBalance()) {
                 amountHelper.text =
@@ -299,11 +302,21 @@ export function Exchange(menu) {
 
                 confirmBtn.enable = false;
                 confirmBtn.tint = 0x999999;
+
+                cashField.text = '-';
+                //
             } else {
                 amountHelper.text = '';
                 confirmBtn.enable = true;
                 confirmBtn.tint = 0xFFFFFF;
+
+                const {rate} = app.service.currencies.get(selected);
+                cashField.text = currencyFormat(amount * rate);
             }
+        }
+
+        function checkIsZero() {
+            return amount <= 0;
         }
 
         function checkBalance() {

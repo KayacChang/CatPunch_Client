@@ -27,7 +27,9 @@
 
     "audio": "启用游戏音效?",
 
-    "wait": "请稍候..."
+    "wait": "请稍候...",
+
+    "insufficientBalance": "余额不足"
   },
   "exchange": {
     "title": "兑换",

@@ -9,7 +9,7 @@ export function currencyValue(num) {
 }
 
 export function signFormat(num) {
-    return numeral(num).format('+0,0.0');
+    return numeral(num).format('+0,0');
 }
 
 export function capitalize(str) {

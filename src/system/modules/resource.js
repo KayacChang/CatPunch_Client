@@ -16,10 +16,18 @@ export function Resource({loader}) {
         app.emit('loading', ...args);
     });
 
-    return {get, load, reset};
+    return {get, load, fetch, reset};
 
     function get(name) {
         return loader.resources[name];
+    }
+
+    function fetch(url) {
+        loader.add(url);
+
+        return new Promise((resolve) => {
+            loader.load((loader, resources) => resolve(resources[url]));
+        });
     }
 
     function load(...scenes) {

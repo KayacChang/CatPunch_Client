@@ -245,7 +245,8 @@ function Nav(menu, sections) {
                     x: 1,
                     duration: 300,
                     easing: 'easeOutQuad',
-                });
+                })
+                .finished;
         }
 
         return section.open();

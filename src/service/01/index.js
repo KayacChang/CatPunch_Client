@@ -82,8 +82,13 @@ export function Service(network) {
         return network
             .post('account/login', requestBody)
             .then(({data, error}) => {
-                if (error['ErrorCode'] !== 0) {
-                    throw new Error(error['Msg']);
+                const code = error['ErrorCode'];
+                if (code !== 0) {
+                    console.error(new Error(error['Msg']));
+
+                    const msg = {title: `Error: ${code}`};
+
+                    return app.alert.error(msg);
                 }
 
                 tokens.token = data['token'];
@@ -113,8 +118,13 @@ export function Service(network) {
         return network
             .post('lobby/init', requestBody)
             .then(({data, error}) => {
-                if (error['ErrorCode'] !== 0) {
-                    throw new Error(error['Msg']);
+                const code = error['ErrorCode'];
+                if (code !== 0) {
+                    console.error(new Error(error['Msg']));
+
+                    const msg = {title: `Error: ${code}`};
+
+                    return app.alert.error(msg);
                 }
 
                 app.user.id = Number(data['player']['id']);
@@ -142,8 +152,13 @@ export function Service(network) {
         return network
             .post('lobby/refresh', requestBody)
             .then(({data, error}) => {
-                if (error['ErrorCode'] !== 0) {
-                    throw new Error(error['Msg']);
+                const code = error['ErrorCode'];
+                if (code !== 0) {
+                    console.error(new Error(error['Msg']));
+
+                    const msg = {title: `Error: ${code}`};
+
+                    return app.alert.error(msg);
                 }
 
                 updateAccount(data['userCoinQuota']);
@@ -164,8 +179,13 @@ export function Service(network) {
         return network
             .post('lobby/exchange', requestBody)
             .then(({data, error}) => {
-                if (error['ErrorCode'] !== 0) {
-                    throw new Error(error['Msg']);
+                const code = error['ErrorCode'];
+                if (code !== 0) {
+                    console.error(new Error(error['Msg']));
+
+                    const msg = {title: `Error: ${code}`};
+
+                    return app.alert.error(msg);
                 }
 
                 app.user.cash = data['gameCoin'];
@@ -185,8 +205,13 @@ export function Service(network) {
         return network
             .post('lobby/checkout', requestBody)
             .then(({data, error}) => {
-                if (error['ErrorCode'] !== 0) {
-                    throw new Error(error['Msg']);
+                const code = error['ErrorCode'];
+                if (code !== 0) {
+                    console.error(new Error(error['Msg']));
+
+                    const msg = {title: `Error: ${code}`};
+
+                    return app.alert.error(msg);
                 }
 
                 app.user.cash = 0;
@@ -216,8 +241,13 @@ export function Service(network) {
         return network
             .post('game/gameresult', requestBody)
             .then(({data, error}) => {
-                if (error['ErrorCode'] !== 0) {
-                    throw new Error(error['Msg']);
+                const code = error['ErrorCode'];
+                if (code !== 0) {
+                    console.error(new Error(error['Msg']));
+
+                    const msg = {title: `Error: ${code}`};
+
+                    return app.alert.error(msg);
                 }
 
                 return handle(data);

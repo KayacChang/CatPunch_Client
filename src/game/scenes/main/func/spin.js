@@ -25,7 +25,14 @@ export async function spin(scene, reels, result) {
 
     spinStart(slot, reels);
 
-    await wait(spinDuration[app.user.speed]);
+    let time = spinDuration[app.user.speed];
+
+    app.on('QuickStop', () => time = 0);
+
+    while (time > 0) {
+        await wait(100);
+        time -= 100;
+    }
 
     await spinStop(slot, reels, result);
 
@@ -71,7 +78,7 @@ async function spinStart(it, reels) {
             targets: reel,
             axis: '+=' + 300,
             easing: 'easeInOutQuad',
-            duration: 10000 - (2000 * app.user.speed),
+            duration: 6000,
         });
 
         await wait(120);
@@ -135,6 +142,7 @@ function spinStop(it, reels, {positions, symbols}) {
         });
 
         await wait(time);
+
         reel.status = Status.Stop;
 
         setTimeout(() =>

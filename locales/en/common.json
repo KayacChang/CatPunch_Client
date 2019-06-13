@@ -27,7 +27,9 @@
 
     "audio": "Enable game audio?",
 
-    "wait": "Wait..."
+    "wait": "Wait...",
+
+    "insufficientBalance": "Insufficient Balance"
   },
   "exchange": {
     "title": "EXCHANGE",
