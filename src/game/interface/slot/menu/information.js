@@ -4,6 +4,13 @@ import anime from 'animejs';
 import {abs, sign} from '../../../../general';
 
 import RULE_01_URL from '../../../rule/gameRule01.png';
+import RULE_02_URL from '../../../rule/gameRule02.png';
+import RULE_03_URL from '../../../rule/gameRule03.png';
+import RULE_04_URL from '../../../rule/gameRule04.png';
+import RULE_05_URL from '../../../rule/gameRule05.png';
+import RULE_06_URL from '../../../rule/gameRule06.png';
+
+import {Sprite} from 'pixi.js';
 
 export function Information(menu) {
     const information = Openable(
@@ -13,7 +20,14 @@ export function Information(menu) {
     information.getChildByName('title')
         .text = translate(`common:information.title`);
 
-    const pageTab = Pages([0, 1, 2, 3, 4, 5]);
+    const pageTab = Pages([
+        RULE_01_URL,
+        RULE_02_URL,
+        RULE_03_URL,
+        RULE_04_URL,
+        RULE_05_URL,
+        RULE_06_URL,
+    ]);
 
     const tabs =
         information.children
@@ -36,9 +50,20 @@ export function Information(menu) {
     return information;
 
     async function open() {
-        const data = await app.resource.fetch(RULE_01_URL);
+        const resources =
+            await app.resource.fetch(...[
+                RULE_01_URL,
+                RULE_02_URL,
+                RULE_03_URL,
+                RULE_04_URL,
+                RULE_05_URL,
+                RULE_06_URL,
+            ]);
 
-        console.log(data);
+        const sprites =
+            resources.map(({texture}) => new Sprite(texture));
+
+        carousel.pages = sprites;
 
         information.visible = true;
         return anime({
@@ -75,7 +100,7 @@ export function Information(menu) {
     function Carousel(it) {
         const {width} = it.getChildByName('mask');
 
-        const pages =
+        let pages =
             it.children
                 .filter(({name}) => name.includes('page'));
 
@@ -92,7 +117,24 @@ export function Information(menu) {
 
         setControl(true);
 
-        return {movePage};
+        return {
+            movePage,
+
+            get pages() {
+                return pages;
+            },
+            set pages(newPages) {
+                newPages.forEach((page, index) => {
+                    const {x, y} = pagesPos[index];
+                    page.position.set(x, y);
+                });
+
+                it.addChild(...newPages);
+                it.removeChild(...pages);
+
+                pages = newPages;
+            },
+        };
 
         function setControl(flag) {
             if (flag) {
@@ -129,7 +171,7 @@ export function Information(menu) {
         }
 
         function getPos(event) {
-            return event.index.getLocalPosition(it);
+            return event.data.getLocalPosition(it);
         }
 
         async function onScrollEnd() {
@@ -261,7 +303,7 @@ export function Information(menu) {
             const movement = pageTab.current - index;
 
             for (let i = 0; i < abs(movement); i++) {
-                const duration = 300 / Math.sqrt(abs(movement));
+                const duration = 100 / Math.sqrt(abs(movement));
 
                 await carousel.movePage(
                     sign(movement) * -1, duration,

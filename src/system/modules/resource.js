@@ -22,11 +22,18 @@ export function Resource({loader}) {
         return loader.resources[name];
     }
 
-    function fetch(url) {
-        loader.add(url);
+    function fetch(...tasks) {
+        loader.add(tasks);
 
         return new Promise((resolve) => {
-            loader.load((loader, resources) => resolve(resources[url]));
+            loader.load((loader, resources) => {
+                const results =
+                    tasks.map((task) => {
+                        return resources[task];
+                    });
+
+                resolve(results);
+            });
         });
     }
 
