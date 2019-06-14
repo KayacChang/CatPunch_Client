@@ -11,8 +11,8 @@ export function Service(network) {
     };
 
     const env = {
-        'logintype': process.env.LOGIN_TYPE,
-        'gametypeid': process.env.GAME_ID,
+        'logintype': ENV.LOGIN_TYPE,
+        'gametypeid': ENV.GAME_ID,
     };
 
     // type 1 - 金幣      gold

@@ -9,7 +9,7 @@ const UTF8 = 'charset=utf-8';
 
 export function Network() {
     const proxy = axios.create({
-        baseURL: process.env.SERVICE_URL,
+        baseURL: ENV.SERVICE_URL,
         headers: {
             'Content-Type': MEDIA_TYPE.JSON + '; ' + UTF8,
         },
