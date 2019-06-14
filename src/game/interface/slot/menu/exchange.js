@@ -93,6 +93,8 @@ export function Exchange(menu) {
     }
 
     function refresh(accountBalance) {
+        amount.set(0);
+
         exchange.children
             .filter(({name}) => name.includes('balance'))
             .forEach(({name, content}) => {
@@ -231,6 +233,8 @@ export function Exchange(menu) {
 
                 currency.set(currencies[index].type);
 
+                amount.set(0);
+
                 close();
             }
         }
@@ -281,6 +285,11 @@ export function Exchange(menu) {
             if (checkIsZero()) {
                 confirmBtn.enable = false;
                 confirmBtn.tint = 0x999999;
+
+                amountHelper.text = '';
+
+                const {rate} = app.service.currencies.get(selected);
+                cashField.text = currencyFormat(amount * rate);
                 //
             } else if (checkOdd()) {
                 const currencyName =
@@ -379,11 +388,13 @@ export function Exchange(menu) {
 
                     app.alert.close();
                 })
-                .then(() => app.alert.success({
-                    title: translate(
-                        'common:message.receive', {cash: app.user.cash},
-                    ),
-                }))
+                .then(() => {
+                    app.alert.success({
+                        title: translate(
+                            'common:message.receive', {cash: app.user.cash},
+                        ),
+                    });
+                })
                 .then(() => menu.close());
         }
     }
@@ -401,8 +412,16 @@ export function Exchange(menu) {
         return btn;
 
         function click() {
-            app.service.refresh()
-                .then(refresh);
+            app.alert.loading();
+
+            dropdown.close();
+
+            app.service
+                .refresh()
+                .then(refresh)
+                .then(() => {
+                    app.alert.close();
+                });
         }
     }
 
@@ -424,6 +443,7 @@ export function Exchange(menu) {
         return btn;
 
         function click() {
+            dropdown.close();
             amount.push(num);
 
             text.style.fill = '#FFB300';
@@ -447,6 +467,7 @@ export function Exchange(menu) {
         return btn;
 
         function click() {
+            dropdown.close();
             amount.pop();
         }
     }
@@ -464,6 +485,7 @@ export function Exchange(menu) {
         return btn;
 
         function click() {
+            dropdown.close();
             amount.set(0);
         }
     }

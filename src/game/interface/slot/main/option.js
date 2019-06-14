@@ -211,15 +211,17 @@ export function Options(view) {
         }
 
         async function setBet() {
+            const hotKeys = app.user.betOptionsHotKey;
+            const options = hotKeys.map((key) => app.user.betOptions[key]);
+
             setOptionItems(
-                app.user.betOptions,
-                update,
+                options, update,
             );
 
             refresh(app.user.bet);
 
             function update(index) {
-                app.user.bet = index;
+                app.user.bet = hotKeys[index];
 
                 refresh(app.user.bet);
             }

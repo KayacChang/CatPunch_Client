@@ -24,7 +24,14 @@ export function Sound({loader}) {
         return sound;
     }
 
-    function mute(isMuted) {
+    function mute(isMuted, target) {
+        if (target) {
+            const sound = loader.resources[target].data;
+            sound.mute(isMuted);
+
+            return sound;
+        }
+
         if (isMuted === undefined) return Howler._muted;
         return Howler.mute(isMuted);
     }

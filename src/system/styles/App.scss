@@ -7,11 +7,6 @@
   canvas {
     width: auto;
     height: 100%;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    /* bring your own prefixes */
-    transform: translate(-50%, -50%);
   }
 
   #mask {
@@ -51,13 +46,18 @@
 
 }
 
-//  When Portrait ======================================
+//  When Mobile ======================================
 @media only screen and (max-device-width: 1000px) {
   #app {
     margin: 0;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 
+//  When Portrait ======================================
 @media all and (orientation: portrait) {
   #app {
     #icon {
@@ -68,6 +68,7 @@
   }
 }
 
+//  When Landscape ======================================
 @media all and (orientation: landscape) {
   #app {
     #icon {

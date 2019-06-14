@@ -200,10 +200,10 @@ function Nav(menu, sections) {
 
         async function click() {
             if (sections.has(name)) {
-                if (menu.section) await menu.section.close();
-
                 const target = sections.get(name);
                 if (menu.section === target) return;
+
+                if (menu.section) await menu.section.close();
 
                 return open(target);
             }

@@ -9,6 +9,7 @@ export function User() {
     let lastWin = 0;
 
     let betOptions = [1.0, 10.0, 20.0, 50.0, 100.0];
+    let betOptionsHotKey = [0, 1, 2, 3, 4];
     let bet = 0;
 
     const speedOptions = [1, 2, 3];
@@ -65,6 +66,13 @@ export function User() {
         },
         set betOptions(options) {
             betOptions = options;
+        },
+
+        get betOptionsHotKey() {
+            return betOptionsHotKey;
+        },
+        set betOptionsHotKey(selection) {
+            betOptionsHotKey = selection;
         },
 
         get bet() {

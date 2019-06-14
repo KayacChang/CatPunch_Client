@@ -1,10 +1,9 @@
 import {
-    select,
-} from './general/utils/dom';
+    select, remove, log,
+} from './general';
 
 import {App} from './system/application';
 import {Service} from './service/01/';
-import {log} from './general/utils/dev';
 
 import i18n from './plugin/i18n';
 
@@ -70,6 +69,9 @@ async function main() {
 
         app.once('GameReady', () => {
             app.stage.removeChild(loadScene);
+
+            select('script').forEach(remove);
+
             app.resize();
 
             document.title = translate('title');

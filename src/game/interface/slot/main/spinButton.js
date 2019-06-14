@@ -39,6 +39,7 @@ export function SpinButton(view) {
 
     let isBlocking = false;
     let isRunning = false;
+    let isAuto = false;
     let isQuickStop = false;
     let whenAnim = false;
     let count = 0;
@@ -72,9 +73,17 @@ export function SpinButton(view) {
         set(newCount) {
             count = newCount;
 
-            if (newCount === 0) return countField.text = '';
+            if (newCount === 0) {
+                countField.text = '';
+
+                isAuto = false;
+
+                return;
+            }
 
             countField.text = newCount;
+
+            isAuto = true;
         },
     };
 
@@ -95,7 +104,7 @@ export function SpinButton(view) {
     return it;
 
     function checkState() {
-        if (it.auto.get() > 0 && isRunning) {
+        if (it.auto.get() > 0 && isAuto) {
             play();
             it.auto.set(it.auto.get() - 1);
         } else {
@@ -146,6 +155,10 @@ export function SpinButton(view) {
         }
     }
 
+    function cashLessThanBet() {
+        return app.user.cash < app.user.betOptions[app.user.bet];
+    }
+
     function onClick() {
         if (isBlocking) {
             if (whenAnim) return;
@@ -188,15 +201,10 @@ export function SpinButton(view) {
                 setTimeout(() => app.emit('QuickStop'), 250);
             }
 
-
             return;
         }
 
         return play();
-    }
-
-    function cashLessThanBet() {
-        return app.user.cash < app.user.betOptions[app.user.bet];
     }
 
     function play() {

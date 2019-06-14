@@ -21,9 +21,9 @@ export function Service(network) {
     // type 4 - 紅利      bonus
     const currencies = new Map([
         ['1', {type: '1', name: 'gold', rate: 1}],
-        ['2', {type: '2', name: 'gift', rate: 0.5}],
         ['3', {type: '3', name: 'etc', rate: 1}],
         ['4', {type: '4', name: 'bonus', rate: 0.5}],
+        ['2', {type: '2', name: 'gift', rate: 0.5}],
     ]);
     const accountBalance = {};
 
@@ -131,7 +131,9 @@ export function Service(network) {
 
                 app.user.cash = data['player']['money'];
 
-                app.user.betOptions = data['betrate'];
+                app.user.betOptions = data['betrate']['betrate'];
+                app.user.betOptionsHotKey = data['betrate']['betratelinkindex'];
+                app.user.bet = data['betrate']['betratedefaultindex'];
 
                 assign(reelTables, {
                     normalTable: data['reel']['normalreel'],

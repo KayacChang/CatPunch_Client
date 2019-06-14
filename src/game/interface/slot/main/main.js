@@ -43,6 +43,8 @@ export function Main(parent) {
                         app.user.betOptions[app.user.bet] :
                         currencyFormat(app.user[name]);
             });
+
+        it.spinButton.checkState();
     }
 }
 

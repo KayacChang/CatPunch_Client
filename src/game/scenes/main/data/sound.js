@@ -24,12 +24,14 @@ import FREE_SPIN_ALERT_MP3
     from '../assets/sounds/mp3/FreeSpinAlert.mp3';
 import COIN_DROP_MP3
     from '../assets/sounds/mp3/CoinDrop.mp3';
-import COIN_SCORE_MP3
-    from '../assets/sounds/mp3/CoinScore.mp3';
 import POPUP_MP3
     from '../assets/sounds/mp3/Popup.mp3';
 import EXPLOSION_MP3
     from '../assets/sounds/mp3/Explosion.mp3';
+import BIGWIN_MP3
+    from '../assets/sounds/mp3/BigWin.mp3';
+import COIN_EXPLOSION_MP3
+    from '../assets/sounds/mp3/CoinExplosion.mp3';
 
 import NORMAL_BGM_WEBM
     from '../assets/sounds/webm/Normal_BGM.webm';
@@ -57,12 +59,14 @@ import FREE_SPIN_ALERT_WEBM
     from '../assets/sounds/webm/FreeSpinAlert.webm';
 import COIN_DROP_WEBM
     from '../assets/sounds/webm/CoinDrop.webm';
-import COIN_SCORE_WEBM
-    from '../assets/sounds/webm/CoinScore.webm';
 import POPUP_WEBM
     from '../assets/sounds/webm/Popup.webm';
 import EXPLOSION_WEBM
     from '../assets/sounds/webm/Explosion.webm';
+import BIGWIN_WEBM
+    from '../assets/sounds/webm/BigWin.webm';
+import COIN_EXPLOSION_WEBM
+    from '../assets/sounds/webm/CoinExplosion.webm';
 
 import NORMAL_BGM_OGG
     from '../assets/sounds/ogg/Normal_BGM.ogg';
@@ -90,12 +94,14 @@ import FREE_SPIN_ALERT_OGG
     from '../assets/sounds/ogg/FreeSpinAlert.ogg';
 import COIN_DROP_OGG
     from '../assets/sounds/ogg/CoinDrop.ogg';
-import COIN_SCORE_OGG
-    from '../assets/sounds/ogg/CoinScore.ogg';
 import POPUP_OGG
     from '../assets/sounds/ogg/Popup.ogg';
 import EXPLOSION_OGG
     from '../assets/sounds/ogg/Explosion.ogg';
+import BIGWIN_OGG
+    from '../assets/sounds/ogg/BigWin.ogg';
+import COIN_EXPLOSION_OGG
+    from '../assets/sounds/ogg/CoinExplosion.ogg';
 
 export const sounds = [
     {
@@ -233,11 +239,21 @@ export const sounds = [
     {
         type: 'sound',
         subType: 'effects',
-        name: 'coinScore',
+        name: 'bigWin',
         src: [
-            COIN_SCORE_WEBM,
-            COIN_SCORE_OGG,
-            COIN_SCORE_MP3,
+            BIGWIN_WEBM,
+            BIGWIN_OGG,
+            BIGWIN_MP3,
+        ],
+    },
+    {
+        type: 'sound',
+        subType: 'effects',
+        name: 'coinExplosion',
+        src: [
+            COIN_EXPLOSION_WEBM,
+            COIN_EXPLOSION_OGG,
+            COIN_EXPLOSION_MP3,
         ],
     },
     {

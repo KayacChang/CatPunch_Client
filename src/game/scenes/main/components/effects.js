@@ -215,6 +215,9 @@ export function bigWinEffect(scene, scores) {
 
     const numberEffect = numberIncrementEffect(scene, scores);
 
+    app.sound.mute(true, 'mainBGM');
+    app.sound.play('bigWin');
+
     return Promise
         .all([alphaIn, scaleIn, maskIn])
         .then(() => {
@@ -248,7 +251,11 @@ export function bigWinEffect(scene, scores) {
 
             return numberEffect.fadeOut();
         })
-        .then(() => scene.removeChild(it));
+        .then(() => {
+            app.sound.mute(false, 'mainBGM');
+
+            scene.removeChild(it);
+        });
 }
 
 export function coinEffect(scene) {
@@ -275,8 +282,7 @@ export function coinEffect(scene) {
 
     app.sound.play('explosion');
 
-    const soundID =
-        setInterval(() => app.sound.play('coinScore'), 320);
+    app.sound.play('coinExplosion');
 
     return wait(3000)
         .then(fadeOut)
@@ -292,7 +298,6 @@ export function coinEffect(scene) {
     }
 
     function reset() {
-        clearInterval(soundID);
         app.ticker.remove(update);
         scene.removeChild(it);
     }
