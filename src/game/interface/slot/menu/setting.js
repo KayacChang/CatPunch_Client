@@ -4,7 +4,7 @@ import {Clickable, ToggleButton, RangeSlider} from '../../components';
 import anime from 'animejs';
 
 import {setColorMatrix} from '../../../plugin/filter';
-import {divide, round, range, map} from '../../../../general';
+import {divide, round} from '../../../../general';
 
 export function Setting(menu) {
     const setting = Openable(
@@ -25,7 +25,9 @@ export function Setting(menu) {
     effectSwitch.set(!app.sound.mute());
     ambienceSwitch.set(!app.sound.mute());
 
-    const volumeRange = map((num) => divide(num, 10))(range(0, 11));
+    const volumeRange = [
+        0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1,
+    ];
     const volume =
         Slider(setting, 'volume', {
             range: volumeRange,
