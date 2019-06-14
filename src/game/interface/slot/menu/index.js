@@ -55,9 +55,13 @@ export function Menu(parent) {
     return menu;
 
     function onIdle() {
-        if (app.user.cash > 10) return;
+        if (!cashLessThanBet()) return;
 
         openNav('exchange');
+    }
+
+    function cashLessThanBet() {
+        return app.user.cash < app.user.betOptions[app.user.bet];
     }
 
     async function openNav(section) {

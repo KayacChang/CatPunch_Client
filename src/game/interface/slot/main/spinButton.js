@@ -105,6 +105,7 @@ export function SpinButton(view) {
 
     function checkState() {
         if (it.auto.get() > 0 && isAuto) {
+            isRunning = false;
             play();
             it.auto.set(it.auto.get() - 1);
         } else {
@@ -127,10 +128,12 @@ export function SpinButton(view) {
                 alpha: 1,
 
                 complete() {
+                    view.menuBtn.interactive = true;
+                    view.option.btn.interactive = true;
+
                     isRunning = false;
                     isQuickStop = false;
 
-                    app.user.auto = 0;
                     app.user.speed = speed;
                 },
             });
@@ -146,12 +149,11 @@ export function SpinButton(view) {
         if (cashLessThanBet()) {
             img.tint = 0x999999;
             isBlocking = true;
+
+            it.auto.set(0);
         } else {
             img.tint = 0xFFFFFF;
             isBlocking = false;
-
-            view.menuBtn.interactive = true;
-            view.option.btn.interactive = true;
         }
     }
 
