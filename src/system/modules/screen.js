@@ -49,7 +49,7 @@ export function enableFullScreenMask() {
     icon.classList.remove('hidden');
     mask.classList.remove('hidden');
 
-    window.addEventListener('touchmove', handle());
+    window.addEventListener('touchend', handle());
     window.addEventListener('resize', handle());
     window.addEventListener('orientationchange', handle());
 
@@ -69,7 +69,7 @@ export function enableFullScreenMask() {
 
                 scrollTo(0, 0);
             });
-        }, 200, {leading: true, trailing: true, maxWait: 60});
+        }, 200, {leading: false, trailing: true, maxWait: 60});
     }
 
     function forApple() {

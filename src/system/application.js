@@ -18,7 +18,7 @@ export function App(Service) {
         new Application({
             resolution: devicePixelRatio,
             antialias: true,
-            powerPreference: isMobile.phone && 'high-performance',
+            forceCanvas: isMobile.phone,
         });
 
     //  Resource

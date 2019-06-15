@@ -167,6 +167,8 @@ function spinStop(it, reels, {positions, symbols}) {
 
                 anime.remove(reel);
 
+                reel.symbols.forEach((symbol) => symbol.visible = false);
+
                 reel.status = Status.Idle;
             },
         }).finished;
