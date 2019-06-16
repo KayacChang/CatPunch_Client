@@ -9,7 +9,7 @@ import {resize} from './modules/screen';
 
 import Swal from '../plugin/swal';
 
-import {debounce, isMobile} from '../general';
+import {isMobile} from '../general';
 
 const {defineProperties, assign, freeze} = Object;
 
@@ -86,8 +86,8 @@ export function App(Service) {
     });
 
     //  Event Binding
-    global.addEventListener('resize', debounce(app.resize, 200));
-    global.addEventListener('orientationchange', debounce(app.resize, 200));
+    global.addEventListener('resize', app.resize);
+    global.addEventListener('orientationchange', app.resize);
 
     return freeze(app);
 }

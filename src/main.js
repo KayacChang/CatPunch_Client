@@ -43,6 +43,7 @@ async function main() {
 
         global.ENV = {
             SERVICE_URL:
+            // res['prodServerURL'],
                 isProduction ? res['prodServerURL'] : res['devServerURL'],
 
             LOGIN_TYPE: res['loginType'],

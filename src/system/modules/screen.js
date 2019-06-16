@@ -1,5 +1,4 @@
-
-import {debounce, abs, select, isMobile} from '../../general';
+import {throttle, abs, select, isMobile} from '../../general';
 
 function getClientSize(target) {
     const {clientWidth, clientHeight} = target;
@@ -49,27 +48,24 @@ export function enableFullScreenMask() {
     icon.classList.remove('hidden');
     mask.classList.remove('hidden');
 
-    window.addEventListener('touchend', handle());
     window.addEventListener('resize', handle());
     window.addEventListener('orientationchange', handle());
 
     function handle() {
-        return debounce(() => {
-            requestAnimationFrame(() => {
-                const isMinimal =
-                    (isMobile.apple.device) ? forApple() : forAndroid();
+        return throttle(() => {
+            const isMinimal =
+                (isMobile.apple.device) ? forApple() : forAndroid();
 
-                const func =
-                    (el, className) => isMinimal ?
-                        el.classList.add(className) :
-                        el.classList.remove(className);
+            const func =
+                (el, className) => isMinimal ?
+                    el.classList.add(className) :
+                    el.classList.remove(className);
 
-                func(icon, 'hidden');
-                func(mask, 'hidden');
+            func(icon, 'hidden');
+            func(mask, 'hidden');
 
-                scrollTo(0, 0);
-            });
-        }, 200, {leading: false, trailing: true, maxWait: 60});
+            scrollTo(0, 0);
+        }, 500);
     }
 
     function forApple() {
@@ -93,10 +89,10 @@ export function resize(app) {
     app.renderer
         .resize(size.width, size.height);
 
-    const rootScene = app.stage.children[0];
-    if (rootScene) {
-        const expectStageSize = {width: 1920, height: 1080};
-        rootScene.scale.x = size.width / expectStageSize.width;
-        rootScene.scale.y = size.height / expectStageSize.height;
-    }
+    app.stage.children
+        .forEach((scene) => {
+            const expectStageSize = {width: 1920, height: 1080};
+            scene.scale.x = size.width / expectStageSize.width;
+            scene.scale.y = size.height / expectStageSize.height;
+        });
 }
