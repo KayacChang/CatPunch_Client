@@ -171,10 +171,12 @@ export function play(scene) {
     }
 
     async function showScores(scores) {
+        const odds = ceil(scores / app.user.betOptions[app.user.bet]);
+
         const coinEffect =
             slot.reels
                 .map((reel) => {
-                    const coins = times(Coin, ceil(scores / 10) + 1);
+                    const coins = times(Coin, odds);
 
                     const pos = coinPos[reel.reelIdx];
 

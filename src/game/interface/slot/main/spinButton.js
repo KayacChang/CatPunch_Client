@@ -104,7 +104,7 @@ export function SpinButton(view) {
     return it;
 
     function checkState() {
-        if (it.auto.get() > 0 && isAuto) {
+        if (it.auto.get() > 0 && isAuto && isRunning) {
             isRunning = false;
             play();
             it.auto.set(it.auto.get() - 1);

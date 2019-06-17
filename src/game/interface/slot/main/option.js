@@ -223,7 +223,7 @@ export function Options(view) {
             function update(index) {
                 app.user.bet = hotKeys[index];
 
-                refresh(app.user.bet);
+                refresh(index);
             }
         }
 

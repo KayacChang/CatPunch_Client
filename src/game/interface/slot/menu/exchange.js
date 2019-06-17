@@ -277,21 +277,21 @@ export function Exchange(menu) {
         return {get, set, push, pop};
 
         function set(val) {
-            amount = val;
-            amountField.text = currencyFormat(amount);
-
             const selected = currency.get();
 
-            if (checkIsZero()) {
+            if (checkIsZero(val)) {
                 confirmBtn.enable = false;
                 confirmBtn.tint = 0x999999;
 
                 amountHelper.text = '';
 
                 const {rate} = app.service.currencies.get(selected);
-                cashField.text = currencyFormat(amount * rate);
+                cashField.text = currencyFormat(val * rate);
+
+                amount = val;
+                amountField.text = currencyFormat(amount);
                 //
-            } else if (checkOdd()) {
+            } else if (checkOdd(val)) {
                 const currencyName =
                     translate(`common:currency.${currency.name()}`);
                 amountHelper.text =
@@ -304,15 +304,18 @@ export function Exchange(menu) {
                 confirmBtn.tint = 0x999999;
 
                 cashField.text = '-';
-                //
-            } else if (checkBalance()) {
-                amountHelper.text =
-                    translate('common:helper.insufficientBalance');
 
+                amount = val;
+                amountField.text = currencyFormat(amount);
+                //
+            } else if (checkBalance(val)) {
                 confirmBtn.enable = false;
                 confirmBtn.tint = 0x999999;
 
                 cashField.text = '-';
+
+                amount = app.service.accountBalance[currency.name()];
+                amountField.text = currencyFormat(amount);
                 //
             } else {
                 amountHelper.text = '';
@@ -320,24 +323,27 @@ export function Exchange(menu) {
                 confirmBtn.tint = 0xFFFFFF;
 
                 const {rate} = app.service.currencies.get(selected);
-                cashField.text = currencyFormat(amount * rate);
+                cashField.text = currencyFormat(val * rate);
+
+                amount = val;
+                amountField.text = currencyFormat(amount);
             }
         }
 
-        function checkIsZero() {
-            return amount <= 0;
+        function checkIsZero(val) {
+            return val <= 0;
         }
 
-        function checkBalance() {
+        function checkBalance(val) {
             const balance = app.service.accountBalance[currency.name()];
-            return amount > balance;
+            return val > balance;
         }
 
-        function checkOdd() {
+        function checkOdd(val) {
             const checkCurrencies =
                 specialCurrencies.includes(currency.get());
 
-            const isOdd = amount % 2 !== 0;
+            const isOdd = val % 2 !== 0;
 
             return checkCurrencies && isOdd;
         }

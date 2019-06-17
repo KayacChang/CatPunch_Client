@@ -52,14 +52,15 @@ export default function() {
         return Swal.fire(config);
     }
 
-    function loading({title}) {
+    function loading(msg = {}) {
         const config = {
             ...defaultStyle,
 
-            title,
             allowEscapeKey: false,
             allowOutsideClick: false,
             onBeforeOpen: () => Swal.showLoading(),
+
+            ...(msg),
         };
         return Swal.fire(config);
     }
