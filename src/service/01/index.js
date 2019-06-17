@@ -73,14 +73,9 @@ export function Service(network) {
         return accountBalance;
     }
 
-    function login() {
-        const requestBody = {
-            ...tokens,
-            ...env,
-        };
-
+    function request(url, body) {
         return network
-            .post('account/login', requestBody)
+            .post(url, body)
             .then(({data, error}) => {
                 const code = error['ErrorCode'];
                 if (code !== 0) {
@@ -88,9 +83,25 @@ export function Service(network) {
 
                     const msg = {title: `Error: ${code}`};
 
+                    if (code === 18) {
+                        msg.text = translate('common:message.maintain');
+                    }
+
                     return app.alert.error(msg);
                 }
 
+                return data;
+            });
+    }
+
+    function login() {
+        const requestBody = {
+            ...tokens,
+            ...env,
+        };
+
+        return request('account/login', requestBody)
+            .then((data) => {
                 tokens.token = data['token'];
 
                 app.user = new User();
@@ -115,18 +126,8 @@ export function Service(network) {
             'gameaccount': app.user.account,
         };
 
-        return network
-            .post('lobby/init', requestBody)
-            .then(({data, error}) => {
-                const code = error['ErrorCode'];
-                if (code !== 0) {
-                    console.error(new Error(error['Msg']));
-
-                    const msg = {title: `Error: ${code}`};
-
-                    return app.alert.error(msg);
-                }
-
+        return request('lobby/init', requestBody)
+            .then((data) => {
                 app.user.id = Number(data['player']['id']);
 
                 app.user.cash = data['player']['money'];
@@ -151,18 +152,8 @@ export function Service(network) {
             'gameaccount': app.user.account,
         };
 
-        return network
-            .post('lobby/refresh', requestBody)
-            .then(({data, error}) => {
-                const code = error['ErrorCode'];
-                if (code !== 0) {
-                    console.error(new Error(error['Msg']));
-
-                    const msg = {title: `Error: ${code}`};
-
-                    return app.alert.error(msg);
-                }
-
+        return request('lobby/refresh', requestBody)
+            .then((data) => {
                 updateAccount(data['userCoinQuota']);
 
                 return accountBalance;
@@ -178,18 +169,8 @@ export function Service(network) {
             'coinamount': Number(amount),
         };
 
-        return network
-            .post('lobby/exchange', requestBody)
-            .then(({data, error}) => {
-                const code = error['ErrorCode'];
-                if (code !== 0) {
-                    console.error(new Error(error['Msg']));
-
-                    const msg = {title: `Error: ${code}`};
-
-                    return app.alert.error(msg);
-                }
-
+        return request('lobby/exchange', requestBody)
+            .then((data) => {
                 app.user.cash = data['gameCoin'];
                 app.emit('UserStatusChange', app.user);
             })
@@ -204,18 +185,8 @@ export function Service(network) {
             'playerid': app.user.id,
         };
 
-        return network
-            .post('lobby/checkout', requestBody)
-            .then(({data, error}) => {
-                const code = error['ErrorCode'];
-                if (code !== 0) {
-                    console.error(new Error(error['Msg']));
-
-                    const msg = {title: `Error: ${code}`};
-
-                    return app.alert.error(msg);
-                }
-
+        return request('lobby/checkout', requestBody)
+            .then((data) => {
                 app.user.cash = 0;
 
                 return fromEntries(
@@ -240,20 +211,8 @@ export function Service(network) {
             ...data,
         };
 
-        return network
-            .post('game/gameresult', requestBody)
-            .then(({data, error}) => {
-                const code = error['ErrorCode'];
-                if (code !== 0) {
-                    console.error(new Error(error['Msg']));
-
-                    const msg = {title: `Error: ${code}`};
-
-                    return app.alert.error(msg);
-                }
-
-                return handle(data);
-            });
+        return request('game/gameresult', requestBody)
+            .then(handle);
     }
 
     function handle(data) {

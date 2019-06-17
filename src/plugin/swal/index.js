@@ -22,15 +22,16 @@ export default function() {
             .catch((err) => console.log(err));
     }
 
-    function error({title}) {
+    function error(msg) {
         const config = {
             ...defaultStyle,
 
             type: 'error',
-            title,
             text: translate(`common:error.unspecific`),
             confirmButtonText: translate(`common:button.back`),
             confirmButtonColor: '#DC3446',
+
+            ...(msg),
         };
 
         return Swal.fire(config)

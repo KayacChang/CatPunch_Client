@@ -61,6 +61,7 @@
     "betLevel": "Bet Level"
   },
   "error": {
-    "unspecific": "Something went wrong. Please call customer service for more details."
+    "unspecific": "Something went wrong. Please call customer service for more details.",
+    "maintain": "Service is currently down for maintenance. Thanks for your patience."
   }
 }
