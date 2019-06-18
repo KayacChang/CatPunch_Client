@@ -1,3 +1,6 @@
+import 'core-js/shim';
+import 'regenerator-runtime/runtime';
+
 import {
     select, remove, log,
 } from './general';
@@ -51,7 +54,9 @@ async function main() {
 
         global.translate = await i18n.init();
 
-        global.app = new App(Service);
+        global.app = new App();
+
+        app.service = new Service();
 
         // Import Load Scene
         const LoadScene = await import('./game/scenes/load/scene');

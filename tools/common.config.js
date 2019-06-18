@@ -62,6 +62,8 @@ module.exports = function(env) {
                 {
                     test: /\.js$/,
                     sideEffects: false,
+                    exclude: /(node_modules|bower_components)/,
+                    include: /node_modules\/pixi_fairygui/,
                     use: [
                         //  PreCompile ===================================
                         {

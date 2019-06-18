@@ -4,7 +4,7 @@ import {User} from '../user';
 
 const {assign, entries, fromEntries} = Object;
 
-export function Service(network) {
+export function Service() {
     const tokens = {
         'accounttoken': construct(),
         'token': '',
@@ -79,7 +79,7 @@ export function Service(network) {
     }
 
     function request(url, body) {
-        return network
+        return app.network
             .post(url, body)
             .then(({data, error}) => {
                 const code = error['ErrorCode'];

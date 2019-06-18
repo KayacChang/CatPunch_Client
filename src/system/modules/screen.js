@@ -57,7 +57,7 @@ export function enableFullScreenMask() {
                 (isMobile.apple.device) ? forApple() : forAndroid();
 
             const func =
-                (el, className) => isMinimal ?
+                (el, className) => isMinimal && isLandScape() ?
                     el.classList.add(className) :
                     el.classList.remove(className);
 
@@ -69,7 +69,11 @@ export function enableFullScreenMask() {
     }
 
     function forApple() {
-        return abs(outerHeight - innerHeight) <= 30;
+        const maxHeight = Math.max(
+            document.documentElement.clientHeight,
+            outerHeight,
+        );
+        return abs(maxHeight - innerHeight) <= 30;
     }
 
     function forAndroid() {

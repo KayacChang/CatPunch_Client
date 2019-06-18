@@ -13,7 +13,7 @@ import {isMobile} from '../general';
 
 const {defineProperties, assign, freeze} = Object;
 
-export function App(Service) {
+export function App() {
     const app =
         new Application({
             resolution: devicePixelRatio,
@@ -29,10 +29,11 @@ export function App(Service) {
     const sound = Sound(app);
     //  Network
     const network = Network();
-    //  Service
-    const service = Service && Service(network);
     //  Alert
     const alert = Swal();
+
+    //  Service
+    let service = undefined;
     //  User
     let user = undefined;
     //  Control
@@ -51,6 +52,7 @@ export function App(Service) {
         },
         service: {
             get: () => service,
+            set: (newService) => service = newService,
         },
         alert: {
             get: () => alert,
