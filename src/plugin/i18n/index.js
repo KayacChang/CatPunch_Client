@@ -33,9 +33,6 @@ const detectorOptions = {
 };
 
 const backendOptions = {
-
-    loadPath: '/locales/{{lng}}/{{ns}}.json',
-
     // init option for fetch, for example
     requestOptions: {
         mode: 'cors',
@@ -55,6 +52,8 @@ function init() {
 
             detection: detectorOptions,
             backend: backendOptions,
+
+            loadPath: ENV.I18N_URL,
 
             ns: ['cat', 'common'],
             defaultNS: 'cat',

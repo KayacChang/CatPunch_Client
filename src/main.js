@@ -38,19 +38,18 @@ async function main() {
     try {
         document.title = 'For Every Gamer | 61 Studio';
 
-        const [res, translate] =
-            await Promise.all([fetchJSON(ENV_URL), i18n.init()]);
+        const res = await fetchJSON(ENV_URL);
 
         global.ENV = {
             SERVICE_URL:
-            // res['prodServerURL'],
                 isProduction ? res['prodServerURL'] : res['devServerURL'],
 
             LOGIN_TYPE: res['loginType'],
             GAME_ID: res['gameID'],
+            I18N_URL: res['i18nURL'],
         };
 
-        global.translate = translate;
+        global.translate = await i18n.init();
 
         global.app = new App(Service);
 
