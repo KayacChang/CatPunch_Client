@@ -50,6 +50,7 @@ export function Information(menu) {
     return information;
 
     async function open() {
+        // @TODO resource fetch again...
         const resources =
             await app.resource.fetch(...[
                 RULE_01_URL,

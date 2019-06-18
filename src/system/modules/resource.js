@@ -23,9 +23,21 @@ export function Resource({loader}) {
     }
 
     function fetch(...tasks) {
-        loader.add(tasks);
+        const _tasks =
+            tasks.filter((name) => !loader.resources[name]);
+
+        loader.add(_tasks);
 
         return new Promise((resolve) => {
+            if (_tasks.length === 0) {
+                const results =
+                    tasks.map((task) => {
+                        return loader.resources[task];
+                    });
+
+                return resolve(results);
+            }
+
             loader.load((loader, resources) => {
                 const results =
                     tasks.map((task) => {
