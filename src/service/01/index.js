@@ -29,6 +29,11 @@ export function Service(network) {
 
     const reelTables = {};
 
+    const order = {
+        'cointype': 0,
+        'coinamount': 0,
+    };
+
     return {
         login, init, refresh, exchange, checkout, sendOneRound,
 
@@ -161,12 +166,15 @@ export function Service(network) {
     }
 
     function exchange({currency, amount}) {
+        order['cointype'] = Number(currency);
+        order['coinamount'] = Number(amount);
+
         const requestBody = {
             ...tokens,
             ...env,
             'playerid': app.user.id,
-            'cointype': Number(currency),
-            'coinamount': Number(amount),
+
+            ...(order),
         };
 
         return request('lobby/exchange', requestBody)
@@ -189,16 +197,21 @@ export function Service(network) {
             .then((data) => {
                 app.user.cash = 0;
 
-                return fromEntries(
+                const result =
                     entries(data['userCoinQuota'])
                         .filter(([key]) => key.includes('coin'))
                         .map(([key, value]) => {
                             const type = key.match(/\d+/)[0];
                             const {name} = currencies.get(type);
 
+                            if (order['cointype'] === Number(type)) {
+                                value -= order['coinamount'];
+                            }
+
                             return [name, value];
-                        }),
-                );
+                        });
+
+                return fromEntries(result);
             });
     }
 

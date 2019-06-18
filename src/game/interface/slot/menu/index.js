@@ -223,7 +223,10 @@ function Nav(menu, sections) {
 
                     const data = await app.service.checkout();
 
-                    await app.alert.checkoutList(data);
+                    await app.alert.checkoutList(data)
+                        .then(({value}) => (value) && history.back());
+
+                    return;
                 }
                 return app.alert.leave();
             }
