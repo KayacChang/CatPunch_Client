@@ -89,7 +89,7 @@ export function Service(network) {
                     const msg = {title: `Error: ${code}`};
 
                     if (code === 18) {
-                        msg.text = translate('common:message.maintain');
+                        msg.text = translate('common:error.maintain');
                     }
 
                     return app.alert.error(msg);
