@@ -1,5 +1,7 @@
 import {throttle, abs, select, isMobile} from '../../general';
 
+import screenfull from 'screenfull';
+
 function getClientSize(target) {
     const {clientWidth, clientHeight} = target;
     return {width: clientWidth, height: clientHeight};
@@ -40,10 +42,45 @@ function setStyleSize(target, {width, height}) {
 }
 
 export function enableFullScreenMask() {
-    if (!isMobile.phone) return;
-
     const icon = select('#icon');
     const mask = select('#mask');
+
+    if (!isMobile.phone) return;
+
+    if (!isMobile.apple.device) {
+        select('#screen-scroll')
+            .classList.add('hidden');
+
+        const func =
+            (el, className) => isLandScape() ?
+                el.classList.add(className) :
+                el.classList.remove(className);
+
+        func(icon, 'hidden');
+
+        scrollTo(0, 0);
+
+        window.addEventListener('orientationchange', () => {
+            const func =
+                (el, className) => !isLandScape() ?
+                    el.classList.add(className) :
+                    el.classList.remove(className);
+
+            func(icon, 'hidden');
+
+            scrollTo(0, 0);
+        });
+
+        app.view.addEventListener('touchend', () => {
+            if (screenfull.enabled) {
+                screenfull.request();
+            } else {
+                // Ignore or do something else
+            }
+        });
+
+        return;
+    }
 
     icon.classList.remove('hidden');
     mask.classList.remove('hidden');
@@ -53,8 +90,7 @@ export function enableFullScreenMask() {
 
     function handle() {
         return throttle(() => {
-            const isMinimal =
-                (isMobile.apple.device) ? forApple() : forAndroid();
+            const isMinimal = forApple();
 
             const func =
                 (el, className) => isMinimal && isLandScape() ?
@@ -74,13 +110,6 @@ export function enableFullScreenMask() {
             outerHeight,
         );
         return abs(maxHeight - innerHeight) <= 30;
-    }
-
-    function forAndroid() {
-        if (!isLandScape()) return false;
-
-        const {clientHeight} = document.documentElement;
-        return abs(innerHeight - clientHeight) >= 30;
     }
 }
 

@@ -22,12 +22,14 @@ module.exports = function(api) {
     const flow = ['@babel/preset-flow'];
 
     //  Plugins =====================================
-    const runtime = '@babel/plugin-transform-runtime';
     const dynamicImport = '@babel/plugin-syntax-dynamic-import';
     const transformFlowStripTypes = 'transform-flow-strip-types';
 
     //  Return =====================================
     const presets = [env, flow];
-    const plugins = [runtime, dynamicImport, transformFlowStripTypes];
+    const plugins = [
+        dynamicImport,
+        transformFlowStripTypes,
+    ];
     return {presets, plugins};
 };

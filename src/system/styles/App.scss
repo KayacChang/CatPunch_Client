@@ -15,9 +15,11 @@
 
     position: absolute;
     top: 0;
+    left: 0;
     z-index: 999;
 
     opacity: .5;
+    overflow-y: scroll;
   }
 
   #icon {
@@ -27,6 +29,7 @@
 
     position: fixed;
     top: 0;
+    left: 0;
     z-index: 998;
 
     #screen-rotation {

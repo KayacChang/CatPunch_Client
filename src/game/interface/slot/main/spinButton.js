@@ -126,6 +126,13 @@ export function SpinButton(view) {
                 targets: arrow,
                 rotation: 0,
                 alpha: 1,
+            });
+
+            anime({
+                targets: view,
+                alpha: 1,
+                easing: 'easeOutCubic',
+                duration: 1000,
 
                 complete() {
                     view.menuBtn.interactive = true;
@@ -136,13 +143,6 @@ export function SpinButton(view) {
 
                     app.user.speed = speed;
                 },
-            });
-
-            anime({
-                targets: view,
-                alpha: 1,
-                easing: 'easeOutCubic',
-                duration: 1000,
             });
         }
 
