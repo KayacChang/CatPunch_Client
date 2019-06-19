@@ -218,7 +218,17 @@ export function Options(view) {
                 options, update,
             );
 
-            refresh(app.user.bet);
+            refresh(hotKeys.indexOf(app.user.bet));
+
+            btns.forEach((btn, index) => {
+                const flag = options[index] <= app.user.cash;
+
+                btn.enable = flag;
+
+                const num = numbers[index];
+
+                num.alpha = flag ? 1 : 0.3;
+            });
 
             function update(index) {
                 app.user.bet = hotKeys[index];

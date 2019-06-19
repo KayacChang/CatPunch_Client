@@ -22,6 +22,10 @@ export function Menu(parent) {
 
     const navBackground =
         menu.getChildByName('nav@background');
+    navBackground.originPos = {
+        x: navBackground.position.x,
+        y: navBackground.position.y,
+    };
 
     const block =
         menu.getChildByName('block');
@@ -50,29 +54,23 @@ export function Menu(parent) {
     menu.open = openNav;
     menu.close = close;
 
-    app.on('Idle', onIdle);
-
     return menu;
-
-    function onIdle() {
-        if (!cashLessThanBet()) return;
-
-        openNav('exchange');
-    }
-
-    function cashLessThanBet() {
-        return app.user.cash < app.user.betOptions[app.user.bet];
-    }
 
     async function openNav(section) {
         menu.visible = true;
         menu.alpha = 1;
+
+        if (menu.section) menu.section.visible = false;
 
         menu.section = undefined;
         nav.tab.alpha = 0;
         nav.btns.forEach((btn) => btn.icon.alpha = 0.5);
 
         block.interactive = true;
+
+        navBackground.position.x = navBackground.originPos.x;
+        background.scale.set(0);
+        hr.scale.x = 0;
 
         await anime.timeline()
             .add({
@@ -87,11 +85,13 @@ export function Menu(parent) {
                 y: nav.originPos.y,
                 duration: 320,
                 easing: 'easeOutQuad',
-            }).finished;
-
-        if (section) {
-            await nav.open(sections.get(section));
-        }
+                complete() {
+                    if (section) {
+                        nav.open(sections.get(section));
+                    }
+                },
+            })
+            .finished;
     }
 
     function close() {
@@ -256,7 +256,7 @@ function Nav(menu, sections) {
                 .finished;
         }
 
-        return section.open();
+        await section.open();
     }
 
     function BackButton(btn, menu) {

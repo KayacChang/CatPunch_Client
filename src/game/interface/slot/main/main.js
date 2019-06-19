@@ -15,8 +15,8 @@ export function Main(parent) {
 
     it.menuBtn = MenuButton(it);
 
-    it.openMenu = function(section) {
-        parent.menu.open(section);
+    it.openMenu = async function(section) {
+        await parent.menu.open(section);
     };
 
     it.option = Options(it);
@@ -43,8 +43,6 @@ export function Main(parent) {
                         app.user.betOptions[app.user.bet] :
                         currencyFormat(app.user[name]);
             });
-
-        it.spinButton.checkState();
     }
 }
 

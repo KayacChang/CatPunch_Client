@@ -87,23 +87,53 @@ export function SpinButton(view) {
         },
     };
 
-    it = assign(it, {
-        auto,
-        checkState,
-    });
+    it = assign(it, {auto});
 
     const arrow = it.getChildByName('arrow');
     const arrowScale = clone(arrow.scale);
 
     const square = it.getChildByName('square');
 
+    if (cashLessThanBet()) {
+        img.tint = 0x999999;
+        isBlocking = true;
+
+        it.auto.set(0);
+    } else {
+        img.tint = 0xFFFFFF;
+        isBlocking = false;
+    }
+
     it.on('Click', onClick);
 
     app.on('Idle', checkState);
 
+    app.on('UserStatusChange', checkButton);
+
     return it;
 
+    function checkButton() {
+        if (cashLessThanBet()) {
+            img.tint = 0x999999;
+            isBlocking = true;
+
+            it.auto.set(0);
+        } else {
+            img.tint = 0xFFFFFF;
+            isBlocking = false;
+        }
+    }
+
     function checkState() {
+        if (cashLessThanBet()) {
+            checkButton();
+            if (!whenAnim) {
+                whenAnim = true;
+                view.openMenu('exchange')
+                    .then(() => whenAnim = false);
+            }
+        }
+
         if (it.auto.get() > 0 && isAuto && isRunning) {
             isRunning = false;
             play();
@@ -145,16 +175,6 @@ export function SpinButton(view) {
                 },
             });
         }
-
-        if (cashLessThanBet()) {
-            img.tint = 0x999999;
-            isBlocking = true;
-
-            it.auto.set(0);
-        } else {
-            img.tint = 0xFFFFFF;
-            isBlocking = false;
-        }
     }
 
     function cashLessThanBet() {
@@ -162,9 +182,8 @@ export function SpinButton(view) {
     }
 
     function onClick() {
+        if (whenAnim) return;
         if (isBlocking) {
-            if (whenAnim) return;
-
             whenAnim = true;
             anime({
                 targets: msg,
@@ -172,6 +191,10 @@ export function SpinButton(view) {
                 duration: 500,
                 direction: 'alternate',
                 easing: 'easeOutExpo',
+                complete() {
+                    msg.alpha = 0;
+                    whenAnim = false;
+                },
             });
 
             anime({
@@ -181,6 +204,7 @@ export function SpinButton(view) {
                 direction: 'alternate',
                 easing: 'easeOutExpo',
                 complete() {
+                    block.alpha = 0;
                     whenAnim = false;
                 },
             });

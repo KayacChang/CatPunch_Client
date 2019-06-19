@@ -196,6 +196,7 @@ export function Service() {
         return request('lobby/checkout', requestBody)
             .then((data) => {
                 app.user.cash = 0;
+                app.emit('UserStatusChange', app.user);
 
                 const result =
                     entries(data['userCoinQuota'])
