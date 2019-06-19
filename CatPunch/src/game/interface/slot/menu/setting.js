@@ -2,7 +2,7 @@ import {Openable} from '../../components/Openable';
 import {Clickable, ToggleButton, RangeSlider} from '../../components';
 
 import anime from 'animejs';
-import {rgbToHex} from '../../../../general';
+import {kFormat, rgbToHex} from '../../../../general';
 
 export function Setting(menu) {
     const setting = Openable(
@@ -26,6 +26,8 @@ export function Setting(menu) {
     const volumeRange = [
         0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1,
     ];
+    const textVolume =
+        setting.getChildByName(`text@volume`);
     const volume =
         Slider(setting, 'volume', {
             range: volumeRange,
@@ -35,29 +37,46 @@ export function Setting(menu) {
                 app.sound.mute(level === 0);
                 effectSwitch.set(!app.sound.mute());
                 ambienceSwitch.set(!app.sound.mute());
+
+                textVolume.text = level;
             },
         });
 
     setLabel(setting, 'spin');
 
+    const textAuto =
+        setting.getChildByName(`text@auto`);
     const auto =
         Slider(setting, 'auto', {
             range: app.user.autoOptions,
-            onchange: (level) => app.user.auto = level,
+            onchange: (level) => {
+                app.user.auto = level;
+                textAuto.text = kFormat(app.user.autoOptions[level]);
+            },
         });
 
+    const textSpeed =
+        setting.getChildByName(`text@speed`);
     const speed =
         Slider(setting, 'speed', {
             range: app.user.speedOptions,
-            onchange: (level) => app.user.speed = level,
+            onchange: (level) => {
+                app.user.speed = level;
+                textSpeed.text = level;
+            },
         });
 
     setLabel(setting, 'bet');
 
+    const textBetLevel =
+        setting.getChildByName(`text@betLevel`);
     const betLevel =
         Slider(setting, 'betLevel', {
             range: app.user.betOptions,
-            onchange: (level) => app.user.bet = level,
+            onchange: (level) => {
+                app.user.bet = level;
+                textBetLevel.text = kFormat(app.user.betOptions[level]);
+            },
         });
 
     setting.y -= 53;
@@ -172,9 +191,7 @@ function Slider(setting, target, {range, onchange}) {
 
     const text =
         setting.getChildByName(`text@${target}`);
-    text.pivot.x = text.width / 2;
     text.x = slider.x;
-
 
     if (range) {
         const minLabel =
@@ -212,7 +229,6 @@ function Slider(setting, target, {range, onchange}) {
 
         slider.x = frame.x + moveRange[level];
         text.x = slider.x;
-        text.text = level;
         valueBar.width = moveRange[level];
 
         onchange(level);

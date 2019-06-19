@@ -109,6 +109,7 @@ export function SpinButton(view) {
     app.on('Idle', checkState);
 
     app.on('UserStatusChange', checkButton);
+    app.on('UserBetChange', checkButton);
 
     return it;
 
