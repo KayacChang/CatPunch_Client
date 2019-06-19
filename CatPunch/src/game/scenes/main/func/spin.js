@@ -145,14 +145,14 @@ function spinStop(it, reels, {positions, symbols}) {
 
         reel.status = Status.Stop;
 
-        setTimeout(() =>
-            app.sound.play('bounce'), 400);
-
         await anime({
             targets: reel.results,
             pos: (el, index) => resultPos[index],
             easing: 'easeOutElastic(1, .3)',
             duration: 500,
+            begin() {
+                app.sound.play('bounce');
+            },
             complete() {
                 fxReels
                     .forEach((reel) => reel.visible = false);
