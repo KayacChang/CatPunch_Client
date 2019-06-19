@@ -45,8 +45,6 @@ export function enableFullScreenMask() {
     const icon = select('#icon');
     const mask = select('#mask');
 
-    if (!isMobile.phone) return;
-
     if (!isMobile.apple.device) {
         select('#screen-scroll')
             .classList.add('hidden');
@@ -74,8 +72,6 @@ export function enableFullScreenMask() {
         app.view.addEventListener('touchend', () => {
             if (screenfull.enabled) {
                 screenfull.request();
-            } else {
-                // Ignore or do something else
             }
         });
 
@@ -109,7 +105,7 @@ export function enableFullScreenMask() {
             document.documentElement.clientHeight,
             outerHeight,
         );
-        return abs(maxHeight - innerHeight) <= 30;
+        return abs(maxHeight - innerHeight) <= 50;
     }
 }
 
