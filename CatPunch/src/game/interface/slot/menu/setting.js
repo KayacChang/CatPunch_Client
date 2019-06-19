@@ -2,9 +2,7 @@ import {Openable} from '../../components/Openable';
 import {Clickable, ToggleButton, RangeSlider} from '../../components';
 
 import anime from 'animejs';
-
-import {setColorMatrix} from '../../../plugin/filter';
-import {divide, round} from '../../../../general';
+import {rgbToHex} from '../../../../general';
 
 export function Setting(menu) {
     const setting = Openable(
@@ -111,9 +109,7 @@ function Toggle(setting, target) {
 
     const ball =
         setting.getChildByName(`ball@${target}`);
-
-    const color = setColorMatrix(ball);
-    color.saturate(-1);
+    ball._color = '#FFFFFF';
 
     const toggle = ToggleButton(
         setting.getChildByName(`frame@${target}`),
@@ -139,13 +135,14 @@ function Toggle(setting, target) {
         return anime({
             targets: ball,
             x,
+            _color: (checked) ? '#FFFFFF' : '#999999',
             duration: 260,
             easing: 'easeOutQuad',
-            update(anim) {
-                const progress = divide(round(anim.progress), 100);
-                const rate = (checked) ?
-                    1 - progress : 0 - progress;
-                color.saturate(rate);
+            update() {
+                const [r, g, b] = ball._color.match(/\d+/g).map(Number);
+
+                ball.tint =
+                    parseInt(rgbToHex([r, g, b]).replace('#', '0x'), 16);
             },
         });
     }
@@ -172,6 +169,12 @@ function Slider(setting, target, {range, onchange}) {
 
     const valueBar =
         setting.getChildByName(`value@${target}`);
+
+    const text =
+        setting.getChildByName(`text@${target}`);
+    text.pivot.x = text.width / 2;
+    text.x = slider.x;
+
 
     if (range) {
         const minLabel =
@@ -208,6 +211,8 @@ function Slider(setting, target, {range, onchange}) {
         level = value;
 
         slider.x = frame.x + moveRange[level];
+        text.x = slider.x;
+        text.text = level;
         valueBar.width = moveRange[level];
 
         onchange(level);

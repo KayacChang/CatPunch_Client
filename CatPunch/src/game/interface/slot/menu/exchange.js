@@ -309,13 +309,11 @@ export function Exchange(menu) {
                 amountField.text = currencyFormat(amount);
                 //
             } else if (checkBalance(val)) {
-                confirmBtn.enable = false;
-                confirmBtn.tint = 0x999999;
-
-                cashField.text = '-';
-
                 amount = app.service.accountBalance[currency.name()];
                 amountField.text = currencyFormat(amount);
+
+                const {rate} = app.service.currencies.get(selected);
+                cashField.text = currencyFormat(amount * rate);
                 //
             } else {
                 amountHelper.text = '';

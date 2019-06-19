@@ -146,9 +146,14 @@ export function Options(view) {
                     return frame;
                 });
 
-        setAudio(app.sound.mute());
-
         menu.checkState = checkState;
+
+        const hotKeys = app.user.betOptionsHotKey;
+        const options = hotKeys.map((key) => app.user.betOptions[key]);
+
+        let isItemsOpen = false;
+
+        let currentOpen = undefined;
 
         return menu;
 
@@ -159,7 +164,23 @@ export function Options(view) {
                 frames[index].alpha = btn.enable ? 1 : 0.3;
 
                 icons[index].tint = btn.enable ? 0xFFFFFF : 0x7B7B7B;
+
+                const num = numbers[index];
+
+                if (currentOpen === 'bet') {
+                    const flag = options[index] <= app.user.cash;
+
+                    btn.enable = flag;
+
+                    num.alpha = flag ? 1 : 0.3;
+                } else {
+                    btn.enable = true;
+
+                    num.alpha = 1;
+                }
             });
+
+            if (!isItemsOpen) setAudio(app.sound.mute());
         }
 
         function resetFunc() {
@@ -177,6 +198,7 @@ export function Options(view) {
         }
 
         function setSpeed() {
+            currentOpen = 'speed';
             setOptionItems(
                 app.user.speedOptions
                     .map((level) => (level) + 'x'),
@@ -193,6 +215,7 @@ export function Options(view) {
         }
 
         function setAuto() {
+            currentOpen = 'auto';
             setOptionItems(
                 app.user.autoOptions,
                 update,
@@ -211,24 +234,13 @@ export function Options(view) {
         }
 
         async function setBet() {
-            const hotKeys = app.user.betOptionsHotKey;
-            const options = hotKeys.map((key) => app.user.betOptions[key]);
+            currentOpen = 'bet';
 
             setOptionItems(
                 options, update,
             );
 
             refresh(hotKeys.indexOf(app.user.bet));
-
-            btns.forEach((btn, index) => {
-                const flag = options[index] <= app.user.cash;
-
-                btn.enable = flag;
-
-                const num = numbers[index];
-
-                num.alpha = flag ? 1 : 0.3;
-            });
 
             function update(index) {
                 app.user.bet = hotKeys[index];
@@ -246,8 +258,26 @@ export function Options(view) {
         }
 
         async function setOptionItems(options, func) {
+            isItemsOpen = true;
+
             const btnState = btns.map(({enable}) => enable);
-            btns.forEach((btn) => btn.enable = true);
+            btns.forEach((btn, index) => {
+                btn.enable = true;
+
+                const num = numbers[index];
+
+                if (currentOpen === 'bet') {
+                    const flag = options[index] <= app.user.cash;
+
+                    btn.enable = flag;
+
+                    num.alpha = flag ? 1 : 0.3;
+                } else {
+                    btn.enable = true;
+
+                    num.alpha = 1;
+                }
+            });
 
             const targets =
                 options
