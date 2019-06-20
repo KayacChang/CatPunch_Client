@@ -43,7 +43,6 @@ export function play(scene) {
 
         if (result.normalGame.scores && !result.hasReSpin) {
             await showScores(normalWin);
-            app.user.lastWin = normalWin;
             app.user.cash += normalWin;
 
             await showBigWinEffect(normalWin);
@@ -90,7 +89,6 @@ export function play(scene) {
             );
 
             await showScores(reSpinWin);
-            app.user.lastWin = reSpinWin;
             app.user.cash += reSpinWin;
 
             await showBigWinEffect(reSpinWin);
@@ -142,7 +140,6 @@ export function play(scene) {
                 totalScores += result.scores;
                 if (result.scores) {
                     await showScores(result.scores);
-                    app.user.lastWin = totalScores;
                 }
             }
 
@@ -153,6 +150,7 @@ export function play(scene) {
 
         app.user.cash = result.cash;
         app.user.totalWin += totalWin;
+        app.user.lastWin = totalWin;
 
         slot.reelTables = normalTable;
 
@@ -163,9 +161,9 @@ export function play(scene) {
     });
 
     function betLock(flag) {
-        const {btns} = app.control.main.option.menu;
+        const menu = app.control.main.option.menu;
 
-        const betButton = btns[2];
+        const betButton = menu.btns[2];
 
         betButton.enable = !flag;
     }

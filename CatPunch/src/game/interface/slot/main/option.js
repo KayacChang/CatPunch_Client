@@ -173,6 +173,8 @@ export function Options(view) {
                     btn.enable = flag;
 
                     num.alpha = flag ? 1 : 0.3;
+                } else if (currentOpen === undefined) {
+                    num.alpha = 1;
                 } else {
                     btn.enable = true;
 
@@ -262,8 +264,6 @@ export function Options(view) {
 
             const btnState = btns.map(({enable}) => enable);
             btns.forEach((btn, index) => {
-                btn.enable = true;
-
                 const num = numbers[index];
 
                 if (currentOpen === 'bet') {
@@ -272,6 +272,8 @@ export function Options(view) {
                     btn.enable = flag;
 
                     num.alpha = flag ? 1 : 0.3;
+                } else if (currentOpen === undefined) {
+                    num.alpha = 1;
                 } else {
                     btn.enable = true;
 
@@ -368,6 +370,8 @@ export function Options(view) {
 
 
         function setBack() {
+            currentOpen = undefined;
+            isItemsOpen = false;
             setOptionMenu(false);
         }
 

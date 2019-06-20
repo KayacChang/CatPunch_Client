@@ -52,14 +52,16 @@ function Cash(it, effect) {
         },
     };
 
+    let lastCash = app.user.cash;
+
     update(app.user.cash);
 
     app.on('UserCashChange', update);
 
-    return proxy;
-
     function update(cash) {
-        showEffect(cash - proxy.cash);
+        showEffect(cash - lastCash);
+
+        lastCash = cash;
 
         anime({
             targets: proxy,

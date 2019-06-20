@@ -281,7 +281,6 @@ export function SpinButton(view) {
         app.sound.play('spin');
 
         app.user.cash -= app.user.betOptions[app.user.bet];
-        app.user.lastWin = 0;
 
         speed = app.user.speed;
         view.menuBtn.interactive = false;
