@@ -2,7 +2,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
 import {
-    select, remove, log,
+    select, remove, log, isProduction, err,
 } from './general';
 
 import {App} from './system/application';
@@ -12,8 +12,6 @@ import i18n from './plugin/i18n';
 import ENV_URL from './env.json';
 
 import {enableFullScreenMask} from './system/modules/screen';
-
-const isProduction = process.env.NODE_ENV === 'production';
 
 function startLoading(scene) {
     const comp = select('#app');
@@ -45,7 +43,7 @@ async function main() {
 
         global.ENV = {
             SERVICE_URL:
-                isProduction ? res['prodServerURL'] : res['devServerURL'],
+                isProduction() ? res['prodServerURL'] : res['devServerURL'],
 
             LOGIN_TYPE: res['loginType'],
             GAME_ID: res['gameID'],
@@ -101,10 +99,10 @@ async function main() {
 
             app.emit('Idle');
         });
-    } catch (err) {
-        console.error(err);
+    } catch (error) {
+        err(error);
 
-        const msg = {title: err.message};
+        const msg = {title: error.message};
 
         app.alert.error(msg);
     }

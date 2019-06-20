@@ -1,5 +1,5 @@
 import {getSearchParam} from '../utils';
-import {clone} from '../../general';
+import {clone, err} from '../../general';
 import {User} from '../user';
 
 const {assign, entries, fromEntries} = Object;
@@ -84,7 +84,7 @@ export function Service() {
             .then(({data, error}) => {
                 const code = error['ErrorCode'];
                 if (code !== 0) {
-                    console.error(new Error(error['Msg']));
+                    err(new Error(error['Msg']));
 
                     const msg = {title: `Error: ${code}`};
 
@@ -235,6 +235,7 @@ export function Service() {
 
         const hasReSpin = Boolean(data['isrespin']);
         const hasFreeGame = Boolean(data['isfreegame']);
+        const hasBetLock = Boolean(data['islockbet']);
 
         const earnPoints = data['freecount'];
 
@@ -267,6 +268,8 @@ export function Service() {
 
             hasFreeGame,
             freeGame,
+
+            hasBetLock,
         };
     }
 

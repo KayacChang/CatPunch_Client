@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import Fetch from 'i18next-fetch-backend';
+import {isProduction} from '../../general';
 
 
 const detectorOptions = {
@@ -46,7 +47,7 @@ function init() {
         .use(LanguageDetector)
         .use(Fetch)
         .init({
-            debug: true,
+            debug: isProduction(),
 
             fallbackLng: 'zh-TW',
 

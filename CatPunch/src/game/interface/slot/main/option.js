@@ -186,6 +186,9 @@ export function Options(view) {
         }
 
         function resetFunc() {
+            currentOpen = undefined;
+            isItemsOpen = false;
+
             btnsFunc = [
                 setSpeed,
                 setAuto,
@@ -197,6 +200,8 @@ export function Options(view) {
             backFunc = setBack;
 
             setAudio(app.sound.mute());
+
+            checkState();
         }
 
         function setSpeed() {
@@ -257,6 +262,8 @@ export function Options(view) {
 
                 setScale(num.index === index, enableFrame);
             });
+
+            checkState();
         }
 
         async function setOptionItems(options, func) {
@@ -370,8 +377,6 @@ export function Options(view) {
 
 
         function setBack() {
-            currentOpen = undefined;
-            isItemsOpen = false;
             setOptionMenu(false);
         }
 

@@ -1,6 +1,6 @@
 import {spin} from './spin';
 import {
-    wait, clone, times, ceil,
+    wait, clone, times, ceil, log, table,
 } from '../../../../general';
 import anime from 'animejs';
 import {
@@ -22,8 +22,8 @@ export function play(scene) {
             .filter(({name}) => name.includes('Coin'));
 
     app.on('GameResult', async (result) => {
-        console.log('Result =============');
-        console.table(result);
+        log('Result =============');
+        table(result);
 
         const normalWin = result.normalGame.scores;
         const reSpinWin = result.hasReSpin ? result.reSpinGame.scores : 0;
@@ -118,7 +118,7 @@ export function play(scene) {
             const freeGame = result.freeGame;
             let totalScores = 0;
             for (const result of freeGame) {
-                console.table(result);
+                table(result);
                 const multiply =
                     freeGame.indexOf(result) + 1;
 
@@ -154,9 +154,9 @@ export function play(scene) {
 
         slot.reelTables = normalTable;
 
-        betLock(energy.scale > 0);
+        betLock(result.hasBetLock);
 
-        console.log('Round Complete...');
+        log('Round Complete...');
         app.emit('Idle');
     });
 

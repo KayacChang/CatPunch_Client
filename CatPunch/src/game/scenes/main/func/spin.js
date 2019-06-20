@@ -1,6 +1,6 @@
 import anime from 'animejs';
 import {
-    wait, nth, floor, mod,
+    wait, nth, floor, mod, log,
 } from '../../../../general';
 
 import {
@@ -42,7 +42,7 @@ export async function spin(scene, reels, result) {
 }
 
 async function spinStart(it, reels) {
-    console.log('Spin Start...');
+    log('Spin Start...');
 
     const mask = it.view.getChildByName('SlotBaseMask');
     anime({
@@ -86,7 +86,7 @@ async function spinStart(it, reels) {
 }
 
 function spinStop(it, reels, {positions, symbols}) {
-    console.log('Spin Stop...');
+    log('Spin Stop...');
 
     const fxReels =
         ['L', 'M', 'R'].map((pos) =>
@@ -180,7 +180,7 @@ function spinStop(it, reels, {positions, symbols}) {
 }
 
 async function spinComplete(scene, reels, {hasLink, symbols}) {
-    console.log('Spin Complete...');
+    log('Spin Complete...');
     app.sound.stop('maybeBonus');
 
     const {slot} = scene;
