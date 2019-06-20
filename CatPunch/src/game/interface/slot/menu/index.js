@@ -54,6 +54,10 @@ export function Menu(parent) {
     menu.open = openNav;
     menu.close = close;
 
+    menu.exchange = exchange;
+    menu.setting = setting;
+    menu.information = information;
+
     return menu;
 
     async function openNav(section) {

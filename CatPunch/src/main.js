@@ -33,7 +33,6 @@ function fetchJSON(url) {
     return fetch(url).then((res) => res.json());
 }
 
-
 async function main() {
     //  Init App
     try {

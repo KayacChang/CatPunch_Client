@@ -166,6 +166,10 @@ export function play(scene) {
         const betButton = menu.btns[2];
 
         betButton.enable = !flag;
+
+        const betLevel = app.control.menu.setting.betLevel;
+
+        betLevel.enable = !flag;
     }
 
     async function showScores(scores) {

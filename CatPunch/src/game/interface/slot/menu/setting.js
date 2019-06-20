@@ -83,6 +83,11 @@ export function Setting(menu) {
     setting.open = open;
     setting.close = close;
 
+    setting.volume = volume;
+    setting.auto = auto;
+    setting.speed = speed;
+    setting.betLevel = betLevel;
+
     return setting;
 
     function open() {
@@ -207,8 +212,10 @@ function Slider(setting, target, {range, onchange}) {
     }
 
     let level = 0;
+    let enable = true;
 
     slider.onDragMove = () => {
+        if (!enable) return;
         if (slider.getPos) {
             const {x} = slider.getPos();
 
@@ -216,9 +223,22 @@ function Slider(setting, target, {range, onchange}) {
         }
     };
 
-    return {setLevel};
+    return {
+        get enable() {
+            return enable;
+        },
+        set enable(flag) {
+            enable = flag;
+
+            slider.tint = enable ? 0xFFFFFF : 0x999999;
+            valueBar.tint = enable ? 0xFFFFFF : 0x999999;
+        },
+
+        setLevel,
+    };
 
     function click({data}) {
+        if (!enable) return;
         const {x} = data.getLocalPosition(frame);
 
         setLevel(condition(x));
