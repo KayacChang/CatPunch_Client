@@ -288,8 +288,12 @@ export function SpinButton(view) {
 
         isRunning = true;
 
+        const key = process.env.KEY;
+
         app.service
-            .sendOneRound({bet: app.user.bet})
+            .sendOneRound({
+                key, bet: app.user.bet,
+            })
             .then((result) => app.emit('GameResult', result));
     }
 }

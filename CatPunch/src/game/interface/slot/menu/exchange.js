@@ -6,6 +6,8 @@ import {
     currencyFormat, log10,
 } from '../../../../general';
 
+const key = process.env.KEY;
+
 export function Exchange(menu) {
     const exchange = Openable(
         menu.getChildByName('exchange'),
@@ -63,11 +65,12 @@ export function Exchange(menu) {
 
             if (!value) return menu.close();
 
-            const data = await app.service.checkout();
+            const data =
+                await app.service.checkout({key});
 
             app.alert.checkoutList(data);
         }
-        await app.service.refresh();
+        await app.service.refresh({key});
 
         refresh(app.service.accountBalance);
 
@@ -383,6 +386,7 @@ export function Exchange(menu) {
 
             app.service
                 .exchange({
+                    key,
                     currency: currency.get(),
                     amount: amount.get(),
                 })
@@ -421,7 +425,7 @@ export function Exchange(menu) {
             dropdown.close();
 
             app.service
-                .refresh()
+                .refresh({key})
                 .then(refresh)
                 .then(() => {
                     app.alert.close();

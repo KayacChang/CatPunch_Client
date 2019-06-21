@@ -13,6 +13,8 @@ import ENV_URL from './env.json';
 
 import {enableFullScreenMask} from './system/modules/screen';
 
+const key = process.env.KEY;
+
 function startLoading(scene) {
     const comp = select('#app');
     const svg = select('#preload');
@@ -53,7 +55,7 @@ async function main() {
 
         global.app = new App();
 
-        app.service = new Service();
+        app.service = new Service(key);
 
         // Import Load Scene
         const LoadScene = await import('./game/scenes/load/scene');
@@ -69,14 +71,14 @@ async function main() {
             loadScene.update(progress);
         });
 
-        await app.service.login();
+        await app.service.login({key});
 
         //  Import Main Scene
         const [MainScene, UserInterface, initData] =
             await Promise.all([
                 import('./game/scenes/main'),
                 import('./game/interface/slot'),
-                app.service.init(),
+                app.service.init({key}),
             ]);
 
         await app.resource.load(MainScene, UserInterface);
