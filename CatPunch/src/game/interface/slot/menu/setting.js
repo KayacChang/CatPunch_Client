@@ -50,7 +50,7 @@ export function Setting(menu) {
         Slider(setting, 'auto', {
             range: app.user.autoOptions,
             onchange: (level) => {
-                app.user.auto = level;
+                app.control.main.spinButton.auto = level;
                 textAuto.text = kFormat(app.user.autoOptions[level]);
             },
         });
@@ -101,6 +101,8 @@ export function Setting(menu) {
         speed.setLevel(app.user.speed);
         betLevel.setLevel(app.user.bet);
         auto.setLevel(app.user.auto);
+
+        betLevel.enable = !app.user.isBetLock;
 
         return anime({
             targets: setting,

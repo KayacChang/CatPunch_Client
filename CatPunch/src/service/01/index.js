@@ -34,6 +34,12 @@ export function Service(prodKey) {
         'coinamount': 0,
     };
 
+    const time = {
+        now: undefined,
+        warning: undefined,
+        maintain: undefined,
+    };
+
     return {
         login, init, refresh, exchange, checkout, sendOneRound,
 
@@ -89,6 +95,7 @@ export function Service(prodKey) {
                     const msg = {title: `Error: ${code}`};
 
                     if (code === 18) {
+                        msg.type = 'info';
                         msg.text = translate('common:error.maintain');
                     }
 
@@ -101,6 +108,30 @@ export function Service(prodKey) {
 
     function authenticate(key) {
         return key !== prodKey;
+    }
+
+    function checkTime() {
+        time.now.setSeconds(time.now.getSeconds() + 1);
+
+        const msg = {};
+
+        if (time.now - time.maintain > 0) {
+            msg.type = 'info';
+            msg.text = translate('common:error.maintain');
+
+            clearInterval(time.timer);
+
+            return app.alert.error(msg);
+        }
+
+        if (time.now - time.warning > 0) {
+            msg.type = 'warning';
+            msg.title = translate('common:error.warning');
+
+            time.warning.setMinutes(time.warning.getMinutes() + 1);
+
+            return app.alert.request(msg);
+        }
     }
 
     function login({key}) {
@@ -128,6 +159,15 @@ export function Service(prodKey) {
                         currencies.get(type).rate = rate;
                     });
 
+                const now = data['serversetting']['servertime'] * 1000;
+                const maintain = data['serversetting']['maintaintime'] * 1000;
+
+                time.now = new Date(now);
+                time.warning = new Date(maintain - (10 * 60 * 1000));
+                time.maintain = new Date(maintain);
+
+                time.timer = setInterval(checkTime, 1000);
+
                 return data;
             });
     }
@@ -152,6 +192,9 @@ export function Service(prodKey) {
                 app.user.betOptions = data['betrate']['betrate'];
                 app.user.betOptionsHotKey = data['betrate']['betratelinkindex'];
                 app.user.bet = data['betrate']['betratedefaultindex'];
+
+                app.user.hasExchanged =
+                    Boolean(data['thirdparty']['isexchange']);
 
                 assign(reelTables, {
                     normalTable: data['reel']['normalreel'],

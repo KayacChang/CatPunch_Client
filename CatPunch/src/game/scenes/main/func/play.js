@@ -161,15 +161,7 @@ export function play(scene) {
     });
 
     function betLock(flag) {
-        const menu = app.control.main.option.menu;
-
-        const betButton = menu.btns[2];
-
-        betButton.enable = !flag;
-
-        const betLevel = app.control.menu.setting.betLevel;
-
-        betLevel.enable = !flag;
+        app.user.isBetLock = flag;
     }
 
     async function showScores(scores) {

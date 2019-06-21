@@ -58,7 +58,7 @@ export function Exchange(menu) {
     return exchange;
 
     async function open() {
-        if (app.user.cash > 0) {
+        if (app.user.hasExchanged) {
             const {value} =
                 await app.alert
                     .request({title: translate('common:message.checkout')});
@@ -69,6 +69,8 @@ export function Exchange(menu) {
                 await app.service.checkout({key});
 
             app.alert.checkoutList(data);
+
+            app.user.hasExchanged = false;
         }
         await app.service.refresh({key});
 
@@ -402,6 +404,7 @@ export function Exchange(menu) {
                             'common:message.receive', {cash: app.user.cash},
                         ),
                     });
+                    app.user.hasExchanged = true;
                 })
                 .then(() => menu.close());
         }

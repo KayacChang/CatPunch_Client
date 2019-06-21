@@ -18,6 +18,9 @@ export function User() {
     const autoOptions = [0, 25, 100, 500, 1000];
     let auto = 0;
 
+    let hasExchanged = false;
+    let isBetLock = false;
+
     return seal({
         get id() {
             return id;
@@ -30,6 +33,12 @@ export function User() {
         },
         set account(value) {
             account = value;
+        },
+        get hasExchanged() {
+            return hasExchanged;
+        },
+        set hasExchanged(flag) {
+            hasExchanged = flag;
         },
 
         //  Balance...
@@ -83,6 +92,13 @@ export function User() {
 
             bet = index;
             app.emit('UserBetChange', bet);
+        },
+
+        get isBetLock() {
+            return isBetLock;
+        },
+        set isBetLock(flag) {
+            isBetLock = flag;
         },
 
         get speedOptions() {
