@@ -237,9 +237,6 @@ export function Options(view) {
             function update(index) {
                 app.user.auto = index;
 
-                view.spinButton.auto
-                    .set(app.user.autoOptions[index]);
-
                 refresh(app.user.auto);
             }
         }

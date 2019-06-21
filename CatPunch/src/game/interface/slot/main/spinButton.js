@@ -110,6 +110,7 @@ export function SpinButton(view) {
 
     app.on('UserStatusChange', checkButton);
     app.on('UserBetChange', checkButton);
+    app.on('UserAutoChange', checkButton);
 
     return it;
 
@@ -123,6 +124,9 @@ export function SpinButton(view) {
             img.tint = 0xFFFFFF;
             isBlocking = false;
         }
+
+        const auto = app.user.autoOptions[app.user.auto];
+        it.auto.set(auto);
     }
 
     function checkState() {

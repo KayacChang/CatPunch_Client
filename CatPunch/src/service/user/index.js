@@ -119,6 +119,7 @@ export function User() {
         },
         set auto(index) {
             auto = index;
+            app.emit('UserAutoChange', auto);
         },
     });
 }

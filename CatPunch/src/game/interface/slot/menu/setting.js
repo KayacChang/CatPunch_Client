@@ -50,7 +50,7 @@ export function Setting(menu) {
         Slider(setting, 'auto', {
             range: app.user.autoOptions,
             onchange: (level) => {
-                app.control.main.spinButton.auto = level;
+                app.user.auto = level;
                 textAuto.text = kFormat(app.user.autoOptions[level]);
             },
         });
