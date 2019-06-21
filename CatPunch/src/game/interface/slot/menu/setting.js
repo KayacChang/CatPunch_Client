@@ -62,7 +62,7 @@ export function Setting(menu) {
             range: app.user.speedOptions,
             onchange: (level) => {
                 app.user.speed = level;
-                textSpeed.text = level;
+                textSpeed.text = level + 1;
             },
         });
 
@@ -241,7 +241,9 @@ function Slider(setting, target, {range, onchange}) {
         if (!enable) return;
         const {x} = data.getLocalPosition(frame);
 
-        setLevel(condition(x));
+        const level = moveRange.findIndex((range) => range > x);
+
+        setLevel(level);
     }
 
     function setLevel(value) {
