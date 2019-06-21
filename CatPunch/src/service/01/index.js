@@ -4,7 +4,7 @@ import {User} from '../user';
 
 const {assign, entries, fromEntries} = Object;
 
-export function Service() {
+export function Service(prodKey) {
     const tokens = {
         'accounttoken': construct(),
         'token': '',
@@ -99,7 +99,15 @@ export function Service() {
             });
     }
 
-    function login() {
+    function authenticate(key) {
+        return key !== prodKey;
+    }
+
+    function login({key}) {
+        if (authenticate(key)) {
+            return err(new Error('Permission Denied...'));
+        }
+
         const requestBody = {
             ...tokens,
             ...env,
@@ -124,7 +132,11 @@ export function Service() {
             });
     }
 
-    function init() {
+    function init({key}) {
+        if (authenticate(key)) {
+            return err(new Error('Permission Denied...'));
+        }
+
         const requestBody = {
             ...tokens,
             ...env,
@@ -150,7 +162,11 @@ export function Service() {
             });
     }
 
-    function refresh() {
+    function refresh({key}) {
+        if (authenticate(key)) {
+            return err(new Error('Permission Denied...'));
+        }
+
         const requestBody = {
             ...tokens,
             ...env,
@@ -165,7 +181,11 @@ export function Service() {
             });
     }
 
-    function exchange({currency, amount}) {
+    function exchange({key, currency, amount}) {
+        if (authenticate(key)) {
+            return err(new Error('Permission Denied...'));
+        }
+
         order['cointype'] = Number(currency);
         order['coinamount'] = Number(amount);
 
@@ -182,11 +202,15 @@ export function Service() {
                 app.user.cash = data['gameCoin'];
                 app.emit('UserStatusChange', app.user);
             })
-            .then(refresh)
+            .then(() => refresh({key}))
             .then(() => ({accountBalance, cash: app.user.cash}));
     }
 
-    function checkout() {
+    function checkout({key}) {
+        if (authenticate(key)) {
+            return err(new Error('Permission Denied...'));
+        }
+
         const requestBody = {
             ...tokens,
             ...env,
@@ -216,13 +240,17 @@ export function Service() {
             });
     }
 
-    function sendOneRound(data) {
+    function sendOneRound({key, bet}) {
+        if (authenticate(key)) {
+            return err(new Error('Permission Denied...'));
+        }
+
         const requestBody = {
             'type': 'gameResult',
             'playerid': app.user.id,
             ...tokens,
             ...env,
-            ...data,
+            bet,
         };
 
         return request('game/gameresult', requestBody)

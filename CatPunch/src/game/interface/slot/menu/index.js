@@ -6,6 +6,8 @@ import {Information} from './information';
 
 const {entries} = Object;
 
+const key = process.env.KEY;
+
 export function Menu(parent) {
     const menu = Openable(
         parent.getChildByName('menu'),
@@ -225,7 +227,8 @@ function Nav(menu, sections) {
 
                     if (!value) return;
 
-                    const data = await app.service.checkout();
+                    const data =
+                        await app.service.checkout({key});
 
                     await app.alert.checkoutList(data)
                         .then(({value}) => (value) && history.back());

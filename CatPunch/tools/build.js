@@ -1,6 +1,13 @@
 //  Imports
 const {table, log} = console;
 const {mergeRight} = require('ramda');
+const {createHash} = require('crypto');
+
+function randomString(length) {
+    return [...Array(length)]
+        .map(() => (~~(Math.random() * 36)).toString(36))
+        .join('');
+}
 
 //  Exports
 module.exports = function(env) {
@@ -9,6 +16,10 @@ module.exports = function(env) {
         'Node': process.env.NODE_ENV,
         'Webpack': env.mode,
     });
+
+    env.KEY = createHash('sha256')
+        .update(randomString(10))
+        .digest('hex');
 
     log(env);
     log('===================================================');
