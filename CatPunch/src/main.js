@@ -8,7 +8,7 @@ import {
 import {App} from './system/application';
 import {Service} from './service/01/';
 
-import i18n from './plugin/i18n';
+import i18n from './system/plugin/i18n';
 import ENV_URL from './env.json';
 
 import {enableFullScreenMask} from './system/modules/screen';

@@ -7,9 +7,9 @@ import {Network} from './modules/network';
 import {Resource} from './modules/resource';
 import {resize} from './modules/screen';
 
-import Swal from '../plugin/swal';
+import Swal from './plugin/swal';
 
-import {isMobile} from '../general';
+import {isMobile} from 'pixi.js/lib/core/utils';
 
 const {defineProperties, assign, freeze} = Object;
 
@@ -30,7 +30,7 @@ export function App() {
     //  Network
     const network = Network();
     //  Alert
-    const alert = Swal();
+    const alert = Swal(app);
 
     //  Service
     let service = undefined;
