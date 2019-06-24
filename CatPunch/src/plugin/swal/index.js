@@ -38,13 +38,14 @@ export default function() {
             .then(() => history.back());
     }
 
-    function request({title}) {
+    function request(data) {
         const config = {
             ...defaultStyle,
 
             type: 'warning',
-            title,
             showCancelButton: true,
+
+            ...(data),
         };
 
         playAudio(ALERT);

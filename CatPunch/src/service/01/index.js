@@ -29,11 +29,6 @@ export function Service(prodKey) {
 
     const reelTables = {};
 
-    const order = {
-        'cointype': 0,
-        'coinamount': 0,
-    };
-
     const time = {
         now: undefined,
         warning: undefined,
@@ -127,8 +122,9 @@ export function Service(prodKey) {
         if (time.now - time.warning > 0) {
             msg.type = 'warning';
             msg.title = translate('common:error.warning');
+            msg.showCancelButton = false;
 
-            time.warning.setMinutes(time.warning.getMinutes() + 1);
+            time.warning.setMinutes(time.now.getMinutes() + 1);
 
             return app.alert.request(msg);
         }
@@ -229,15 +225,13 @@ export function Service(prodKey) {
             return err(new Error('Permission Denied...'));
         }
 
-        order['cointype'] = Number(currency);
-        order['coinamount'] = Number(amount);
-
         const requestBody = {
             ...tokens,
             ...env,
             'playerid': app.user.id,
 
-            ...(order),
+            'cointype': Number(currency),
+            'coinamount': Number(amount),
         };
 
         return request('lobby/exchange', requestBody)
@@ -271,10 +265,6 @@ export function Service(prodKey) {
                         .map(([key, value]) => {
                             const type = key.match(/\d+/)[0];
                             const {name} = currencies.get(type);
-
-                            if (order['cointype'] === Number(type)) {
-                                value -= order['coinamount'];
-                            }
 
                             return [name, value];
                         });

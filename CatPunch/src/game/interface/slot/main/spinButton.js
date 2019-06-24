@@ -3,7 +3,7 @@ import {Container, Text} from 'pixi.js';
 import anime from 'animejs';
 import {setBehaviour} from './button';
 
-import {pi, clone} from '../../../../general';
+import {pi, clone, wait} from '../../../../general';
 
 const {assign} = Object;
 
@@ -137,6 +137,8 @@ export function SpinButton(view) {
                 view.openMenu('exchange')
                     .then(() => whenAnim = false);
             }
+
+            return spinEnd();
         }
 
         if (it.auto.get() > 0 && isAuto && isRunning) {
@@ -144,42 +146,46 @@ export function SpinButton(view) {
             play();
             it.auto.set(it.auto.get() - 1);
         } else {
-            anime.remove(arrow);
-
-            anime({
-                targets: square.scale,
-                x: 0, y: 0,
-            });
-
-            anime({
-                targets: arrow.scale,
-                x: arrowScale.x,
-                y: arrowScale.y,
-            });
-
-            anime({
-                targets: arrow,
-                rotation: 0,
-                alpha: 1,
-            });
-
-            anime({
-                targets: view,
-                alpha: 1,
-                easing: 'easeOutCubic',
-                duration: 1000,
-
-                complete() {
-                    view.menuBtn.interactive = true;
-                    view.option.btn.interactive = true;
-
-                    isRunning = false;
-                    isQuickStop = false;
-
-                    app.user.speed = speed;
-                },
-            });
+            spinEnd();
         }
+    }
+
+    function spinEnd() {
+        anime.remove(arrow);
+
+        anime({
+            targets: square.scale,
+            x: 0, y: 0,
+        });
+
+        anime({
+            targets: arrow.scale,
+            x: arrowScale.x,
+            y: arrowScale.y,
+        });
+
+        anime({
+            targets: arrow,
+            rotation: 0,
+            alpha: 1,
+        });
+
+        anime({
+            targets: view,
+            alpha: 1,
+            easing: 'easeOutCubic',
+            duration: 1000,
+
+            complete() {
+                view.menuBtn.interactive = true;
+                view.option.btn.interactive = true;
+
+                isRunning = false;
+                isQuickStop = false;
+
+                app.user.speed = speed;
+            },
+        });
     }
 
     function cashLessThanBet() {
