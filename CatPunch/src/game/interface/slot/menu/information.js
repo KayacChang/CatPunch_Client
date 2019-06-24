@@ -3,12 +3,13 @@ import anime from 'animejs';
 
 import {abs, sign} from '../../../../general';
 
-import RULE_01_URL from '../../../rule/gameRule01.png';
-import RULE_02_URL from '../../../rule/gameRule02.png';
-import RULE_03_URL from '../../../rule/gameRule03.png';
-import RULE_04_URL from '../../../rule/gameRule04.png';
-import RULE_05_URL from '../../../rule/gameRule05.png';
-import RULE_06_URL from '../../../rule/gameRule06.png';
+import RULE_0_URL from '../../../rule/gameRule0.png';
+import RULE_1_URL from '../../../rule/gameRule1.png';
+import RULE_2_URL from '../../../rule/gameRule2.png';
+import RULE_3_URL from '../../../rule/gameRule3.png';
+import RULE_4_URL from '../../../rule/gameRule4.png';
+import RULE_5_URL from '../../../rule/gameRule5.png';
+import RULE_6_URL from '../../../rule/gameRule6.png';
 
 import {Sprite} from 'pixi.js';
 
@@ -21,12 +22,13 @@ export function Information(menu) {
         .text = translate(`common:information.title`);
 
     const pageTab = Pages([
-        RULE_01_URL,
-        RULE_02_URL,
-        RULE_03_URL,
-        RULE_04_URL,
-        RULE_05_URL,
-        RULE_06_URL,
+        RULE_5_URL,
+        RULE_6_URL,
+        RULE_0_URL,
+        RULE_1_URL,
+        RULE_2_URL,
+        RULE_3_URL,
+        RULE_4_URL,
     ]);
 
     const tabs =
@@ -50,15 +52,15 @@ export function Information(menu) {
     return information;
 
     async function open() {
-        // @TODO resource fetch again...
         const resources =
             await app.resource.fetch(...[
-                RULE_01_URL,
-                RULE_02_URL,
-                RULE_03_URL,
-                RULE_04_URL,
-                RULE_05_URL,
-                RULE_06_URL,
+                RULE_5_URL,
+                RULE_6_URL,
+                RULE_0_URL,
+                RULE_1_URL,
+                RULE_2_URL,
+                RULE_3_URL,
+                RULE_4_URL,
             ]);
 
         const sprites =
@@ -106,7 +108,8 @@ export function Information(menu) {
                 .filter(({name}) => name.includes('page'));
 
         const pagesPos =
-            pages.map(({x, y}) => ({x, y}));
+            pages
+                .map(({name, x, y}) => ({name, x, y}));
 
         it.interactive = true;
 
@@ -136,6 +139,10 @@ export function Information(menu) {
                 pages = newPages;
             },
         };
+
+        function Idx({name}) {
+            return name.split('@')[1];
+        }
 
         function setControl(flag) {
             if (flag) {
