@@ -143,7 +143,6 @@ export function SpinButton(view) {
         if (it.auto.get() > 0 && isAuto && isRunning) {
             isRunning = false;
             play();
-            it.auto.set(it.auto.get() - 1);
         } else {
             spinEnd();
         }
