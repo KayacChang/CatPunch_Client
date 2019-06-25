@@ -131,7 +131,6 @@ export function SpinButton(view) {
 
     function checkState() {
         if (cashLessThanBet()) {
-            checkButton();
             if (!whenAnim) {
                 whenAnim = true;
                 view.openMenu('exchange')
@@ -184,6 +183,8 @@ export function SpinButton(view) {
                 isQuickStop = false;
 
                 app.user.speed = speed;
+
+                checkButton();
             },
         });
     }
@@ -195,6 +196,8 @@ export function SpinButton(view) {
     function onClick() {
         if (whenAnim) return;
         if (isBlocking) {
+            if (isRunning) return;
+
             whenAnim = true;
             anime({
                 targets: msg,

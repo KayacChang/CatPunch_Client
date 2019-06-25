@@ -37,8 +37,8 @@ export function Exchange(menu) {
         pad.getChildByName('btn@delete'),
     );
 
-    CleanButton(
-        exchange.getChildByName('btn@cancel'),
+    BackButton(
+        exchange.getChildByName('btn@back'),
     );
 
     RefreshButton(
@@ -483,7 +483,7 @@ export function Exchange(menu) {
         }
     }
 
-    function CleanButton(btn) {
+    function BackButton(btn) {
         btn = Clickable(btn);
         btn.on('pointerdown', click);
 
@@ -498,6 +498,8 @@ export function Exchange(menu) {
         function click() {
             dropdown.close();
             amount.set(0);
+
+            menu.close();
         }
     }
 }
