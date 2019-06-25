@@ -302,6 +302,10 @@ export function SpinButton(view) {
 
         isRunning = true;
 
+        if (auto.get() > 0) {
+            auto.set(auto.get() - 1);
+        }
+
         const key = process.env.KEY;
 
         app.service
