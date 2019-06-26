@@ -1,7 +1,7 @@
 import {defaultFont} from '../../components';
 import {
     currencyFormat,
-    currencyValue,
+    toValue,
     signFormat,
 } from '../../../../general';
 import anime from 'animejs';
@@ -45,7 +45,7 @@ function init(view) {
 function Cash(it, effect) {
     const proxy = {
         get cash() {
-            return currencyValue(it.content.text);
+            return toValue(it.content.text);
         },
         set cash(newCash) {
             it.content.text = currencyFormat(newCash);
@@ -121,7 +121,7 @@ function Bet(it) {
 function Win(it) {
     const proxy = {
         get scores() {
-            return currencyValue(it.content.text);
+            return toValue(it.content.text);
         },
         set scores(newScores) {
             it.content.text = currencyFormat(newScores);

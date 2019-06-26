@@ -2,6 +2,7 @@ import {Clickable, defaultFont} from '../../components';
 import {setDropShadow} from '../../../plugin/filter';
 import {setBehaviour} from './button';
 import anime from 'animejs';
+import {kCurrencyFormat, toValue} from '../../../../general';
 
 function setScale(open, ...targets) {
     const tasks =
@@ -245,7 +246,8 @@ export function Options(view) {
             currentOpen = 'bet';
 
             setOptionItems(
-                options, update,
+                options.map(kCurrencyFormat),
+                update,
             );
 
             function update(index) {
@@ -273,7 +275,7 @@ export function Options(view) {
                 if (currentOpen === 'bet') {
                     const flag =
                         !app.user.isBetLock &&
-                        options[index] <= app.user.cash;
+                        toValue(options[index]) <= app.user.cash;
 
                     btn.enable = flag;
 
