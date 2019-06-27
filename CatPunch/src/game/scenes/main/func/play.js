@@ -143,6 +143,7 @@ export function play(scene) {
                 }
             }
 
+            app.user.cash += totalScores;
             await showBigWinEffect(totalScores);
 
             await energy.update(0);
