@@ -172,19 +172,18 @@ export function SpinButton(view) {
             targets: view,
             alpha: 1,
             easing: 'easeOutCubic',
-            duration: 750,
+        });
 
-            complete() {
-                view.menuBtn.interactive = true;
-                view.option.btn.interactive = true;
+        requestAnimationFrame(() => {
+            view.menuBtn.interactive = true;
+            view.option.btn.interactive = true;
 
-                isRunning = false;
-                isQuickStop = false;
+            isRunning = false;
+            isQuickStop = false;
 
-                app.user.speed = speed;
+            app.user.speed = speed;
 
-                checkButton();
-            },
+            checkButton();
         });
     }
 
