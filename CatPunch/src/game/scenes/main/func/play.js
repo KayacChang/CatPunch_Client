@@ -160,7 +160,7 @@ export function play(scene) {
 
         betLock(result.hasBetLock);
 
-        if (totalWin > 0) await wait(1000);
+        if (totalWin > 0) await wait(750);
 
         log('Round Complete...');
         app.emit('Idle');
