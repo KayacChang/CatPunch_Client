@@ -172,7 +172,7 @@ export function SpinButton(view) {
             targets: view,
             alpha: 1,
             easing: 'easeOutCubic',
-            duration: 1000,
+            duration: 750,
 
             complete() {
                 view.menuBtn.interactive = true;
