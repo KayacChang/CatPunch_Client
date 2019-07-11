@@ -219,7 +219,7 @@ function Nav(menu, sections) {
             }
 
             if (name === 'home') {
-                if (app.user.cash > 0) {
+                if (app.user.hasExchanged) {
                     const {value} =
                         await app.alert.request(
                             {title: translate(`common:message.checkout`)},

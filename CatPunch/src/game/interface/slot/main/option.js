@@ -2,6 +2,7 @@ import {Clickable, defaultFont} from '../../components';
 import {setDropShadow} from '../../../plugin/filter';
 import {setBehaviour} from './button';
 import anime from 'animejs';
+import {kCurrencyFormat, toValue} from '../../../../general';
 
 function setScale(open, ...targets) {
     const tasks =
@@ -168,7 +169,9 @@ export function Options(view) {
                 const num = numbers[index];
 
                 if (currentOpen === 'bet') {
-                    const flag = options[index] <= app.user.cash;
+                    const flag =
+                        !app.user.isBetLock &&
+                        options[index] <= app.user.cash;
 
                     btn.enable = flag;
 
@@ -183,6 +186,11 @@ export function Options(view) {
             });
 
             if (!isItemsOpen) setAudio(app.sound.mute());
+
+            (currentOpen === 'bet') ? refresh(hotKeys.indexOf(app.user.bet)) :
+                (currentOpen === 'auto') ? refresh(app.user.auto) :
+                    (currentOpen === 'speed') ? refresh(app.user.speed) :
+                        undefined;
         }
 
         function resetFunc() {
@@ -212,8 +220,6 @@ export function Options(view) {
                 update,
             );
 
-            refresh(app.user.speed);
-
             function update(index) {
                 app.user.speed = index;
 
@@ -223,18 +229,14 @@ export function Options(view) {
 
         function setAuto() {
             currentOpen = 'auto';
+
             setOptionItems(
                 app.user.autoOptions,
                 update,
             );
 
-            refresh(app.user.auto);
-
             function update(index) {
                 app.user.auto = index;
-
-                view.spinButton.auto
-                    .set(app.user.autoOptions[index]);
 
                 refresh(app.user.auto);
             }
@@ -244,10 +246,9 @@ export function Options(view) {
             currentOpen = 'bet';
 
             setOptionItems(
-                options, update,
+                options.map(kCurrencyFormat),
+                update,
             );
-
-            refresh(hotKeys.indexOf(app.user.bet));
 
             function update(index) {
                 app.user.bet = hotKeys[index];
@@ -262,8 +263,6 @@ export function Options(view) {
 
                 setScale(num.index === index, enableFrame);
             });
-
-            checkState();
         }
 
         async function setOptionItems(options, func) {
@@ -274,7 +273,9 @@ export function Options(view) {
                 const num = numbers[index];
 
                 if (currentOpen === 'bet') {
-                    const flag = options[index] <= app.user.cash;
+                    const flag =
+                        !app.user.isBetLock &&
+                        toValue(options[index]) <= app.user.cash;
 
                     btn.enable = flag;
 
@@ -326,6 +327,11 @@ export function Options(view) {
                 btn.scale.set(1);
             });
 
+            (currentOpen === 'bet') ? refresh(hotKeys.indexOf(app.user.bet)) :
+                (currentOpen === 'auto') ? refresh(app.user.auto) :
+                    (currentOpen === 'speed') ? refresh(app.user.speed) :
+                        undefined;
+
             backFunc = async function() {
                 app.sound.play('option');
                 await setScale(false, ...targets);
@@ -339,7 +345,6 @@ export function Options(view) {
                 resetFunc();
             };
         }
-
 
         function setAudio(isMute) {
             const audioFrame = frames[3];

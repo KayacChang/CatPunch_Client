@@ -62,6 +62,7 @@
   },
   "error": {
     "unspecific": "Something went wrong. Please call customer service for more details.",
+    "warning": "Service will down for maintenance in 5 minutes.",
     "maintain": "Service is currently down for maintenance. Thanks for your patience."
   }
 }

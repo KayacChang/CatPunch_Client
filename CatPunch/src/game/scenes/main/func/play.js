@@ -43,9 +43,10 @@ export function play(scene) {
 
         if (result.normalGame.scores && !result.hasReSpin) {
             await showScores(normalWin);
-            app.user.cash += normalWin;
-
             await showBigWinEffect(normalWin);
+
+            app.user.cash += normalWin;
+            app.user.lastWin = normalWin;
         }
 
         if (result.hasReSpin) {
@@ -89,9 +90,11 @@ export function play(scene) {
             );
 
             await showScores(reSpinWin);
-            app.user.cash += reSpinWin;
 
             await showBigWinEffect(reSpinWin);
+
+            app.user.cash += reSpinWin;
+            app.user.lastWin = reSpinWin;
         }
 
         if (energy.scale === 10) {
@@ -142,34 +145,29 @@ export function play(scene) {
                     await showScores(result.scores);
                 }
             }
-
             await showBigWinEffect(totalScores);
+
+            app.user.cash += totalScores;
+            app.user.lastWin = totalScores;
 
             await energy.update(0);
         }
 
         app.user.cash = result.cash;
         app.user.totalWin += totalWin;
-        app.user.lastWin = totalWin;
 
         slot.reelTables = normalTable;
 
         betLock(result.hasBetLock);
+
+        if (totalWin > 0) await wait(750);
 
         log('Round Complete...');
         app.emit('Idle');
     });
 
     function betLock(flag) {
-        const menu = app.control.main.option.menu;
-
-        const betButton = menu.btns[2];
-
-        betButton.enable = !flag;
-
-        const betLevel = app.control.menu.setting.betLevel;
-
-        betLevel.enable = !flag;
+        app.user.isBetLock = flag;
     }
 
     async function showScores(scores) {

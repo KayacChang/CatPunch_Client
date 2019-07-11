@@ -2,7 +2,7 @@ import {Container, Sprite, extras, particles} from 'pixi.js';
 
 import anime from 'animejs';
 import {
-    currencyFormat, currencyValue, wait,
+    currencyFormat, toValue, wait,
     degreeToRadian, radianToDegree,
     map, times,
     random, randomInt, pi,
@@ -380,7 +380,7 @@ export function numberIncrementEffect(scene, num) {
 
     const proxy = {
         get number() {
-            return currencyValue(number.text);
+            return toValue(number.text);
         },
         set number(num) {
             number.text = currencyFormat(num);

@@ -2,7 +2,7 @@ import {Openable} from '../../components/Openable';
 import {Clickable, ToggleButton, RangeSlider} from '../../components';
 
 import anime from 'animejs';
-import {kFormat, rgbToHex} from '../../../../general';
+import {kFormat, kCurrencyFormat, rgbToHex} from '../../../../general';
 
 export function Setting(menu) {
     const setting = Openable(
@@ -62,7 +62,7 @@ export function Setting(menu) {
             range: app.user.speedOptions,
             onchange: (level) => {
                 app.user.speed = level;
-                textSpeed.text = level;
+                textSpeed.text = level + 1;
             },
         });
 
@@ -75,9 +75,19 @@ export function Setting(menu) {
             range: app.user.betOptions,
             onchange: (level) => {
                 app.user.bet = level;
-                textBetLevel.text = kFormat(app.user.betOptions[level]);
+                textBetLevel.text = kCurrencyFormat(app.user.betOptions[level]);
             },
         });
+    setting
+        .getChildByName(`label@betLevel_min`)
+        .content.text = kCurrencyFormat(app.user.betOptions[0]);
+    setting
+        .getChildByName(`label@betLevel_max`)
+        .content.text = kCurrencyFormat(
+            app.user.betOptions[
+                app.user.betOptions.length - 1
+            ]
+        );
 
     setting.y -= 53;
     setting.open = open;
@@ -101,6 +111,8 @@ export function Setting(menu) {
         speed.setLevel(app.user.speed);
         betLevel.setLevel(app.user.bet);
         auto.setLevel(app.user.auto);
+
+        betLevel.enable = !app.user.isBetLock;
 
         return anime({
             targets: setting,
@@ -241,7 +253,9 @@ function Slider(setting, target, {range, onchange}) {
         if (!enable) return;
         const {x} = data.getLocalPosition(frame);
 
-        setLevel(condition(x));
+        const level = moveRange.findIndex((range) => range > x);
+
+        setLevel(level);
     }
 
     function setLevel(value) {

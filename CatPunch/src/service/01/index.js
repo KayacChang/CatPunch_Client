@@ -29,9 +29,10 @@ export function Service(prodKey) {
 
     const reelTables = {};
 
-    const order = {
-        'cointype': 0,
-        'coinamount': 0,
+    const time = {
+        now: undefined,
+        warning: undefined,
+        maintain: undefined,
     };
 
     return {
@@ -89,6 +90,7 @@ export function Service(prodKey) {
                     const msg = {title: `Error: ${code}`};
 
                     if (code === 18) {
+                        msg.type = 'info';
                         msg.text = translate('common:error.maintain');
                     }
 
@@ -101,6 +103,31 @@ export function Service(prodKey) {
 
     function authenticate(key) {
         return key !== prodKey;
+    }
+
+    function checkTime() {
+        time.now.setSeconds(time.now.getSeconds() + 1);
+
+        const msg = {};
+
+        if (time.now - time.maintain > 0) {
+            msg.type = 'info';
+            msg.text = translate('common:error.maintain');
+
+            clearInterval(time.timer);
+
+            return app.alert.error(msg);
+        }
+
+        if (time.now - time.warning > 0) {
+            msg.type = 'warning';
+            msg.title = translate('common:error.warning');
+            msg.showCancelButton = false;
+
+            time.warning.setMinutes(time.now.getMinutes() + 1);
+
+            return app.alert.request(msg);
+        }
     }
 
     function login({key}) {
@@ -128,6 +155,15 @@ export function Service(prodKey) {
                         currencies.get(type).rate = rate;
                     });
 
+                const now = data['serversetting']['servertime'] * 1000;
+                const maintain = data['serversetting']['maintaintime'] * 1000;
+
+                time.now = new Date(now);
+                time.warning = new Date(maintain - (10 * 60 * 1000));
+                time.maintain = new Date(maintain);
+
+                time.timer = setInterval(checkTime, 1000);
+
                 return data;
             });
     }
@@ -152,6 +188,9 @@ export function Service(prodKey) {
                 app.user.betOptions = data['betrate']['betrate'];
                 app.user.betOptionsHotKey = data['betrate']['betratelinkindex'];
                 app.user.bet = data['betrate']['betratedefaultindex'];
+
+                app.user.hasExchanged =
+                    Boolean(data['thirdparty']['isexchange']);
 
                 assign(reelTables, {
                     normalTable: data['reel']['normalreel'],
@@ -186,15 +225,13 @@ export function Service(prodKey) {
             return err(new Error('Permission Denied...'));
         }
 
-        order['cointype'] = Number(currency);
-        order['coinamount'] = Number(amount);
-
         const requestBody = {
             ...tokens,
             ...env,
             'playerid': app.user.id,
 
-            ...(order),
+            'cointype': Number(currency),
+            'coinamount': Number(amount),
         };
 
         return request('lobby/exchange', requestBody)
@@ -228,10 +265,6 @@ export function Service(prodKey) {
                         .map(([key, value]) => {
                             const type = key.match(/\d+/)[0];
                             const {name} = currencies.get(type);
-
-                            if (order['cointype'] === Number(type)) {
-                                value -= order['coinamount'];
-                            }
 
                             return [name, value];
                         });

@@ -53,6 +53,8 @@ async function main() {
 
         global.translate = await i18n.init();
 
+        select(`meta[name='Description']`).content = translate('description');
+
         global.app = new App();
 
         app.service = new Service(key);

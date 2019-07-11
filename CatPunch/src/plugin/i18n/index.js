@@ -47,7 +47,7 @@ function init() {
         .use(LanguageDetector)
         .use(Fetch)
         .init({
-            debug: isProduction(),
+            debug: !isProduction(),
 
             fallbackLng: 'zh-TW',
 

@@ -1,6 +1,8 @@
 //  Imports
 const {resolve} = require('path');
-const {ProgressPlugin, DefinePlugin, optimize} = require('webpack');
+const {
+    ProgressPlugin, DefinePlugin, HashedModuleIdsPlugin, optimize,
+} = require('webpack');
 const {ModuleConcatenationPlugin} = optimize;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -26,7 +28,7 @@ module.exports = function(env) {
         //  Output  ===========================================
         output: {
             path: productDir,
-            filename: 'js/bundle.js',
+            filename: 'js/[name].[contenthash].js',
         },
 
         //  Optimization    ====================================
@@ -93,7 +95,7 @@ module.exports = function(env) {
                         {
                             loader: 'file-loader',
                             options: {
-                                name: '[name].[ext]',
+                                name: `[name].[ext]?${env.KEY}`,
                                 publicPath: publicPath + 'assets',
                                 outputPath: 'assets',
                             },
@@ -106,7 +108,7 @@ module.exports = function(env) {
                         {
                             loader: 'file-loader',
                             options: {
-                                name: '[name].[ext]',
+                                name: `[name].[ext]?${env.KEY}`,
                                 publicPath: publicPath + 'assets',
                                 outputPath: 'assets',
                             },
@@ -119,7 +121,7 @@ module.exports = function(env) {
                         {
                             loader: 'file-loader',
                             options: {
-                                name: '[name].[ext]',
+                                name: `[name].[ext]?${env.KEY}`,
                                 publicPath: publicPath + 'assets',
                                 outputPath: 'assets',
                             },
@@ -132,7 +134,7 @@ module.exports = function(env) {
                         {
                             loader: 'file-loader',
                             options: {
-                                name: '[name].[ext]',
+                                name: `[name].[ext]?${env.KEY}`,
                                 publicPath: publicPath + 'assets',
                                 outputPath: 'assets',
                             },
@@ -156,6 +158,8 @@ module.exports = function(env) {
 
             //  Module Bundle like Roll up
             new ModuleConcatenationPlugin(),
+
+            new HashedModuleIdsPlugin(),
 
             //  HTML
             new HtmlWebpackPlugin({
