@@ -9,8 +9,6 @@ import {resize} from './modules/screen';
 
 import Swal from '../plugin/swal';
 
-import {isMobile} from '../general';
-
 const {defineProperties, assign, freeze} = Object;
 
 export function App() {
@@ -18,7 +16,7 @@ export function App() {
         new Application({
             resolution: devicePixelRatio,
             antialias: true,
-            forceCanvas: isMobile.phone,
+            forceCanvas: true,
             forceFXAA: true,
             powerPreference: 'high-performance',
         });
