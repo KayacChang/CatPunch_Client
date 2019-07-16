@@ -17,16 +17,23 @@ export function Network() {
     });
 
     function fetchData(promise) {
-        return promise.then(({data}) => data)
-            .catch((err) => app.alert.error(err));
+        return promise.then(({data}) => data);
     }
 
     function get(url) {
-        return fetchData(proxy.get(url));
+        return fetchData(
+            proxy
+                .get(url)
+                .catch((err) => app.alert.error(err)),
+        );
     }
 
     function post(url, payload) {
-        return fetchData(proxy.post(url, payload));
+        return fetchData(
+            proxy
+                .post(url, payload)
+                .catch((err) => app.alert.error(err)),
+        );
     }
 
     return {get, post};
