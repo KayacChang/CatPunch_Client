@@ -17,7 +17,8 @@ export function Network() {
     });
 
     function fetchData(promise) {
-        return promise.then(({data}) => data);
+        return promise.then(({data}) => data)
+            .catch((err) => app.alert.error(err));
     }
 
     function get(url) {
