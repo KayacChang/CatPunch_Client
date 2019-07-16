@@ -16,24 +16,24 @@ export function Network() {
         timeout: 10000,
     });
 
-    function fetchData(promise) {
-        return promise.then(({data}) => data);
+    async function get(url) {
+        try {
+            const {data} = await proxy.get(url);
+
+            return data;
+        } catch (err) {
+            app.alert.error(err);
+        }
     }
 
-    function get(url) {
-        return fetchData(
-            proxy
-                .get(url)
-                .catch((err) => app.alert.error(err)),
-        );
-    }
+    async function post(url, payload) {
+        try {
+            const {data} = await proxy.post(url, payload);
 
-    function post(url, payload) {
-        return fetchData(
-            proxy
-                .post(url, payload)
-                .catch((err) => app.alert.error(err)),
-        );
+            return data;
+        } catch (err) {
+            app.alert.error(err);
+        }
     }
 
     return {get, post};
