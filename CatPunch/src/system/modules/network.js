@@ -22,7 +22,7 @@ export function Network() {
 
             return data;
         } catch (err) {
-            app.alert.error(err);
+            handleError(err);
         }
     }
 
@@ -32,8 +32,16 @@ export function Network() {
 
             return data;
         } catch (err) {
-            app.alert.error(err);
+            handleError(err);
         }
+    }
+
+    function handleError(err) {
+        if (err.message === 'Network Error') {
+            return app.alert.reload(err.message);
+        }
+
+        return app.alert.error(err.message);
     }
 
     return {get, post};

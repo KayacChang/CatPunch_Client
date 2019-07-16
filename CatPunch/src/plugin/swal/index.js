@@ -38,6 +38,22 @@ export default function() {
             .then(() => history.back());
     }
 
+    function reload(msg) {
+        const config = {
+            ...defaultStyle,
+
+            type: 'error',
+            text: translate(`common:error.connection`),
+            confirmButtonText: translate(`common:button.refresh`),
+            confirmButtonColor: '#DC3446',
+
+            ...(msg),
+        };
+
+        return Swal.fire(config)
+            .then(() => location.reload());
+    }
+
     function request(data) {
         const config = {
             ...defaultStyle,
@@ -166,7 +182,7 @@ export default function() {
     }
 
     return {
-        error, leave, loading, close,
+        error, leave, loading, close, reload,
         success, checkoutList, request,
     };
 }
