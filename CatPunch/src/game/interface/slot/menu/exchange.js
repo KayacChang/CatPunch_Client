@@ -378,7 +378,7 @@ export function Exchange(menu) {
 
         return btn;
 
-        function click() {
+        async function click() {
             if (amount.get() <= 0) return;
 
             const balance = app.service.accountBalance[currency.name()];
@@ -386,7 +386,7 @@ export function Exchange(menu) {
 
             app.alert.loading({title: translate('common:message.wait')});
 
-            app.service
+            await app.service
                 .exchange({
                     key,
                     currency: currency.get(),
