@@ -1,5 +1,4 @@
 FROM nginx
-MAINTAINER scott.chen@sixonetech.com
 RUN mkdir -p /usr/share/game/catpunch
 RUN mkdir -p /etc/nginx/ssl
 COPY nginx.conf /etc/nginx/nginx.conf
