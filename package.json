@@ -61,7 +61,7 @@
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
     "i18next-fetch-backend": "^2.2.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "mathjs": "^6.0.1",
     "numeral": "^2.0.6",
     "pixi-filters": "^2.7.1",
