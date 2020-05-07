@@ -1,26 +1,15 @@
 import {defaultFont} from '../../components';
-import {
-    currencyFormat,
-    toValue,
-    signFormat,
-} from '../../../../general';
+import {currencyFormat, toValue, signFormat} from '@kayac/utils';
 import anime from 'animejs';
 
 export function Status(view) {
     init(view);
 
-    Cash(
-        view.getChildByName('field@cash'),
-        view.getChildByName('effect@cash'),
-    );
+    Cash(view.getChildByName('field@cash'), view.getChildByName('effect@cash'));
 
-    Bet(
-        view.getChildByName('field@bet'),
-    );
+    Bet(view.getChildByName('field@bet'));
 
-    Win(
-        view.getChildByName('field@win'),
-    );
+    Win(view.getChildByName('field@win'));
 
     return view;
 }
@@ -112,9 +101,7 @@ function Bet(it) {
     return it;
 
     function update(index) {
-        it.content.text = currencyFormat(
-            app.user.betOptions[index],
-        );
+        it.content.text = currencyFormat(app.user.betOptions[index]);
     }
 }
 

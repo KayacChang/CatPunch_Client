@@ -1,7 +1,5 @@
 import anime from 'animejs';
-import {
-    wait, nth, floor, mod, log,
-} from '../../../../general';
+import {wait, nth, floor, mod, log} from '@kayac/utils';
 
 import {
     spinDuration,
@@ -15,8 +13,7 @@ import {Status} from '../components/slot';
 import {setBevel, setGlow} from '../../../plugin/filter';
 import {bubbleEffect} from '../components/effects';
 
-const maybeBonusIcon =
-    symbolConfig.find(({maybeBonus}) => maybeBonus).id;
+const maybeBonusIcon = symbolConfig.find(({maybeBonus}) => maybeBonus).id;
 
 const emptyIcon = symbolConfig.length;
 
@@ -27,7 +24,7 @@ export async function spin(scene, reels, result) {
 
     let time = spinDuration[app.user.speed];
 
-    app.on('QuickStop', () => time = 0);
+    app.on('QuickStop', () => (time = 0));
 
     while (time > 0) {
         await wait(100);
@@ -52,13 +49,11 @@ async function spinStart(it, reels) {
         duration: 500,
     });
 
-    it.reels
-        .forEach((reel) =>
-            reel.results.forEach((result) =>
-                result.visible = true));
+    it.reels.forEach((reel) =>
+        reel.results.forEach((result) => (result.visible = true)),
+    );
 
-    it.view
-        .children
+    it.view.children
         .filter(({name}) => name.includes('Effect'))
         .forEach((effect) => {
             effect.visible = false;
@@ -88,17 +83,14 @@ async function spinStart(it, reels) {
 function spinStop(it, reels, {positions, symbols}) {
     log('Spin Stop...');
 
-    const fxReels =
-        ['L', 'M', 'R'].map((pos) =>
-            it.view.getChildByName(`FXReel_${pos}`).anim);
+    const fxReels = ['L', 'M', 'R'].map(
+        (pos) => it.view.getChildByName(`FXReel_${pos}`).anim,
+    );
 
     return Promise.all(reels.map(stop));
 
     function isMaybeBonus() {
-        return (
-            symbols[0] !== emptyIcon &&
-            symbols[1] === maybeBonusIcon
-        );
+        return symbols[0] !== emptyIcon && symbols[1] === maybeBonusIcon;
     }
 
     async function stop(reel, index) {
@@ -108,8 +100,7 @@ function spinStop(it, reels, {positions, symbols}) {
 
         let resultPos = [2, 4];
 
-        const reelTable =
-            reel.reelTable.filter((num) => num !== 10);
+        const reelTable = reel.reelTable.filter((num) => num !== 10);
 
         if (symbols[reel.reelIdx] !== 10) {
             results[0].icon = symbols[reel.reelIdx];
@@ -154,10 +145,9 @@ function spinStop(it, reels, {positions, symbols}) {
                 app.sound.play('bounce');
             },
             complete() {
-                fxReels
-                    .forEach((reel) => reel.visible = false);
+                fxReels.forEach((reel) => (reel.visible = false));
 
-                const flag = (reel.reelIdx === 1 && isMaybeBonus());
+                const flag = reel.reelIdx === 1 && isMaybeBonus();
 
                 fxReels[2].visible = flag;
 
@@ -167,15 +157,13 @@ function spinStop(it, reels, {positions, symbols}) {
 
                 anime.remove(reel);
 
-                reel.symbols.forEach((symbol) => symbol.visible = false);
+                reel.symbols.forEach((symbol) => (symbol.visible = false));
 
                 reel.status = Status.Idle;
             },
         }).finished;
 
-        reel.results
-            .forEach((result) =>
-                result.pos = floor(result.pos));
+        reel.results.forEach((result) => (result.pos = floor(result.pos)));
     }
 }
 
@@ -187,7 +175,7 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
 
     slot.view.children
         .filter(({name}) => name.includes('FXReel'))
-        .forEach(({anim}) => anim.visible = false);
+        .forEach(({anim}) => (anim.visible = false));
 
     if (hasLink) {
         const mask = slot.view.getChildByName('SlotBaseMask');
@@ -202,8 +190,7 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
         let soundFlag = false;
 
         reels.map((reel) => {
-            const symbolName =
-                getSymbolName(symbols[reel.reelIdx]);
+            const symbolName = getSymbolName(symbols[reel.reelIdx]);
 
             if (isNormalSymbol(symbolName)) {
                 normalEffect(reel);
@@ -220,14 +207,10 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
         });
     }
 
-    const midReel =
-        reels.find(({reelIdx}) => reelIdx === 1);
+    const midReel = reels.find(({reelIdx}) => reelIdx === 1);
 
     if (midReel && getSymbolName(symbols[1]) === 'neko') {
-        const symbol =
-            midReel.results
-                .find((symbol) => symbol.pos === 2)
-                .view;
+        const symbol = midReel.results.find((symbol) => symbol.pos === 2).view;
 
         anime({
             targets: symbol.scale,
@@ -242,13 +225,12 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
             easing: 'easeOutElastic(5, .2)',
         });
 
-        const glow =
-            setGlow(symbol, {
-                distance: 15,
-                outerStrength: 0.1,
-                innerStrength: 0.1,
-                color: 0x0288D1,
-            });
+        const glow = setGlow(symbol, {
+            distance: 15,
+            outerStrength: 0.1,
+            innerStrength: 0.1,
+            color: 0x0288d1,
+        });
 
         anime({
             targets: glow,
@@ -270,10 +252,7 @@ async function spinComplete(scene, reels, {hasLink, symbols}) {
 }
 
 function normalEffect(reel) {
-    const symbol =
-        reel.results
-            .find((symbol) => symbol.pos === 2)
-            .view;
+    const symbol = reel.results.find((symbol) => symbol.pos === 2).view;
 
     anime({
         targets: symbol.scale,
@@ -286,36 +265,30 @@ function normalEffect(reel) {
         distance: 15,
         outerStrength: 1,
         innerStrength: 5,
-        color: 0xFCFFA3,
+        color: 0xfcffa3,
     });
 
     setBevel(symbol);
 }
 
 function specialEffect(it, reel, symbolName) {
-    reel.results
-        .find((symbol) => symbol.pos === 2)
-        .visible = false;
+    reel.results.find((symbol) => symbol.pos === 2).visible = false;
 
-    const effect =
-        it.view.getChildByName(`Effect_${reel.reelIdx}`);
+    const effect = it.view.getChildByName(`Effect_${reel.reelIdx}`);
 
     effect.visible = true;
 
-    const anim =
-        effect.getChildByName(`anim@${symbolName}`).anim;
+    const anim = effect.getChildByName(`anim@${symbolName}`).anim;
 
     setBevel(anim, {thickness: 1, lightAlpha: 0.4});
 
-
     if (symbolName === 'neko') {
-        const glow =
-            setGlow(anim, {
-                distance: 15,
-                outerStrength: 0.1,
-                innerStrength: 0.1,
-                color: 0x0288D1,
-            });
+        const glow = setGlow(anim, {
+            distance: 15,
+            outerStrength: 0.1,
+            innerStrength: 0.1,
+            color: 0x0288d1,
+        });
 
         anime({
             targets: glow,
@@ -330,9 +303,7 @@ function specialEffect(it, reel, symbolName) {
 
     anim.visible = true;
     anim.gotoAndPlay(0);
-    app.sound.play(
-        symbolName.replace(/@.*/, ''),
-    );
+    app.sound.play(symbolName.replace(/@.*/, ''));
 }
 
 function isNormalSymbol(name) {
@@ -340,15 +311,13 @@ function isNormalSymbol(name) {
 }
 
 function isSpecialSymbol(name) {
-    return name.includes('koi') ||
-        name.includes('neko') ||
-        name.includes('taiko');
+    return (
+        name.includes('koi') || name.includes('neko') || name.includes('taiko')
+    );
 }
 
 function getSymbolName(icon) {
     if (icon === emptyIcon) return 'empty';
 
-    return symbolConfig
-        .find(({id}) => id === icon)
-        .name;
+    return symbolConfig.find(({id}) => id === icon).name;
 }

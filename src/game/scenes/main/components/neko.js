@@ -1,4 +1,4 @@
-import {wait} from '../../../../general/utils/time';
+import {wait} from '@kayac/utils';
 import {setOutline} from '../../../plugin/filter';
 
 export function Neko(scene) {

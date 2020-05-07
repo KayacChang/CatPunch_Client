@@ -1,15 +1,19 @@
 //  Imports
 const {resolve} = require('path');
 const {
-    ProgressPlugin, DefinePlugin, HashedModuleIdsPlugin, optimize,
+    ProgressPlugin,
+    DefinePlugin,
+    HashedModuleIdsPlugin,
 } = require('webpack');
-const {ModuleConcatenationPlugin} = optimize;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const WorkerPlugin = require('worker-plugin');
 
+const Dotenv = require('dotenv-webpack');
+
 //  Path
 const {
+    rootPath,
     sourceDir,
     productDir,
     baseDir,
@@ -18,43 +22,15 @@ const {
 } = require('../constant');
 
 //  Exports
-module.exports = function(env) {
+module.exports = function (env) {
     return {
         //  Entry   ===========================================
-        entry: [
-            resolve(sourceDir, 'main.js'),
-        ],
+        entry: [resolve(sourceDir, 'main.js')],
 
         //  Output  ===========================================
         output: {
             path: productDir,
             filename: 'js/[name].[contenthash].js',
-        },
-
-        //  Optimization    ====================================
-        optimization: {
-            usedExports: true,
-            sideEffects: false,
-            concatenateModules: true,
-
-            splitChunks: {
-                chunks: 'all',
-                minSize: 0,
-                maxInitialRequests: Infinity,
-                cacheGroups: {
-                    vendor: {
-                        test: /[\\/]node_modules[\\/]/,
-                        name(module) {
-                            const packageName =
-                                module.context.match(
-                                    /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
-                                )[1];
-
-                            return `${packageName.replace('@', '')}`;
-                        },
-                    },
-                },
-            },
         },
 
         //  Module =============================================
@@ -84,7 +60,12 @@ module.exports = function(env) {
                     use: [
                         {loader: MiniCssExtractPlugin.loader},
                         'css-loader',
-                        'sass-loader',
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                implementation: require('sass'),
+                            },
+                        },
                     ],
                 },
                 // Assets =============================================
@@ -144,9 +125,7 @@ module.exports = function(env) {
                 //  Favicon =============================================
                 {
                     test: /\.(ico)$/,
-                    use: [
-                        {loader: 'url-loader', options: {limit: 8192}},
-                    ],
+                    use: [{loader: 'url-loader', options: {limit: 8192}}],
                 },
             ],
         },
@@ -156,9 +135,7 @@ module.exports = function(env) {
             //  Building Progress
             new ProgressPlugin(),
 
-            //  Module Bundle like Roll up
-            new ModuleConcatenationPlugin(),
-
+            //  Cache
             new HashedModuleIdsPlugin(),
 
             //  HTML
@@ -180,6 +157,10 @@ module.exports = function(env) {
             }),
 
             new WorkerPlugin(),
+
+            new Dotenv({
+                path: resolve(rootPath, '.env'),
+            }),
         ],
         //  END ============================================
     };

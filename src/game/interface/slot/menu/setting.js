@@ -2,92 +2,73 @@ import {Openable} from '../../components/Openable';
 import {Clickable, ToggleButton, RangeSlider} from '../../components';
 
 import anime from 'animejs';
-import {kFormat, kCurrencyFormat, rgbToHex} from '../../../../general';
+import {kFormat, kCurrencyFormat, rgb2hex} from '@kayac/utils';
 
 export function Setting(menu) {
-    const setting = Openable(
-        menu.getChildByName('setting'),
-    );
+    const setting = Openable(menu.getChildByName('setting'));
 
-    setting.getChildByName('title')
-        .text = translate(`common:setting.title`);
+    setting.getChildByName('title').text = translate(`common:setting.title`);
 
     setLabel(setting, 'audio');
 
-    const effectSwitch =
-        Toggle(setting, 'effects');
+    const effectSwitch = Toggle(setting, 'effects');
 
-    const ambienceSwitch =
-        Toggle(setting, 'ambience');
+    const ambienceSwitch = Toggle(setting, 'ambience');
 
     effectSwitch.set(!app.sound.mute());
     ambienceSwitch.set(!app.sound.mute());
 
-    const volumeRange = [
-        0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1,
-    ];
-    const textVolume =
-        setting.getChildByName(`text@volume`);
-    const volume =
-        Slider(setting, 'volume', {
-            range: volumeRange,
-            onchange: (level) => {
-                app.sound.volume(volumeRange[level]);
+    const volumeRange = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+    const textVolume = setting.getChildByName(`text@volume`);
+    const volume = Slider(setting, 'volume', {
+        range: volumeRange,
+        onchange: (level) => {
+            app.sound.volume(volumeRange[level]);
 
-                app.sound.mute(level === 0);
-                effectSwitch.set(!app.sound.mute());
-                ambienceSwitch.set(!app.sound.mute());
+            app.sound.mute(level === 0);
+            effectSwitch.set(!app.sound.mute());
+            ambienceSwitch.set(!app.sound.mute());
 
-                textVolume.text = level;
-            },
-        });
+            textVolume.text = level;
+        },
+    });
 
     setLabel(setting, 'spin');
 
-    const textAuto =
-        setting.getChildByName(`text@auto`);
-    const auto =
-        Slider(setting, 'auto', {
-            range: app.user.autoOptions,
-            onchange: (level) => {
-                app.user.auto = level;
-                textAuto.text = kFormat(app.user.autoOptions[level]);
-            },
-        });
+    const textAuto = setting.getChildByName(`text@auto`);
+    const auto = Slider(setting, 'auto', {
+        range: app.user.autoOptions,
+        onchange: (level) => {
+            app.user.auto = level;
+            textAuto.text = kFormat(app.user.autoOptions[level]);
+        },
+    });
 
-    const textSpeed =
-        setting.getChildByName(`text@speed`);
-    const speed =
-        Slider(setting, 'speed', {
-            range: app.user.speedOptions,
-            onchange: (level) => {
-                app.user.speed = level;
-                textSpeed.text = level + 1;
-            },
-        });
+    const textSpeed = setting.getChildByName(`text@speed`);
+    const speed = Slider(setting, 'speed', {
+        range: app.user.speedOptions,
+        onchange: (level) => {
+            app.user.speed = level;
+            textSpeed.text = level + 1;
+        },
+    });
 
     setLabel(setting, 'bet');
 
-    const textBetLevel =
-        setting.getChildByName(`text@betLevel`);
-    const betLevel =
-        Slider(setting, 'betLevel', {
-            range: app.user.betOptions,
-            onchange: (level) => {
-                app.user.bet = level;
-                textBetLevel.text = kCurrencyFormat(app.user.betOptions[level]);
-            },
-        });
-    setting
-        .getChildByName(`label@betLevel_min`)
-        .content.text = kCurrencyFormat(app.user.betOptions[0]);
-    setting
-        .getChildByName(`label@betLevel_max`)
-        .content.text = kCurrencyFormat(
-            app.user.betOptions[
-                app.user.betOptions.length - 1
-            ]
-        );
+    const textBetLevel = setting.getChildByName(`text@betLevel`);
+    const betLevel = Slider(setting, 'betLevel', {
+        range: app.user.betOptions,
+        onchange: (level) => {
+            app.user.bet = level;
+            textBetLevel.text = kCurrencyFormat(app.user.betOptions[level]);
+        },
+    });
+    setting.getChildByName(`label@betLevel_min`).content.text = kCurrencyFormat(
+        app.user.betOptions[0],
+    );
+    setting.getChildByName(`label@betLevel_max`).content.text = kCurrencyFormat(
+        app.user.betOptions[app.user.betOptions.length - 1],
+    );
 
     setting.y -= 53;
     setting.open = open;
@@ -104,8 +85,7 @@ export function Setting(menu) {
         setting.visible = true;
 
         const soundLevel =
-            app.sound.mute() === true ?
-                0 : volumeRange.length - 1;
+            app.sound.mute() === true ? 0 : volumeRange.length - 1;
         volume.setLevel(soundLevel);
 
         speed.setLevel(app.user.speed);
@@ -116,7 +96,8 @@ export function Setting(menu) {
 
         return anime({
             targets: setting,
-            alpha: 1, y: 0,
+            alpha: 1,
+            y: 0,
             duration: 300,
             easing: 'easeOutQuad',
         }).finished;
@@ -125,7 +106,8 @@ export function Setting(menu) {
     function close() {
         return anime({
             targets: setting,
-            alpha: 0, y: '-=' + 53,
+            alpha: 0,
+            y: '-=' + 53,
             duration: 300,
             easing: 'easeOutQuad',
             complete() {
@@ -136,20 +118,18 @@ export function Setting(menu) {
 }
 
 function setLabel(setting, target) {
-    setting.getChildByName(`label@${target}`)
-        .text = translate(`common:setting.${target}`);
+    setting.getChildByName(`label@${target}`).text = translate(
+        `common:setting.${target}`,
+    );
 }
 
 function Toggle(setting, target) {
     setLabel(setting, target);
 
-    const ball =
-        setting.getChildByName(`ball@${target}`);
+    const ball = setting.getChildByName(`ball@${target}`);
     ball._color = '#FFFFFF';
 
-    const toggle = ToggleButton(
-        setting.getChildByName(`frame@${target}`),
-    );
+    const toggle = ToggleButton(setting.getChildByName(`frame@${target}`));
 
     toggle.on('Change', () => update(toggle.checked));
 
@@ -165,20 +145,18 @@ function Toggle(setting, target) {
     function update(checked) {
         app.sound[target] = checked;
 
-        const x = (checked) ?
-            toggle.x + (toggle.width / 2) : toggle.x - 4;
+        const x = checked ? toggle.x + toggle.width / 2 : toggle.x - 4;
 
         return anime({
             targets: ball,
             x,
-            _color: (checked) ? '#FFFFFF' : '#999999',
+            _color: checked ? '#FFFFFF' : '#999999',
             duration: 260,
             easing: 'easeOutQuad',
             update() {
                 const [r, g, b] = ball._color.match(/\d+/g).map(Number);
 
-                ball.tint =
-                    parseInt(rgbToHex([r, g, b]).replace('#', '0x'), 16);
+                ball.tint = parseInt(rgb2hex([r, g, b]).replace('#', '0x'), 16);
             },
         });
     }
@@ -187,14 +165,11 @@ function Toggle(setting, target) {
 function Slider(setting, target, {range, onchange}) {
     setLabel(setting, target);
 
-    const frame = Clickable(
-        setting.getChildByName(`frame@${target}`),
-    );
+    const frame = Clickable(setting.getChildByName(`frame@${target}`));
 
     const parts = range.length - 1;
-    const base = (frame.width / parts);
-    const moveRange =
-        range.map((level, index) => base * index);
+    const base = frame.width / parts;
+    const moveRange = range.map((level, index) => base * index);
 
     frame.on('pointerdown', click);
 
@@ -203,20 +178,14 @@ function Slider(setting, target, {range, onchange}) {
         frame,
     );
 
-    const valueBar =
-        setting.getChildByName(`value@${target}`);
+    const valueBar = setting.getChildByName(`value@${target}`);
 
-    const text =
-        setting.getChildByName(`text@${target}`);
+    const text = setting.getChildByName(`text@${target}`);
     text.x = slider.x;
 
     if (range) {
-        const minLabel =
-            setting
-                .getChildByName(`label@${target}_min`);
-        const maxLabel =
-            setting
-                .getChildByName(`label@${target}_max`);
+        const minLabel = setting.getChildByName(`label@${target}_min`);
+        const maxLabel = setting.getChildByName(`label@${target}_max`);
 
         if (minLabel) minLabel.content.text = range[0];
 
@@ -242,8 +211,8 @@ function Slider(setting, target, {range, onchange}) {
         set enable(flag) {
             enable = flag;
 
-            slider.tint = enable ? 0xFFFFFF : 0x999999;
-            valueBar.tint = enable ? 0xFFFFFF : 0x999999;
+            slider.tint = enable ? 0xffffff : 0x999999;
+            valueBar.tint = enable ? 0xffffff : 0x999999;
         },
 
         setLevel,
@@ -273,12 +242,6 @@ function Slider(setting, target, {range, onchange}) {
     function condition(x) {
         if (x <= 0) return 0;
         const level = moveRange.findIndex((range) => range > x);
-        return (
-            (level === 0) ? 0 :
-                (level === -1) ? parts :
-                    level - 1
-        );
+        return level === 0 ? 0 : level === -1 ? parts : level - 1;
     }
 }
-
-

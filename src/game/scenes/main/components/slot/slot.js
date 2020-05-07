@@ -1,34 +1,22 @@
-import {
-    divide, mod, floor, nth,
-} from '../../../../../general';
+import {divide, mod, floor, nth} from '@kayac/utils';
 
-import {
-    TextureManager,
-    isReel,
-    isSymbol, isResult,
-} from './util';
+import {TextureManager, isReel, isSymbol, isResult} from './util';
 
 import {Status} from './index';
 import {setMotionBlur} from '../../../../plugin/filter';
 
-export function SlotMachine(
-    {
-        view,
-        stopPerSymbol,
-        reelTables,
-        symbolConfig,
-        distancePerStop,
-    },
-) {
-    const slotBaseView =
-        view.getChildByName('SlotBase');
+export function SlotMachine({
+    view,
+    stopPerSymbol,
+    reelTables,
+    symbolConfig,
+    distancePerStop,
+}) {
+    const slotBaseView = view.getChildByName('SlotBase');
 
     const {getTexture} = TextureManager(symbolConfig);
 
-    const reels =
-        slotBaseView.children
-            .filter(isReel)
-            .map(Reel);
+    const reels = slotBaseView.children.filter(isReel).map(Reel);
 
     return {
         view,
@@ -44,14 +32,11 @@ export function SlotMachine(
 
     function Symbol(view, symbolIdx) {
         const distance =
-            distancePerStop ||
-            divide(Number(view.height), stopPerSymbol);
+            distancePerStop || divide(Number(view.height), stopPerSymbol);
 
-        const initPos =
-            symbolIdx * stopPerSymbol;
+        const initPos = symbolIdx * stopPerSymbol;
 
-        const anchorOffset =
-            view.anchor.y * view.height;
+        const anchorOffset = view.anchor.y * view.height;
 
         let icon = 0;
 
@@ -92,7 +77,7 @@ export function SlotMachine(
                 return divide(view.y - anchorOffset, distance);
             },
             set pos(newPos) {
-                view.y = (newPos * distance) + anchorOffset;
+                view.y = newPos * distance + anchorOffset;
             },
 
             get y() {
@@ -111,20 +96,12 @@ export function SlotMachine(
         };
     }
 
-
     function Reel(view, reelIdx) {
-        const symbols =
-            view.children
-                .filter(isSymbol)
-                .map(Symbol);
+        const symbols = view.children.filter(isSymbol).map(Symbol);
 
-        const results =
-            view.children
-                .filter(isResult)
-                .map(Symbol);
+        const results = view.children.filter(isResult).map(Symbol);
 
-        const displayLength =
-            symbols.length * stopPerSymbol;
+        const displayLength = symbols.length * stopPerSymbol;
 
         let motionBlur = undefined;
 
@@ -182,17 +159,13 @@ export function SlotMachine(
                 return axis;
             },
             set axis(newAxis) {
-                newAxis =
-                    mod(newAxis, reelTables[reelIdx].length);
+                newAxis = mod(newAxis, reelTables[reelIdx].length);
 
-                symbols
-                    .forEach((symbol) => updateSymbol(symbol, newAxis));
+                symbols.forEach((symbol) => updateSymbol(symbol, newAxis));
 
-                results
-                    .forEach((result) => updateResult(result, newAxis));
+                results.forEach((result) => updateResult(result, newAxis));
 
-                const velocity =
-                    (status === Status.Stop) ? 0 : newAxis - axis;
+                const velocity = status === Status.Stop ? 0 : newAxis - axis;
                 motionBlur.update(velocity);
 
                 axis = newAxis;
@@ -200,20 +173,17 @@ export function SlotMachine(
         };
 
         function updateSymbol(symbol, newAxis) {
-            symbol.pos =
-                (newAxis + symbol.initPos) % displayLength;
+            symbol.pos = (newAxis + symbol.initPos) % displayLength;
 
             if (status === Status.Stop) {
-                return symbol.visible = false;
+                return (symbol.visible = false);
                 //
             } else if (status === Status.Start) {
                 if (symbol.pos < 1 && !symbol.visible) {
-                    return symbol.visible = true;
+                    return (symbol.visible = true);
                     //
                 } else if (symbol.pos >= displayLength - 1) {
-                    const iconId = nth(
-                        floor(newAxis), reelTables[reelIdx],
-                    );
+                    const iconId = nth(floor(newAxis), reelTables[reelIdx]);
 
                     if (iconId === 10) return;
 
@@ -234,10 +204,9 @@ export function SlotMachine(
                     //
                 } else if (result.pos <= displayLength - 1) {
                     const velocity = newAxis - axis;
-                    result.pos += (velocity);
+                    result.pos += velocity;
                 }
             }
         }
     }
 }
-

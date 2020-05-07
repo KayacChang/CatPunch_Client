@@ -3,39 +3,28 @@ import './styles/App.scss';
 import {Application} from 'pixi.js';
 import EventEmitter from 'eventemitter3';
 import {Sound} from './modules/sound';
-import {Network} from './modules/network';
 import {Resource} from './modules/resource';
 import {resize} from './modules/screen';
-
-import Swal from '../plugin/swal';
+import {User} from './user';
 
 const {defineProperties, assign, freeze} = Object;
 
-export function App() {
-    const app =
-        new Application({
-            resolution: devicePixelRatio,
-            antialias: true,
-            forceCanvas: true,
-            forceFXAA: true,
-            powerPreference: 'high-performance',
-        });
+export default (function () {
+    const app = new Application({
+        resolution: devicePixelRatio || 1,
+        antialias: true,
+    });
 
     //  Resource
     const resource = Resource(app);
+    const user = User(app);
     //  Sound
     const sound = Sound(app);
-    //  Network
-    const network = Network();
-    //  Alert
-    const alert = Swal();
 
-    //  Service
+    let translate = undefined;
     let service = undefined;
-    //  User
-    let user = undefined;
-    //  Control
     let control = undefined;
+    let alert = undefined;
 
     //  Modules
     defineProperties(app, {
@@ -45,23 +34,24 @@ export function App() {
         sound: {
             get: () => sound,
         },
-        network: {
-            get: () => network,
+        alert: {
+            get: () => alert,
+            set: (alertFunc) => (alert = alertFunc),
         },
         service: {
             get: () => service,
-            set: (newService) => service = newService,
-        },
-        alert: {
-            get: () => alert,
+            set: (newService) => (service = newService),
         },
         user: {
             get: () => user,
-            set: (newUser) => user = newUser,
         },
         control: {
             get: () => control,
-            set: (newControl) => control = newControl,
+            set: (newControl) => (control = newControl),
+        },
+        translate: {
+            get: () => translate,
+            set: (translateFunc) => (translate = translateFunc),
         },
     });
 
@@ -76,6 +66,9 @@ export function App() {
         },
         once(event, listener) {
             eventCore.once(event, listener);
+        },
+        off(event, listener) {
+            eventCore.off(event, listener);
         },
         emit(event, ...args) {
             eventCore.emit(event, ...args);
@@ -92,4 +85,4 @@ export function App() {
     global.addEventListener('orientationchange', app.resize);
 
     return freeze(app);
-}
+})();

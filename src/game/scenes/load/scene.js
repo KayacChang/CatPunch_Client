@@ -1,7 +1,7 @@
 import LOAD_URL from './assets/sprite_sheets/load.fui';
 import LOAD_ATLAS0_URL from './assets/sprite_sheets/load@atlas0.png';
 
-import {multiply, divide} from '../../../general';
+import {multiply, divide} from '@kayac/utils';
 import {addPackage} from 'pixi_fairygui';
 
 export function reserve() {

@@ -1,7 +1,7 @@
 import {setDropShadow} from '../../../plugin/filter';
 import anime from 'animejs';
 
-import {isMobile} from '../../../../general';
+import {isMobile} from '@kayac/utils';
 
 export function setBehaviour(it) {
     const hoverMaskView = it.getChildByName('hover');
@@ -62,12 +62,12 @@ export function setBehaviour(it) {
             targets: shadow,
             easing: 'easeInOutSine',
             duration: 100,
-            ...(normal.shadow),
+            ...normal.shadow,
         });
         anime({
             targets: hoverMaskView,
-            ...(anim),
-            ...(normal.hoverMask),
+            ...anim,
+            ...normal.hoverMask,
         });
         anime({
             targets: downMaskView,
@@ -83,12 +83,12 @@ export function setBehaviour(it) {
             targets: shadow,
             easing: 'easeInOutSine',
             duration: 100,
-            ...(hover.shadow),
+            ...hover.shadow,
         });
         anime({
             targets: hoverMaskView,
-            ...(anim),
-            ...(hover.hoverMask),
+            ...anim,
+            ...hover.hoverMask,
         });
         anime({
             targets: downMaskView,

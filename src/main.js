@@ -1,109 +1,76 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+import {select} from '@kayac/utils';
 
-import {
-    select, remove, log, isProduction, err,
-} from './general';
-
-import {App} from './system/application';
-import {Service} from './service/01/';
-
-import i18n from './plugin/i18n';
-import ENV_URL from './env.json';
+import app from './system/application';
+import {Service} from './service';
+import i18n from './system/plugin/i18n';
+import Swal from './system/plugin/swal';
 
 import {enableFullScreenMask} from './system/modules/screen';
 
-const key = process.env.KEY;
+import * as PIXI from 'pixi.js';
+import {install} from '@pixi/unsafe-eval';
 
-function startLoading(scene) {
-    const comp = select('#app');
-    const svg = select('#preload');
-    svg.remove();
-
-    comp.prepend(app.view);
-
-    const loadScene = scene.create();
-    app.stage.addChild(loadScene);
-    app.resize();
-
-    enableFullScreenMask();
-
-    return loadScene;
-}
-
-function fetchJSON(url) {
-    return fetch(url).then((res) => res.json());
-}
+install(PIXI);
 
 async function main() {
     //  Init App
     try {
-        document.title = 'For Every Gamer | 61 Studio';
+        document.title = 'For Every Gamer';
 
-        const res = await fetchJSON(ENV_URL);
-
-        global.ENV = {
-            SERVICE_URL:
-                isProduction() ? res['prodServerURL'] : res['devServerURL'],
-
-            LOGIN_TYPE: res['loginType'],
-            GAME_ID: res['gameID'],
-            I18N_URL: res['i18nURL'],
-        };
-
-        global.translate = await i18n.init();
-
-        select(`meta[name='Description']`).content = translate('description');
-
-        global.app = new App();
-
-        app.service = new Service(key);
+        app.translate = await i18n.init(process.env.I18N_URL);
+        app.alert = Swal(app.translate);
+        app.service = new Service(process.env.SERVER_URL);
 
         // Import Load Scene
         const LoadScene = await import('./game/scenes/load/scene');
-
         await app.resource.load(LoadScene);
 
-        const loadScene = startLoading(LoadScene);
+        const comp = select('#app');
+        const svg = select('#preload');
+        svg.remove();
 
-        app.on('loading', ({progress}, {name}) => {
-            log(`Progress: ${progress} %`);
-            log(`Resource: ${name}`);
+        comp.prepend(app.view);
 
-            loadScene.update(progress);
-        });
+        const loadScene = LoadScene.create(app);
+        app.stage.addChild(loadScene);
+        app.resize();
 
-        await app.service.login({key});
+        enableFullScreenMask(app);
 
         //  Import Main Scene
-        const [MainScene, UserInterface, initData] =
-            await Promise.all([
-                import('./game/scenes/main'),
-                import('./game/interface/slot'),
-                app.service.init({key}),
-            ]);
+        const [Interface, MainScene, initData] = await Promise.all([
+            import('./game/interface/slot'),
+            import('./game/scenes/main'),
 
-        await app.resource.load(MainScene, UserInterface);
+            app.service.init(),
+        ]);
 
-        const ui = UserInterface.create(initData);
-        const scene = MainScene.create(initData);
-        scene.addChild(ui);
+        app.user.id = initData['player']['id'];
+        app.user.cash = initData['player']['money'];
 
-        app.stage.addChildAt(scene, 0);
+        app.user.betOptions = initData['betrate']['betrate'];
+        app.user.betOptionsHotKey = initData['betrate']['betratelinkindex'];
+        app.user.bet = initData['betrate']['betratedefaultindex'];
 
-        app.once('GameReady', () => {
-            app.stage.removeChild(loadScene);
+        await app.resource.load(Interface, MainScene);
 
-            select('script').forEach(remove);
+        const mainScene = MainScene.create(app, initData.reel.normalreel);
+        const ui = Interface.create(app);
 
-            app.resize();
+        mainScene.addChild(ui);
 
-            document.title = translate('title');
+        app.stage.addChildAt(mainScene, 0);
 
-            app.emit('Idle');
-        });
+        select('script').forEach((el) => el.remove());
+
+        app.resize();
+
+        app.emit('Idle');
+
+        document.title = app.translate('title');
+        //
     } catch (error) {
-        err(error);
+        console.error(error);
 
         const msg = {title: error.message};
 

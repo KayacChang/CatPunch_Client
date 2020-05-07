@@ -1,4 +1,4 @@
-import {throttle, isMobile} from '../../../general';
+import {throttle, isMobile} from '@kayac/utils';
 
 const {defineProperties} = Object;
 
@@ -40,10 +40,7 @@ export function Clickable(it) {
     }
 
     function throttleFunc(func) {
-        return throttle(
-            func, 400,
-            {leading: true, trailing: false},
-        );
+        return throttle(func, 400, {leading: true, trailing: false});
     }
 }
 

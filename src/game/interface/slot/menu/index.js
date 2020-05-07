@@ -1,49 +1,41 @@
 import {Clickable, Openable} from '../../components';
-import {Exchange} from './exchange';
 import {Setting} from './setting';
 import anime from 'animejs';
 import {Information} from './information';
 
 const {entries} = Object;
 
-const key = process.env.KEY;
-
 export function Menu(parent) {
-    const menu = Openable(
-        parent.getChildByName('menu'),
-    );
+    const menu = Openable(parent.getChildByName('menu'));
     menu.interactive = true;
 
-    const background =
-        menu.getChildByName('background');
+    const background = menu.getChildByName('background');
     background.scale.set(0);
 
-    const hr =
-        menu.getChildByName('hr');
+    const hr = menu.getChildByName('hr');
     hr.scale.x = 0;
 
-    const navBackground =
-        menu.getChildByName('nav@background');
+    const navBackground = menu.getChildByName('nav@background');
     navBackground.originPos = {
         x: navBackground.position.x,
         y: navBackground.position.y,
     };
 
-    const block =
-        menu.getChildByName('block');
+    const block = menu.getChildByName('block');
     block.on('pointerdown', () => close());
 
     menu.block = block;
 
-    const exchange = Exchange(menu);
     const setting = Setting(menu);
     const information = Information(menu);
 
-    const sections =
-        new Map(entries({
-            exchange, setting, information,
-        }));
-    sections.forEach((section) => section.alpha = 0);
+    const sections = new Map(
+        entries({
+            setting,
+            information,
+        }),
+    );
+    sections.forEach((section) => (section.alpha = 0));
 
     const nav = Nav(menu, sections);
     nav.originPos = {
@@ -56,7 +48,6 @@ export function Menu(parent) {
     menu.open = openNav;
     menu.close = close;
 
-    menu.exchange = exchange;
     menu.setting = setting;
     menu.information = information;
 
@@ -70,7 +61,7 @@ export function Menu(parent) {
 
         menu.section = undefined;
         nav.tab.alpha = 0;
-        nav.btns.forEach((btn) => btn.icon.alpha = 0.5);
+        nav.btns.forEach((btn) => (btn.icon.alpha = 0.5));
 
         block.interactive = true;
 
@@ -78,7 +69,8 @@ export function Menu(parent) {
         background.scale.set(0);
         hr.scale.x = 0;
 
-        await anime.timeline()
+        await anime
+            .timeline()
             .add({
                 targets: navBackground,
                 x: '-=' + navBackground.width,
@@ -96,8 +88,7 @@ export function Menu(parent) {
                         nav.open(sections.get(section));
                     }
                 },
-            })
-            .finished;
+            }).finished;
     }
 
     function close() {
@@ -132,7 +123,8 @@ export function Menu(parent) {
             })
             .add({
                 targets: background.scale,
-                x: 0, y: 0,
+                x: 0,
+                y: 0,
                 duration: 500,
                 easing: 'easeInOutExpo',
                 complete() {
@@ -146,25 +138,19 @@ export function Menu(parent) {
 function Nav(menu, sections) {
     const nav = menu.getChildByName('nav');
 
-    const background =
-        menu.getChildByName('background');
+    const background = menu.getChildByName('background');
 
-    const hr =
-        menu.getChildByName('hr');
+    const hr = menu.getChildByName('hr');
 
-    BackButton(
-        nav.getChildByName('back'),
-        menu,
-    );
+    BackButton(nav.getChildByName('back'), menu);
 
     const tab = nav.getChildByName('tab');
 
     nav.tab = tab;
 
-    const navBtns =
-        nav.children
-            .filter(({name}) => name.includes('btn'))
-            .map(NavButton);
+    const navBtns = nav.children
+        .filter(({name}) => name.includes('btn'))
+        .map(NavButton);
     nav.btns = navBtns;
 
     nav.updateState = updateState;
@@ -200,8 +186,7 @@ function Nav(menu, sections) {
     function NavButton(it) {
         const [, name] = it.name.split('@');
 
-        it.icon =
-            nav.getChildByName(`img@${name}`);
+        it.icon = nav.getChildByName(`img@${name}`);
 
         it = Clickable(it);
         it.on('pointerdown', click);
@@ -219,22 +204,6 @@ function Nav(menu, sections) {
             }
 
             if (name === 'home') {
-                if (app.user.hasExchanged) {
-                    const {value} =
-                        await app.alert.request(
-                            {title: translate(`common:message.checkout`)},
-                        );
-
-                    if (!value) return;
-
-                    const data =
-                        await app.service.checkout({key});
-
-                    await app.alert.checkoutList(data)
-                        .then(({value}) => (value) && history.back());
-
-                    return;
-                }
                 return app.alert.leave();
             }
         }
@@ -247,10 +216,12 @@ function Nav(menu, sections) {
         updateState();
 
         if (background.scale.x < 1) {
-            await anime.timeline()
+            await anime
+                .timeline()
                 .add({
                     targets: background.scale,
-                    x: 1, y: 1,
+                    x: 1,
+                    y: 1,
                     duration: 500,
                     easing: 'easeInOutExpo',
                 })
@@ -259,8 +230,7 @@ function Nav(menu, sections) {
                     x: 1,
                     duration: 300,
                     easing: 'easeOutQuad',
-                })
-                .finished;
+                }).finished;
         }
 
         await section.open();
@@ -272,5 +242,3 @@ function Nav(menu, sections) {
         return btn;
     }
 }
-
-

@@ -1,12 +1,24 @@
-import {Container, Sprite, extras, particles} from 'pixi.js';
+import {
+    Container,
+    Sprite,
+    BitmapText,
+    AnimatedSprite,
+    ParticleContainer,
+} from 'pixi.js';
 
 import anime from 'animejs';
 import {
-    currencyFormat, toValue, wait,
-    degreeToRadian, radianToDegree,
-    map, times,
-    random, randomInt, pi,
-} from '../../../../general';
+    currencyFormat,
+    toValue,
+    wait,
+    degreeToRadian,
+    radianToDegree,
+    map,
+    times,
+    random,
+    randomInt,
+    pi,
+} from '@kayac/utils';
 
 import {setBevel, setGlow, setOutline} from '../../../plugin/filter';
 
@@ -21,9 +33,10 @@ function setFlex(elements, options = {}) {
 export function freeGameEffect(scene, multiply) {
     const sheet = app.resource.get('effect-text').spritesheet;
 
-    const textSprites =
-        map((char) => new Sprite(sheet.textures[`${char}.png`]),
-            'freegame');
+    const textSprites = map(
+        (char) => new Sprite(sheet.textures[`${char}.png`]),
+        'freegame',
+    );
 
     setFlex(textSprites);
 
@@ -31,10 +44,8 @@ export function freeGameEffect(scene, multiply) {
     title.addChild(...textSprites);
     title.scale.set(0.75);
 
-    const X =
-        new Sprite(sheet.textures['x.png']);
-    const number =
-        new extras.BitmapText(`${multiply}`, {font: '90px Effect'});
+    const X = new Sprite(sheet.textures['x.png']);
+    const number = new BitmapText(`${multiply}`, {font: '90px Effect'});
     number.y += number.height / 2;
 
     const content = new Container();
@@ -58,33 +69,32 @@ export function freeGameEffect(scene, multiply) {
 
     const textEffects = TextEffect4([it]);
 
-    const maskEffects =
-        anime
-            .timeline({
-                targets: scene.getChildByName('effectMask'),
-                easing: 'easeOutCirc',
-            })
-            .add({
-                alpha: 0.5,
-                duration: 800,
-            })
-            .add({
-                alpha: 0,
-                duration: 600,
-            })
-            .finished;
+    const maskEffects = anime
+        .timeline({
+            targets: scene.getChildByName('effectMask'),
+            easing: 'easeOutCirc',
+        })
+        .add({
+            alpha: 0.5,
+            duration: 800,
+        })
+        .add({
+            alpha: 0,
+            duration: 600,
+        }).finished;
 
-    return Promise
-        .all([textEffects, maskEffects])
-        .then(() => scene.removeChild(it));
+    return Promise.all([textEffects, maskEffects]).then(() =>
+        scene.removeChild(it),
+    );
 }
 
 export function reSpinEffect(scene) {
     const sheet = app.resource.get('effect-text').spritesheet;
 
-    const textSprites =
-        map((char) => new Sprite(sheet.textures[`${char}.png`]),
-            'respin');
+    const textSprites = map(
+        (char) => new Sprite(sheet.textures[`${char}.png`]),
+        'respin',
+    );
 
     setFlex(textSprites);
 
@@ -105,33 +115,32 @@ export function reSpinEffect(scene) {
 
     const textEffects = TextEffect4([it]);
 
-    const maskEffects =
-        anime
-            .timeline({
-                targets: scene.getChildByName('effectMask'),
-                easing: 'easeOutCirc',
-            })
-            .add({
-                alpha: 0.5,
-                duration: 800,
-            })
-            .add({
-                alpha: 0,
-                duration: 600,
-            })
-            .finished;
+    const maskEffects = anime
+        .timeline({
+            targets: scene.getChildByName('effectMask'),
+            easing: 'easeOutCirc',
+        })
+        .add({
+            alpha: 0.5,
+            duration: 800,
+        })
+        .add({
+            alpha: 0,
+            duration: 600,
+        }).finished;
 
-    return Promise
-        .all([textEffects, maskEffects])
-        .then(() => scene.removeChild(it));
+    return Promise.all([textEffects, maskEffects]).then(() =>
+        scene.removeChild(it),
+    );
 }
 
 export function bigWinEffect(scene, scores) {
     const sheet = app.resource.get('effect-text').spritesheet;
 
     const bigSprites = map(
-        (char) => new Sprite(sheet.textures[`${char}.png`])
-        , 'big');
+        (char) => new Sprite(sheet.textures[`${char}.png`]),
+        'big',
+    );
 
     setFlex(bigSprites);
 
@@ -139,8 +148,9 @@ export function bigWinEffect(scene, scores) {
     title1.addChild(...bigSprites);
 
     const winSprites = map(
-        (char) => new Sprite(sheet.textures[`${char}.png`])
-        , 'win');
+        (char) => new Sprite(sheet.textures[`${char}.png`]),
+        'win',
+    );
 
     setFlex(winSprites);
 
@@ -160,9 +170,9 @@ export function bigWinEffect(scene, scores) {
     title1.position.set(title1.width / 2, title1.height / 2);
     title2.position.set(title2.width / 2, title2.height / 2);
 
-    const {width, height} =
-        [...bigSprites, ...winSprites]
-            .reduce((a, b) => a.width > b.width ? a : b);
+    const {width, height} = [...bigSprites, ...winSprites].reduce((a, b) =>
+        a.width > b.width ? a : b,
+    );
 
     setFlex(it.children);
 
@@ -181,45 +191,40 @@ export function bigWinEffect(scene, scores) {
         delay: (el, i) => 350 * i,
     };
 
-    const alphaIn =
-        anime({
-            targets: it.children,
-            alpha: config.alphaIn,
-            duration: config.durationIn,
-            delay: config.delay,
-        }).finished;
+    const alphaIn = anime({
+        targets: it.children,
+        alpha: config.alphaIn,
+        duration: config.durationIn,
+        delay: config.delay,
+    }).finished;
 
-    const scaleIn =
-        anime({
-            targets: it.children.map(({scale}) => scale),
-            x: config.scaleIn,
-            y: config.scaleIn,
-            duration: config.durationIn,
-            delay: config.delay,
-            begin(anim) {
-                anim.animatables
-                    .forEach((el, index) =>
-                        setTimeout(() =>
-                            app.sound.play('popup'), 350 * index));
-            },
-        }).finished;
+    const scaleIn = anime({
+        targets: it.children.map(({scale}) => scale),
+        x: config.scaleIn,
+        y: config.scaleIn,
+        duration: config.durationIn,
+        delay: config.delay,
+        begin(anim) {
+            anim.animatables.forEach((el, index) =>
+                setTimeout(() => app.sound.play('popup'), 350 * index),
+            );
+        },
+    }).finished;
 
-    const maskIn =
-        anime({
-            targets: scene.getChildByName('effectMask'),
-            alpha: 0.5,
-            duration: config.durationIn,
-            easing: 'easeOutCirc',
-            delay: config.delay,
-        }).finished;
+    const maskIn = anime({
+        targets: scene.getChildByName('effectMask'),
+        alpha: 0.5,
+        duration: config.durationIn,
+        easing: 'easeOutCirc',
+        delay: config.delay,
+    }).finished;
 
     const numberEffect = numberIncrementEffect(scene, scores);
 
     app.sound.mute(true, 'mainBGM');
     app.sound.play('bigWin');
 
-    return Promise
-        .all([alphaIn, scaleIn, maskIn])
+    return Promise.all([alphaIn, scaleIn, maskIn])
         .then(() => {
             numberEffect.fadeIn();
             return numberEffect.numberAnim();
@@ -259,7 +264,7 @@ export function bigWinEffect(scene, scores) {
 }
 
 export function coinEffect(scene) {
-    const it = new particles.ParticleContainer(10000, {
+    const it = new ParticleContainer(10000, {
         vertices: true,
         scale: true,
         position: true,
@@ -268,10 +273,9 @@ export function coinEffect(scene) {
         alpha: true,
     });
 
-    scene.addChildAt(it,
-        scene.getChildIndex(
-            scene.getChildByName('effectMask'),
-        ) + 1,
+    scene.addChildAt(
+        it,
+        scene.getChildIndex(scene.getChildByName('effectMask')) + 1,
     );
 
     const coins = times(Coin, 200);
@@ -284,9 +288,7 @@ export function coinEffect(scene) {
 
     app.sound.play('coinExplosion');
 
-    return wait(3000)
-        .then(fadeOut)
-        .then(reset);
+    return wait(3000).then(fadeOut).then(reset);
 
     function fadeOut() {
         return anime({
@@ -311,18 +313,14 @@ export function coinEffect(scene) {
         const angle = 180 - (direction + 90);
 
         if (direction > 0 && direction < 180) {
-            coin.x +=
-                coin.speed * Math.sin(direction) / Math.sin(coin.speed);
+            coin.x += (coin.speed * Math.sin(direction)) / Math.sin(coin.speed);
         } else {
-            coin.x -=
-                coin.speed * Math.sin(direction) / Math.sin(coin.speed);
+            coin.x -= (coin.speed * Math.sin(direction)) / Math.sin(coin.speed);
         }
         if (direction > 90 && direction < 270) {
-            coin.y +=
-                coin.speed * Math.sin(angle) / Math.sin(coin.speed);
+            coin.y += (coin.speed * Math.sin(angle)) / Math.sin(coin.speed);
         } else {
-            coin.y -=
-                coin.speed * Math.sin(angle) / Math.sin(coin.speed);
+            coin.y -= (coin.speed * Math.sin(angle)) / Math.sin(coin.speed);
         }
 
         coin.direction -= coin.turningSpeed;
@@ -332,32 +330,23 @@ export function coinEffect(scene) {
     function Coin() {
         const spriteSheet = app.resource.get('coin').spritesheet;
 
-        const it =
-            new extras.AnimatedSprite(spriteSheet.animations['coin']);
+        const it = new AnimatedSprite(spriteSheet.animations['coin']);
 
-        it.position.set(
-            scene._width / 2, scene._height / 2,
-        );
+        it.position.set(scene._width / 2, scene._height / 2);
 
         it.anchor.set(0.5);
 
-        it.scale.set(
-            randomInt(25, 45) / 100,
-        );
+        it.scale.set(randomInt(25, 45) / 100);
 
-        it.rotation =
-            random(pi * 2);
+        it.rotation = random(pi * 2);
 
-        it.direction =
-            random(pi * 2);
+        it.direction = random(pi * 2);
 
-        it.speed =
-            randomInt(5, 10);
+        it.speed = randomInt(5, 10);
 
         it.turningSpeed = degreeToRadian(0.01);
 
-        const startFrom =
-            randomInt(it.totalFrames);
+        const startFrom = randomInt(it.totalFrames);
 
         it.animationSpeed = 0.6;
 
@@ -368,10 +357,9 @@ export function coinEffect(scene) {
 }
 
 export function numberIncrementEffect(scene, num) {
-    const number =
-        new extras.BitmapText(currencyFormat(0), {
-            font: '72px Effect',
-        });
+    const number = new BitmapText(currencyFormat(0), {
+        font: '72px Effect',
+    });
 
     const it = new Container();
     it.addChild(number);
@@ -411,8 +399,7 @@ export function numberIncrementEffect(scene, num) {
             delay: 850,
             duration: 3000,
             begin() {
-                wait(850)
-                    .then(() => app.sound.play('maybeBonus'));
+                wait(850).then(() => app.sound.play('maybeBonus'));
             },
             complete() {
                 app.sound.stop('maybeBonus');
@@ -470,10 +457,9 @@ export function numberIncrementEffect(scene, num) {
 }
 
 export async function scoresEffect(scene, scores) {
-    const number =
-        new extras.BitmapText('0', {
-            font: '48px Effect',
-        });
+    const number = new BitmapText('0', {
+        font: '48px Effect',
+    });
 
     const it = new Container();
     it.addChild(number);
@@ -481,7 +467,7 @@ export async function scoresEffect(scene, scores) {
     setBevel(it);
     setOutline(it);
 
-    number.anchor.set(.5);
+    number.anchor.set(0.5);
 
     updatePos();
 
@@ -559,10 +545,7 @@ export async function scoresEffect(scene, scores) {
     }
 
     function updatePos() {
-        it.position.set(
-            scene._width / 2,
-            scene._height / 2,
-        );
+        it.position.set(scene._width / 2, scene._height / 2);
     }
 }
 
@@ -577,41 +560,37 @@ function TextEffect4(targets) {
         delay: (el, i) => 350 * i,
     };
 
-    const alpha =
-        anime
-            .timeline({targets})
-            .add({
-                alpha: config.alphaIn,
-                duration: config.durationIn,
-                delay: config.delay,
-            })
-            .add({
-                alpha: config.alphaOut,
-                easing: 'easeInExpo',
-                duration: config.durationOut,
-                delay: config.delay,
-            })
-            .finished;
+    const alpha = anime
+        .timeline({targets})
+        .add({
+            alpha: config.alphaIn,
+            duration: config.durationIn,
+            delay: config.delay,
+        })
+        .add({
+            alpha: config.alphaOut,
+            easing: 'easeInExpo',
+            duration: config.durationOut,
+            delay: config.delay,
+        }).finished;
 
-    const scale =
-        anime
-            .timeline({
-                targets: targets.map(({scale}) => scale),
-            })
-            .add({
-                x: config.scaleIn,
-                y: config.scaleIn,
-                duration: config.durationIn,
-                delay: config.delay,
-            })
-            .add({
-                x: config.scaleOut,
-                y: config.scaleOut,
-                easing: 'easeInExpo',
-                duration: config.durationOut,
-                delay: config.delay,
-            })
-            .finished;
+    const scale = anime
+        .timeline({
+            targets: targets.map(({scale}) => scale),
+        })
+        .add({
+            x: config.scaleIn,
+            y: config.scaleIn,
+            duration: config.durationIn,
+            delay: config.delay,
+        })
+        .add({
+            x: config.scaleOut,
+            y: config.scaleOut,
+            easing: 'easeInExpo',
+            duration: config.durationOut,
+            delay: config.delay,
+        }).finished;
 
     return Promise.all([alpha, scale]);
 }
@@ -623,18 +602,15 @@ export function bubbleEffect(scene) {
 
     scene.addChild(...bubbles);
 
-    const targetsX =
-        bubbles.map((it) => it.x + randomInt(-700, 800));
+    const targetsX = bubbles.map((it) => it.x + randomInt(-700, 800));
 
-    const targetsY1 =
-        bubbles.map((it) => it.y + randomInt(150, 500));
+    const targetsY1 = bubbles.map((it) => it.y + randomInt(150, 500));
 
-    const targetPos =
-        scene.toLocal(
-            scene.slot.view
-                .getChildByName(`energy@${scene.energy.scale}`)
-                .getGlobalPosition({}),
-        );
+    const targetPos = scene.toLocal(
+        scene.slot.view
+            .getChildByName(`energy@${scene.energy.scale}`)
+            .getGlobalPosition({}),
+    );
 
     anime
         .timeline({
@@ -676,7 +652,8 @@ export function bubbleEffect(scene) {
             x: [0.1, 0.75],
         })
         .add({
-            y: 0, x: 0,
+            y: 0,
+            x: 0,
             duration: 540,
             easing: 'easeInExpo',
             complete() {
@@ -687,10 +664,8 @@ export function bubbleEffect(scene) {
     function Bubble() {
         const it = new Sprite(texture);
 
-        it.position.set(
-            scene._width / 2, scene._height / 2,
-        );
-        it.anchor.set(.5);
+        it.position.set(scene._width / 2, scene._height / 2);
+        it.anchor.set(0.5);
 
         it.scale.set(0);
 
@@ -698,7 +673,7 @@ export function bubbleEffect(scene) {
             innerStrength: 2,
             outerStrength: 1,
             distance: 8,
-            color: 0xB3E5FC,
+            color: 0xb3e5fc,
         });
 
         setBevel(it);

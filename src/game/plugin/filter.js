@@ -1,12 +1,16 @@
 import {
-    GlowFilter, BevelFilter, DropShadowFilter,
-    BulgePinchFilter, MotionBlurFilter, AdvancedBloomFilter,
-    OutlineFilter, ZoomBlurFilter, GodrayFilter,
+    GlowFilter,
+    BevelFilter,
+    DropShadowFilter,
+    BulgePinchFilter,
+    MotionBlurFilter,
+    AdvancedBloomFilter,
+    OutlineFilter,
+    ZoomBlurFilter,
+    GodrayFilter,
 } from 'pixi-filters';
 
-import {isMobile} from '../../general';
-
-import {filters} from 'pixi.js';
+import {filters, isMobile} from 'pixi.js';
 
 const {BlurFilter, ColorMatrixFilter} = filters;
 
@@ -31,13 +35,7 @@ export function setColorMatrix(view) {
 export function setBlur(view, options = {}) {
     if (isMobile.phone) return {};
 
-    const {
-        strength,
-        quality,
-        resolution,
-        kernelSize,
-        blur,
-    } = options;
+    const {strength, quality, resolution, kernelSize, blur} = options;
 
     const it = new BlurFilter(
         strength || 8,
@@ -55,17 +53,9 @@ export function setBlur(view, options = {}) {
 export function setZoom(view, options) {
     if (isMobile.phone) return {};
 
-    const {
-        strength,
-        center,
-        innerRadius,
-    } = options;
+    const {strength, center, innerRadius} = options;
 
-    const it = new ZoomBlurFilter(
-        strength,
-        center,
-        innerRadius,
-    );
+    const it = new ZoomBlurFilter(strength, center, innerRadius);
 
     setFilter(view, it);
 
@@ -100,13 +90,7 @@ export function setAdvancedBloom(view, options) {
 export function setGlow(view, options = {}) {
     if (isMobile.phone) return {};
 
-    const {
-        distance,
-        outerStrength,
-        innerStrength,
-        color,
-        quality,
-    } = options;
+    const {distance, outerStrength, innerStrength, color, quality} = options;
 
     const it = new GlowFilter(
         distance || 10,
@@ -180,7 +164,7 @@ export function setMotionBlur(view) {
     return it;
 
     function update(newPos) {
-        const blurAmount = Math.max(0, (newPos) * 100);
+        const blurAmount = Math.max(0, newPos * 100);
         it.velocity = [0, blurAmount];
         it.kernelSize = blurAmount;
     }

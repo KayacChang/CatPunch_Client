@@ -3,19 +3,16 @@ import {Container, Text} from 'pixi.js';
 import anime from 'animejs';
 import {setBehaviour} from './button';
 
-import {pi, clone, wait} from '../../../../general';
+import {pi, clone} from '@kayac/utils';
 
 const {assign} = Object;
 
 export function SpinButton(view) {
-    let it = Clickable(
-        view.getChildByName('spin'),
-    );
+    let it = Clickable(view.getChildByName('spin'));
 
     const img = it.getChildByName('frame');
 
-    const block =
-        view.getChildByName('block');
+    const block = view.getChildByName('block');
 
     const msg = defaultFont(
         new Text(translate('common:message.insufficientBalance')),
@@ -45,26 +42,18 @@ export function SpinButton(view) {
     let count = 0;
     let speed = app.user.speed;
 
-    const countField =
-        defaultFont(new Text(), {
-            fontFamily: 'Candal',
-            fontSize: 48,
-            fill: '#FAFAFA',
-        });
-    it.addChildAt(
-        countField,
-        it.getChildIndex(
-            it.getChildByName('hover'),
-        ),
-    );
+    const countField = defaultFont(new Text(), {
+        fontFamily: 'Candal',
+        fontSize: 48,
+        fill: '#FAFAFA',
+    });
+    it.addChildAt(countField, it.getChildIndex(it.getChildByName('hover')));
 
-    countField.anchor.set(.5);
+    countField.anchor.set(0.5);
 
-    countField.pivot
-        .set(countField.width / 2, countField.height / 2);
+    countField.pivot.set(countField.width / 2, countField.height / 2);
 
-    countField.position
-        .set(it.width / 2, it.height / 2);
+    countField.position.set(it.width / 2, it.height / 2);
 
     const auto = {
         get() {
@@ -100,7 +89,7 @@ export function SpinButton(view) {
 
         it.auto.set(0);
     } else {
-        img.tint = 0xFFFFFF;
+        img.tint = 0xffffff;
         isBlocking = false;
     }
 
@@ -121,7 +110,7 @@ export function SpinButton(view) {
 
             it.auto.set(0);
         } else {
-            img.tint = 0xFFFFFF;
+            img.tint = 0xffffff;
             isBlocking = false;
         }
 
@@ -133,8 +122,7 @@ export function SpinButton(view) {
         if (cashLessThanBet()) {
             if (!whenAnim) {
                 whenAnim = true;
-                view.openMenu('exchange')
-                    .then(() => whenAnim = false);
+                view.openMenu('exchange').then(() => (whenAnim = false));
             }
 
             return spinEnd();
@@ -153,7 +141,8 @@ export function SpinButton(view) {
 
         anime({
             targets: square.scale,
-            x: 0, y: 0,
+            x: 0,
+            y: 0,
         });
 
         anime({
@@ -261,12 +250,14 @@ export function SpinButton(view) {
 
         anime({
             targets: square.scale,
-            x: 1, y: 1,
+            x: 1,
+            y: 1,
         });
 
         anime({
             targets: arrow.scale,
-            x: 0, y: 0,
+            x: 0,
+            y: 0,
         });
 
         anime({
@@ -308,7 +299,8 @@ export function SpinButton(view) {
 
         app.service
             .sendOneRound({
-                key, bet: app.user.bet,
+                key,
+                bet: app.user.bet,
             })
             .then((result) => app.emit('GameResult', result));
     }

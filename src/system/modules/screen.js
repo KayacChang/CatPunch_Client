@@ -1,4 +1,4 @@
-import {throttle, abs, select, isMobile} from '../../general';
+import {throttle, abs, select, isMobile} from '@kayac/utils';
 
 import screenfull from 'screenfull';
 
@@ -18,8 +18,8 @@ export function isLandScape() {
 function getExpectSize() {
     const size = getWindowSize();
 
-    const expectRadio = (16 / 9);
-    const currentRadio = (size.width / size.height);
+    const expectRadio = 16 / 9;
+    const currentRadio = size.width / size.height;
 
     if (currentRadio > expectRadio) {
         size.width = size.height * expectRadio;
@@ -46,23 +46,22 @@ export function enableFullScreenMask() {
     const mask = select('#mask');
 
     if (!isMobile.apple.device) {
-        select('#screen-scroll')
-            .classList.add('hidden');
+        select('#screen-scroll').classList.add('hidden');
 
-        const func =
-            (el, className) => isLandScape() ?
-                el.classList.add(className) :
-                el.classList.remove(className);
+        const func = (el, className) =>
+            isLandScape()
+                ? el.classList.add(className)
+                : el.classList.remove(className);
 
         func(icon, 'hidden');
 
         scrollTo(0, 0);
 
         window.addEventListener('orientationchange', () => {
-            const func =
-                (el, className) => !isLandScape() ?
-                    el.classList.add(className) :
-                    el.classList.remove(className);
+            const func = (el, className) =>
+                !isLandScape()
+                    ? el.classList.add(className)
+                    : el.classList.remove(className);
 
             func(icon, 'hidden');
 
@@ -88,10 +87,10 @@ export function enableFullScreenMask() {
         return throttle(() => {
             const isMinimal = forApple();
 
-            const func =
-                (el, className) => isMinimal && isLandScape() ?
-                    el.classList.add(className) :
-                    el.classList.remove(className);
+            const func = (el, className) =>
+                isMinimal && isLandScape()
+                    ? el.classList.add(className)
+                    : el.classList.remove(className);
 
             func(icon, 'hidden');
             func(mask, 'hidden');
@@ -115,13 +114,11 @@ export function resize(app) {
     setStyleSize(app.view.parentElement, size);
     setSize(app.view, size);
 
-    app.renderer
-        .resize(size.width, size.height);
+    app.renderer.resize(size.width, size.height);
 
-    app.stage.children
-        .forEach((scene) => {
-            const expectStageSize = {width: 1920, height: 1080};
-            scene.scale.x = size.width / expectStageSize.width;
-            scene.scale.y = size.height / expectStageSize.height;
-        });
+    app.stage.children.forEach((scene) => {
+        const expectStageSize = {width: 1920, height: 1080};
+        scene.scale.x = size.width / expectStageSize.width;
+        scene.scale.y = size.height / expectStageSize.height;
+    });
 }

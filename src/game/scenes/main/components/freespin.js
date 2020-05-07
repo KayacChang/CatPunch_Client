@@ -1,5 +1,5 @@
 import anime from 'animejs';
-import {degreeToRadian} from '../../../../general';
+import {degreeToRadian} from '@kayac/utils';
 import {setColorMatrix} from '../../../plugin/filter';
 
 export function FreeSpinIcon(view) {
@@ -23,7 +23,8 @@ export function FreeSpinIcon(view) {
         });
         anime({
             targets: view.scale,
-            x: 1, y: 1,
+            x: 1,
+            y: 1,
             easing: 'linear',
             duration: 85,
         });
@@ -42,13 +43,14 @@ export function FreeSpinIcon(view) {
         });
         anime({
             targets: view.scale,
-            x: [1, 1.2], y: [1, 1.2],
+            x: [1, 1.2],
+            y: [1, 1.2],
             easing: 'linear',
             direction: 'alternate',
             duration: 500,
             loop: true,
             update(anim) {
-                const value = 1 + (anim.progress / 100);
+                const value = 1 + anim.progress / 100;
                 color.brightness(value);
             },
         });

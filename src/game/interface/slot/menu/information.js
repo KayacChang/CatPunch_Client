@@ -1,7 +1,7 @@
 import {Clickable, Openable} from '../../components';
 import anime from 'animejs';
 
-import {abs, sign} from '../../../../general';
+import {abs, sign} from '@kayac/utils';
 
 import RULE_0_URL from '../../../rule/gameRule0.png';
 import RULE_1_URL from '../../../rule/gameRule1.png';
@@ -14,12 +14,11 @@ import RULE_6_URL from '../../../rule/gameRule6.png';
 import {Sprite} from 'pixi.js';
 
 export function Information(menu) {
-    const information = Openable(
-        menu.getChildByName('information'),
-    );
+    const information = Openable(menu.getChildByName('information'));
 
-    information.getChildByName('title')
-        .text = translate(`common:information.title`);
+    information.getChildByName('title').text = translate(
+        `common:information.title`,
+    );
 
     const pageTab = Pages([
         RULE_5_URL,
@@ -31,18 +30,13 @@ export function Information(menu) {
         RULE_4_URL,
     ]);
 
-    const tabs =
-        information.children
-            .filter(({name}) => name.includes('tab'))
-            .map(Tab);
+    const tabs = information.children
+        .filter(({name}) => name.includes('tab'))
+        .map(Tab);
 
-    information.children
-        .filter(({name}) => name.includes('arrow'))
-        .map(Arrow);
+    information.children.filter(({name}) => name.includes('arrow')).map(Arrow);
 
-    const carousel = Carousel(
-        information.getChildByName('carousel'),
-    );
+    const carousel = Carousel(information.getChildByName('carousel'));
 
     update();
 
@@ -52,8 +46,8 @@ export function Information(menu) {
     return information;
 
     async function open() {
-        const resources =
-            await app.resource.fetch(...[
+        const resources = await app.resource.fetch(
+            ...[
                 RULE_5_URL,
                 RULE_6_URL,
                 RULE_0_URL,
@@ -61,17 +55,18 @@ export function Information(menu) {
                 RULE_2_URL,
                 RULE_3_URL,
                 RULE_4_URL,
-            ]);
+            ],
+        );
 
-        const sprites =
-            resources.map(({texture}) => new Sprite(texture));
+        const sprites = resources.map(({texture}) => new Sprite(texture));
 
         carousel.pages = sprites;
 
         information.visible = true;
         return anime({
             targets: information,
-            alpha: 1, y: 0,
+            alpha: 1,
+            y: 0,
             duration: 300,
             easing: 'easeOutQuad',
         }).finished;
@@ -80,7 +75,8 @@ export function Information(menu) {
     function close() {
         return anime({
             targets: information,
-            alpha: 0, y: '-=' + 53,
+            alpha: 0,
+            y: '-=' + 53,
             duration: 300,
             easing: 'easeOutQuad',
             complete() {
@@ -103,13 +99,9 @@ export function Information(menu) {
     function Carousel(it) {
         const {width} = it.getChildByName('mask');
 
-        let pages =
-            it.children
-                .filter(({name}) => name.includes('page'));
+        let pages = it.children.filter(({name}) => name.includes('page'));
 
-        const pagesPos =
-            pages
-                .map(({name, x, y}) => ({name, x, y}));
+        const pagesPos = pages.map(({name, x, y}) => ({name, x, y}));
 
         it.interactive = true;
 
@@ -146,14 +138,12 @@ export function Information(menu) {
 
         function setControl(flag) {
             if (flag) {
-                it
-                    .on('pointerdown', onScrollStart)
+                it.on('pointerdown', onScrollStart)
                     .on('pointerup', onScrollEnd)
                     .on('pointerupoutside', onScrollEnd)
                     .on('pointermove', onScrollMove);
             } else {
-                it
-                    .off('pointerdown', onScrollStart)
+                it.off('pointerdown', onScrollStart)
                     .off('pointerup', onScrollEnd)
                     .off('pointerupoutside', onScrollEnd)
                     .off('pointermove', onScrollMove);
@@ -220,30 +210,29 @@ export function Information(menu) {
 
             const dx = x - px;
 
-            pages.forEach((page) => page.x += dx);
+            pages.forEach((page) => (page.x += dx));
 
-            return px = x;
+            return (px = x);
         }
 
         function movePage(movement, duration = 300) {
-            const tasks =
-                pagesPos.map((pos, index) => {
-                    let pageIndex = index + movement;
+            const tasks = pagesPos.map((pos, index) => {
+                let pageIndex = index + movement;
 
-                    if (pageIndex < 0) {
-                        pageIndex = pagesPos.length + pageIndex;
-                        return pages[pageIndex].x = pos.x;
-                    } else if (pageIndex >= pagesPos.length) {
-                        pageIndex = pageIndex % pagesPos.length;
-                        return pages[pageIndex].x = pos.x;
-                    }
-                    return anime({
-                        targets: pages[pageIndex],
-                        x: pos.x,
-                        duration,
-                        easing: 'easeOutCubic',
-                    }).finished;
-                });
+                if (pageIndex < 0) {
+                    pageIndex = pagesPos.length + pageIndex;
+                    return (pages[pageIndex].x = pos.x);
+                } else if (pageIndex >= pagesPos.length) {
+                    pageIndex = pageIndex % pagesPos.length;
+                    return (pages[pageIndex].x = pos.x);
+                }
+                return anime({
+                    targets: pages[pageIndex],
+                    x: pos.x,
+                    duration,
+                    easing: 'easeOutCubic',
+                }).finished;
+            });
 
             return Promise.all(tasks).then(() => {
                 pages.sort((pageA, pageB) => pageA.x - pageB.x);
@@ -260,9 +249,7 @@ export function Information(menu) {
             },
             set current(value) {
                 current =
-                    (value < 0) ?
-                        pages.length + value :
-                        value % pages.length;
+                    value < 0 ? pages.length + value : value % pages.length;
             },
         };
     }
@@ -313,9 +300,7 @@ export function Information(menu) {
             for (let i = 0; i < abs(movement); i++) {
                 const duration = 100 / Math.sqrt(abs(movement));
 
-                await carousel.movePage(
-                    sign(movement) * -1, duration,
-                );
+                await carousel.movePage(sign(movement) * -1, duration);
             }
         }
 
