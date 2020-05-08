@@ -7,60 +7,52 @@ import {Neko} from './components/neko';
 import {FreeSpinIcon} from './components/freespin';
 import {EnergyBar} from './components/energy';
 
-import {
-    setBevel,
-    setDropShadow,
-    setGlow,
-} from '../../plugin/filter';
+import {setBevel, setDropShadow, setGlow} from '../../plugin/filter';
 
 import {play} from './func/play';
 
 function initSlotMachine(scene, reelTables) {
-    const slot =
-        SlotMachine({
-            view: scene.getChildByName('SlotMachine'),
-            reelTables,
-            ...data,
-        });
+    const slot = SlotMachine({
+        view: scene.getChildByName('SlotMachine'),
+        reelTables,
+        ...data,
+    });
 
     setBevel(slot.view, {thickness: 5});
 
-    const title =
-        slot.view.getChildByName('Title');
+    const title = slot.view.getChildByName('Title');
 
     setBevel(title);
 
-    slot.reels
-        .forEach((reel) =>
-            setDropShadow(reel.view, {
-                blur: 3.2,
-                quality: 2,
-                alpha: 0.58,
-                distance: 8,
-                rotation: [45, 90, 135][reel.reelIdx],
-            }));
+    slot.reels.forEach((reel) =>
+        setDropShadow(reel.view, {
+            blur: 3.2,
+            quality: 2,
+            alpha: 0.58,
+            distance: 8,
+            rotation: [45, 90, 135][reel.reelIdx],
+        }),
+    );
 
-    const tasks =
-        slot.view.children
-            .map((target) => {
-                if (target.name.includes('FXReel')) {
-                    setGlow(target, {
-                        innerStrength: 1,
-                        outerStrength: 1,
-                        distance: 6,
-                        color: 0xFCFFA3,
-                    });
+    const tasks = slot.view.children
+        .map((target) => {
+            if (target.name.includes('FXReel')) {
+                setGlow(target, {
+                    innerStrength: 1,
+                    outerStrength: 1,
+                    distance: 6,
+                    color: 0xfcffa3,
+                });
 
-                    return whenAnimComplete(target);
-                } else if (target.name.includes('Effect')) {
-                    return target.children.map(whenAnimComplete);
-                }
-                return Promise.resolve();
-            })
-            .flat();
+                return whenAnimComplete(target);
+            } else if (target.name.includes('Effect')) {
+                return target.children.map(whenAnimComplete);
+            }
+            return Promise.resolve();
+        })
+        .flat();
 
-    Promise.all(tasks)
-        .then(() => slot.view.emit('Ready'));
+    Promise.all(tasks).then(() => slot.view.emit('Ready'));
 
     return slot;
 
@@ -83,9 +75,7 @@ export function create({normalTable, freeGameTable}) {
 
     const slot = initSlotMachine(scene, normalTable);
 
-    const energy = EnergyBar(
-        slot.view.getChildByName('EnergyBar'),
-    );
+    const energy = EnergyBar(slot.view.getChildByName('EnergyBar'));
 
     const freeSpinIcon = FreeSpinIcon(
         slot.view.getChildByName('Icon@freespin'),
@@ -102,9 +92,15 @@ export function create({normalTable, freeGameTable}) {
 
     play(scene);
 
-    slot.view.once('Ready', () => app.emit('GameReady'));
+    slot.view.once('Ready', () => {
+        app.emit('GameReady');
 
-    app.alert.request({title: translate(`common:message.audio`)})
+        const loadScene = app.stage.getChildByName('LoadScene');
+        app.stage.removeChild(loadScene);
+    });
+
+    app.alert
+        .request({title: app.translate(`common:message.audio`)})
         .then(({value}) => {
             app.sound.mute(!value);
 

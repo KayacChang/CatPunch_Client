@@ -7,7 +7,9 @@ import {kFormat, kCurrencyFormat, rgb2hex} from '@kayac/utils';
 export function Setting(menu) {
     const setting = Openable(menu.getChildByName('setting'));
 
-    setting.getChildByName('title').text = translate(`common:setting.title`);
+    setting.getChildByName('title').text = app.translate(
+        `common:setting.title`,
+    );
 
     setLabel(setting, 'audio');
 
@@ -118,7 +120,7 @@ export function Setting(menu) {
 }
 
 function setLabel(setting, target) {
-    setting.getChildByName(`label@${target}`).text = translate(
+    setting.getChildByName(`label@${target}`).text = app.translate(
         `common:setting.${target}`,
     );
 }

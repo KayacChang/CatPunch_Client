@@ -23,7 +23,7 @@ function init(view) {
             if (type === 'label') {
                 defaultFont(field.content, {fontFamily: 'Basic'});
 
-                field.content.text = translate(`common:status.${name}`);
+                field.content.text = app.translate(`common:status.${name}`);
                 //
             } else if (type === 'field' || type === 'effect') {
                 defaultFont(field.content, {fontFamily: 'Candal'});

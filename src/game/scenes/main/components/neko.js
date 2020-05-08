@@ -9,8 +9,8 @@ export function Neko(scene) {
         quality: 1,
     });
 
-    const appearAnim = scene.getTransition('neko_appear');
-    const disappearAnim = scene.getTransition('neko_disappear');
+    const appearAnim = scene.transition['neko_appear'];
+    const disappearAnim = scene.transition['neko_disappear'];
 
     neko.anim.loop = false;
     neko.visible = false;

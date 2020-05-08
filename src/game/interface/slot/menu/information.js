@@ -16,7 +16,7 @@ import {Sprite} from 'pixi.js';
 export function Information(menu) {
     const information = Openable(menu.getChildByName('information'));
 
-    information.getChildByName('title').text = translate(
+    information.getChildByName('title').text = app.translate(
         `common:information.title`,
     );
 
@@ -131,10 +131,6 @@ export function Information(menu) {
                 pages = newPages;
             },
         };
-
-        function Idx({name}) {
-            return name.split('@')[1];
-        }
 
         function setControl(flag) {
             if (flag) {

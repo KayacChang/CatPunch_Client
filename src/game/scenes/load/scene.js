@@ -20,13 +20,12 @@ export function create() {
 
     const unit = divide(loading.width, 100);
 
-    update(0);
+    app.on('loading', ({progress}, {name}) => {
+        console.log(`Progress: ${progress} %`);
+        console.log(`Resource: ${name}`);
 
-    scene.update = update;
+        loading.width = multiply(progress, unit);
+    });
 
     return scene;
-
-    function update(progress) {
-        loading.width = multiply(progress, unit);
-    }
 }

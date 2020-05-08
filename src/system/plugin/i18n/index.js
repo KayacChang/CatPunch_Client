@@ -51,8 +51,8 @@ function init(path) {
                 loadPath: `${path}/{{lng}}/{{ns}}.json`,
             },
 
-            ns: ['cyberpunk', 'common'],
-            defaultNS: 'cyberpunk',
+            ns: ['cat', 'common'],
+            defaultNS: 'cat',
         });
 }
 

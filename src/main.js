@@ -17,6 +17,8 @@ async function main() {
     try {
         document.title = 'For Every Gamer';
 
+        global.app = app;
+
         app.translate = await i18n.init(process.env.I18N_URL);
         app.alert = Swal(app.translate);
         app.service = new Service(process.env.SERVER_URL);

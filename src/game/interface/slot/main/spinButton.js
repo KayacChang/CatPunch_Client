@@ -15,7 +15,7 @@ export function SpinButton(view) {
     const block = view.getChildByName('block');
 
     const msg = defaultFont(
-        new Text(translate('common:message.insufficientBalance')),
+        new Text(app.translate('common:message.insufficientBalance')),
         {
             fontFamily: 'Candal',
             fontSize: 48,
