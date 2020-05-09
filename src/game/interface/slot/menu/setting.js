@@ -158,7 +158,7 @@ function Toggle(setting, target) {
             update() {
                 const [r, g, b] = ball._color.match(/\d+/g).map(Number);
 
-                ball.tint = parseInt(rgb2hex([r, g, b]).replace('#', '0x'), 16);
+                ball.tint = rgb2hex([r, g, b]);
             },
         });
     }
