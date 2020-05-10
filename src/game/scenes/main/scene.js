@@ -69,7 +69,7 @@ function initSlotMachine(scene, reelTables) {
     }
 }
 
-export function create({normalTable, freeGameTable}) {
+export function create(app, {normalTable, freeGameTable}) {
     const create = addPackage(app, 'main');
     const scene = create('MainScene');
 

@@ -56,7 +56,10 @@ async function main() {
 
         await app.resource.load(Interface, MainScene);
 
-        const mainScene = MainScene.create(app, initData.reel.normalreel);
+        const mainScene = MainScene.create(app, {
+            normalTable: initData['reel']['normalreel'],
+            freeGameTable: initData['reel']['respinreel'],
+        });
         const ui = Interface.create(app);
 
         mainScene.addChild(ui);

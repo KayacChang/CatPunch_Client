@@ -17,15 +17,14 @@ export function User(app) {
     const autoOptions = [0, 25, 100, 500, 1000];
     let auto = 0;
 
-    let payTable = [];
-    let jackPot = {};
-
     const autoStopCondition = {
         on_any_win: false,
         on_single_win_of_at_least: 0,
         if_cash_increases_by: 0,
         if_cash_decreases_by: 0,
     };
+
+    let isBetLock = false;
 
     return seal({
         get id() {
@@ -117,19 +116,11 @@ export function User(app) {
             return autoStopCondition;
         },
 
-        get payTable() {
-            return payTable;
+        get isBetLock() {
+            return isBetLock;
         },
-        set payTable(newTable) {
-            payTable = newTable;
-        },
-
-        get jackPot() {
-            return jackPot;
-        },
-        set jackPot(newTable) {
-            jackPot = newTable;
-            app.emit('JackPotChange', jackPot);
+        set isBetLock(flag) {
+            isBetLock = flag;
         },
     });
 }

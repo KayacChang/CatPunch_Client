@@ -20,10 +20,9 @@ export function create() {
 
     const unit = divide(loading.width, 100);
 
-    app.on('loading', ({progress}, {name}) => {
-        console.log(`Progress: ${progress} %`);
-        console.log(`Resource: ${name}`);
+    loading.width = 0;
 
+    app.on('loading', ({progress}, {name}) => {
         loading.width = multiply(progress, unit);
     });
 
