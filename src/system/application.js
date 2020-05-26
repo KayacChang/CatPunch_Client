@@ -11,7 +11,8 @@ const {defineProperties, assign, freeze} = Object;
 
 export default (function () {
     const app = new Application({
-        resolution: devicePixelRatio || 1,
+        width: window.innerHeight * (16 / 9),
+        height: window.innerHeight,
         antialias: true,
     });
 

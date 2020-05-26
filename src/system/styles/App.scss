@@ -6,7 +6,8 @@
 
     canvas {
         width: auto;
-        height: 100%;
+
+        max-height: 100vh;
     }
 
     #mask {
