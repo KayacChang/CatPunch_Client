@@ -1,8 +1,8 @@
-import Swal from 'sweetalert2/dist/sweetalert2';
-import './styles/swal.scss';
+import Swal from 'sweetalert2/dist/sweetalert2'
+import './styles/swal.scss'
 
-import ALERT from './sounds/alert01.mp3';
-import SUCCESS from './sounds/success01.mp3';
+import ALERT from './sounds/alert01.mp3'
+import SUCCESS from './sounds/success01.mp3'
 
 export default function (translate) {
     const defaultStyle = {
@@ -11,15 +11,15 @@ export default function (translate) {
         cancelButtonText: translate(`common:button.cancel`),
         confirmButtonColor: '#007BFF',
         cancelButtonColor: '#DC3446',
-    };
-
-    function playAudio(url) {
-        if (app.sound.mute()) return;
-
-        return new Audio(url).play().catch((err) => console.log(err));
     }
 
-    function error(msg) {
+    function playAudio (url) {
+        if (app.sound.mute()) return
+
+        return new Audio(url).play().catch((err) => console.log(err))
+    }
+
+    function error (msg) {
         const config = {
             ...defaultStyle,
 
@@ -29,12 +29,12 @@ export default function (translate) {
             confirmButtonColor: '#DC3446',
 
             ...msg,
-        };
+        }
 
-        return Swal.fire(config).then(() => history.back());
+        return Swal.fire(config).then(() => history.back())
     }
 
-    function reload(msg) {
+    function reload (msg) {
         const config = {
             ...defaultStyle,
 
@@ -44,12 +44,12 @@ export default function (translate) {
             confirmButtonColor: '#DC3446',
 
             ...msg,
-        };
+        }
 
-        return Swal.fire(config).then(() => location.reload());
+        return Swal.fire(config).then(() => location.reload())
     }
 
-    function request(data) {
+    function request (data) {
         const config = {
             ...defaultStyle,
 
@@ -57,14 +57,14 @@ export default function (translate) {
             showCancelButton: true,
 
             ...data,
-        };
+        }
 
-        playAudio(ALERT);
+        playAudio(ALERT)
 
-        return Swal.fire(config);
+        return Swal.fire(config)
     }
 
-    function loading(msg = {}) {
+    function loading (msg = {}) {
         const config = {
             ...defaultStyle,
 
@@ -73,15 +73,15 @@ export default function (translate) {
             onBeforeOpen: () => Swal.showLoading(),
 
             ...msg,
-        };
-        return Swal.fire(config);
+        }
+        return Swal.fire(config)
     }
 
-    function close() {
-        return Swal.close();
+    function close () {
+        return Swal.close()
     }
 
-    function success({title}) {
+    function success ({title}) {
         const config = {
             ...defaultStyle,
 
@@ -89,14 +89,14 @@ export default function (translate) {
             title,
             showConfirmButton: false,
             timer: 2000,
-        };
+        }
 
-        playAudio(SUCCESS);
+        playAudio(SUCCESS)
 
-        return Swal.fire(config);
+        return Swal.fire(config)
     }
 
-    function leave() {
+    function leave (url) {
         const config = {
             ...defaultStyle,
 
@@ -106,12 +106,23 @@ export default function (translate) {
             confirmButtonColor: '#DC3446',
             showCancelButton: true,
             cancelButtonColor: '#007BFF',
-        };
+        }
 
-        return Swal.fire(config).then(({value}) => value && history.back());
+        return Swal.fire(config).then(({value}) => {
+            if (!value) {
+                return
+            }
+
+            if (!url) {
+                history.back()
+                return
+            }
+
+            window.location.replace(url)
+        })
     }
 
-    function checkoutList({gold, gift, etc, bonus}) {
+    function checkoutList ({gold, gift, etc, bonus}) {
         const config = {
             ...defaultStyle,
 
@@ -122,18 +133,18 @@ export default function (translate) {
         `,
             cancelButtonColor: '#007BFF',
             onBeforeOpen,
-        };
+        }
 
-        return Swal.fire(config);
+        return Swal.fire(config)
 
-        function onBeforeOpen() {
-            Swal.showLoading();
+        function onBeforeOpen () {
+            Swal.showLoading()
 
-            const content = Swal.getContent();
+            const content = Swal.getContent()
 
-            const list = content.querySelector('#list');
+            const list = content.querySelector('#list')
 
-            const host = 'https://www.fbk168.com/images/game-coin/';
+            const host = 'https://www.fbk168.com/images/game-coin/'
 
             const tasks = [
                 {url: 'user_bg_gold', money: gold},
@@ -141,34 +152,34 @@ export default function (translate) {
                 {url: 'user_bg_bonus', money: bonus},
                 {url: 'user_bg_gift', money: gift},
             ].map(({url, money}) => {
-                const image = new Image();
-                image.src = host + url + '.png';
+                const image = new Image()
+                image.src = host + url + '.png'
 
-                const text = document.createElement('div');
+                const text = document.createElement('div')
 
-                text.textContent = money;
+                text.textContent = money
 
-                const container = document.createElement('div');
+                const container = document.createElement('div')
 
-                container.append(image, text);
-                container.classList.add('text-center', 'number-font');
+                container.append(image, text)
+                container.classList.add('text-center', 'number-font')
 
-                const item = document.createElement('li');
+                const item = document.createElement('li')
 
-                item.append(container);
+                item.append(container)
 
                 return new Promise((resolve) => {
-                    image.onload = () => resolve(item);
-                });
-            });
+                    image.onload = () => resolve(item)
+                })
+            })
 
             Promise.all(tasks)
                 .then((items) => {
                     items.forEach((item) => {
-                        list.appendChild(item);
-                    });
+                        list.appendChild(item)
+                    })
                 })
-                .then(() => Swal.hideLoading());
+                .then(() => Swal.hideLoading())
         }
     }
 
@@ -181,5 +192,5 @@ export default function (translate) {
         success,
         checkoutList,
         request,
-    };
+    }
 }
