@@ -1,73 +1,73 @@
-import {Clickable, Openable} from '../../components';
-import {Setting} from './setting';
-import anime from 'animejs';
-import {Information} from './information';
+import {Clickable, Openable} from '../../components'
+import {Setting} from './setting'
+import anime from 'animejs'
+import {Information} from './information'
 
-const {entries} = Object;
+const {entries} = Object
 
-export function Menu(parent) {
-    const menu = Openable(parent.getChildByName('menu'));
-    menu.interactive = true;
+export function Menu (parent) {
+    const menu = Openable(parent.getChildByName('menu'))
+    menu.interactive = true
 
-    const background = menu.getChildByName('background');
-    background.scale.set(0);
+    const background = menu.getChildByName('background')
+    background.scale.set(0)
 
-    const hr = menu.getChildByName('hr');
-    hr.scale.x = 0;
+    const hr = menu.getChildByName('hr')
+    hr.scale.x = 0
 
-    const navBackground = menu.getChildByName('nav@background');
+    const navBackground = menu.getChildByName('nav@background')
     navBackground.originPos = {
         x: navBackground.position.x,
         y: navBackground.position.y,
-    };
+    }
 
-    const block = menu.getChildByName('block');
-    block.on('pointerdown', () => close());
+    const block = menu.getChildByName('block')
+    block.on('pointerdown', () => close())
 
-    menu.block = block;
+    menu.block = block
 
-    const setting = Setting(menu);
-    const information = Information(menu);
+    const setting = Setting(menu)
+    const information = Information(menu)
 
     const sections = new Map(
         entries({
             setting,
             information,
         }),
-    );
-    sections.forEach((section) => (section.alpha = 0));
+    )
+    sections.forEach((section) => (section.alpha = 0))
 
-    const nav = Nav(menu, sections);
+    const nav = Nav(menu, sections)
     nav.originPos = {
         x: nav.position.x,
         y: nav.position.y,
-    };
-    nav.y = 0;
-    nav.alpha = 0;
+    }
+    nav.y = 0
+    nav.alpha = 0
 
-    menu.open = openNav;
-    menu.close = close;
+    menu.open = openNav
+    menu.close = close
 
-    menu.setting = setting;
-    menu.information = information;
+    menu.setting = setting
+    menu.information = information
 
-    return menu;
+    return menu
 
-    async function openNav(section) {
-        menu.visible = true;
-        menu.alpha = 1;
+    async function openNav (section) {
+        menu.visible = true
+        menu.alpha = 1
 
-        if (menu.section) menu.section.visible = false;
+        if (menu.section) menu.section.visible = false
 
-        menu.section = undefined;
-        nav.tab.alpha = 0;
-        nav.btns.forEach((btn) => (btn.icon.alpha = 0.5));
+        menu.section = undefined
+        nav.tab.alpha = 0
+        nav.btns.forEach((btn) => (btn.icon.alpha = 0.5))
 
-        block.interactive = true;
+        block.interactive = true
 
-        navBackground.position.x = navBackground.originPos.x;
-        background.scale.set(0);
-        hr.scale.x = 0;
+        navBackground.position.x = navBackground.originPos.x
+        background.scale.set(0)
+        hr.scale.x = 0
 
         await anime
             .timeline()
@@ -83,34 +83,34 @@ export function Menu(parent) {
                 y: nav.originPos.y,
                 duration: 320,
                 easing: 'easeOutQuad',
-                complete() {
+                complete () {
                     if (section) {
-                        nav.open(sections.get(section));
+                        nav.open(sections.get(section))
                     }
                 },
-            }).finished;
+            }).finished
     }
 
-    function close() {
-        if (!menu.visible) return;
+    function close () {
+        if (!menu.visible) return
 
-        parent.main.updateStatus();
+        parent.main.updateStatus()
 
-        if (menu.section) menu.section.close();
+        if (menu.section) menu.section.close()
 
         anime({
             targets: hr.scale,
             x: 0,
             duration: 300,
             easing: 'easeOutQuart',
-        });
+        })
 
         anime({
             targets: navBackground,
             x: '+=' + navBackground.width,
             duration: 500,
             easing: 'easeInOutExpo',
-        });
+        })
 
         anime
             .timeline()
@@ -127,52 +127,52 @@ export function Menu(parent) {
                 y: 0,
                 duration: 500,
                 easing: 'easeInOutExpo',
-                complete() {
-                    menu.visible = false;
-                    menu.alpha = 0;
+                complete () {
+                    menu.visible = false
+                    menu.alpha = 0
                 },
-            });
+            })
     }
 }
 
-function Nav(menu, sections) {
-    const nav = menu.getChildByName('nav');
+function Nav (menu, sections) {
+    const nav = menu.getChildByName('nav')
 
-    const background = menu.getChildByName('background');
+    const background = menu.getChildByName('background')
 
-    const hr = menu.getChildByName('hr');
+    const hr = menu.getChildByName('hr')
 
-    BackButton(nav.getChildByName('back'), menu);
+    BackButton(nav.getChildByName('back'), menu)
 
-    const tab = nav.getChildByName('tab');
+    const tab = nav.getChildByName('tab')
 
-    nav.tab = tab;
+    nav.tab = tab
 
     const navBtns = nav.children
         .filter(({name}) => name.includes('btn'))
-        .map(NavButton);
-    nav.btns = navBtns;
+        .map(NavButton)
+    nav.btns = navBtns
 
-    nav.updateState = updateState;
+    nav.updateState = updateState
 
-    nav.open = open;
+    nav.open = open
 
-    return nav;
+    return nav
 
-    function updateState() {
-        const target = menu.section.name;
-        let targetBtn = undefined;
+    function updateState () {
+        const target = menu.section.name
+        let targetBtn = undefined
 
         navBtns.forEach((btn) => {
-            const [, name] = btn.name.split('@');
+            const [, name] = btn.name.split('@')
 
             if (name === target) {
-                btn.icon.alpha = 0.9;
-                targetBtn = btn;
+                btn.icon.alpha = 0.9
+                targetBtn = btn
             } else {
-                btn.icon.alpha = 0.5;
+                btn.icon.alpha = 0.5
             }
-        });
+        })
 
         return anime({
             targets: tab,
@@ -180,40 +180,41 @@ function Nav(menu, sections) {
             alpha: 0.9,
             duration: 300,
             easing: 'easeOutQuart',
-        }).finished;
+        }).finished
     }
 
-    function NavButton(it) {
-        const [, name] = it.name.split('@');
+    function NavButton (it) {
+        const [, name] = it.name.split('@')
 
-        it.icon = nav.getChildByName(`img@${name}`);
+        it.icon = nav.getChildByName(`img@${name}`)
 
-        it = Clickable(it);
-        it.on('pointerdown', click);
+        it = Clickable(it)
+        it.on('pointerdown', click)
 
-        return it;
+        return it
 
-        async function click() {
+        async function click () {
             if (sections.has(name)) {
-                const target = sections.get(name);
-                if (menu.section === target) return;
+                const target = sections.get(name)
 
-                if (menu.section) await menu.section.close();
+                if (menu.section === target) return
 
-                return open(target);
+                if (menu.section) await menu.section.close()
+
+                return open(target)
             }
 
             if (name === 'home') {
-                return app.alert.leave();
+                return app.alert.leave(localStorage['lobby'])
             }
         }
     }
 
-    async function open(section) {
-        menu.block.interactive = false;
+    async function open (section) {
+        menu.block.interactive = false
 
-        menu.section = section;
-        updateState();
+        menu.section = section
+        updateState()
 
         if (background.scale.x < 1) {
             await anime
@@ -230,15 +231,15 @@ function Nav(menu, sections) {
                     x: 1,
                     duration: 300,
                     easing: 'easeOutQuad',
-                }).finished;
+                }).finished
         }
 
-        await section.open();
+        await section.open()
     }
 
-    function BackButton(btn, menu) {
-        btn = Clickable(btn);
-        btn.on('pointerdown', () => menu.close());
-        return btn;
+    function BackButton (btn, menu) {
+        btn = Clickable(btn)
+        btn.on('pointerdown', () => menu.close())
+        return btn
     }
 }
