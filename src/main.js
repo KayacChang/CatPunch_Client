@@ -1,43 +1,62 @@
-import {select} from '@kayac/utils';
+import {select} from '@kayac/utils'
 
-import app from './system/application';
-import {Service} from './service';
-import i18n from './system/plugin/i18n';
-import Swal from './system/plugin/swal';
+import app from './system/application'
+import {Service} from './service'
+import i18n from './system/plugin/i18n'
+import Swal from './system/plugin/swal'
 
-import {enableFullScreenMask} from './system/modules/screen';
+import {
+    iPhoneFullScreen,
+    isMobile,
+    isFullScreenSupport,
+    requestFullScreen,
+} from './system/modules/device'
 
-import * as PIXI from 'pixi.js';
-import {install} from '@pixi/unsafe-eval';
+import * as PIXI from 'pixi.js'
+import {install} from '@pixi/unsafe-eval'
 
-install(PIXI);
+install(PIXI)
 
-async function main() {
+function enableFullscreen () {
+    if (!isMobile()) {
+        return
+    }
+
+    if (isFullScreenSupport(window.document.body)) {
+        document.addEventListener('touchend', () =>
+            requestFullScreen(window.document.body),
+        )
+    }
+
+    iPhoneFullScreen()
+}
+
+async function main () {
     //  Init App
     try {
-        document.title = 'For Every Gamer';
+        document.title = 'For Every Gamer'
 
-        global.app = app;
+        global.app = app
 
-        app.translate = await i18n.init(process.env.I18N_URL);
-        app.alert = Swal(app.translate);
-        app.service = new Service(process.env.SERVER_URL);
+        app.translate = await i18n.init(process.env.I18N_URL)
+        app.alert = Swal(app.translate)
+        app.service = new Service(process.env.SERVER_URL)
 
         // Import Load Scene
-        const LoadScene = await import('./game/scenes/load/scene');
-        await app.resource.load(LoadScene);
+        const LoadScene = await import('./game/scenes/load/scene')
+        await app.resource.load(LoadScene)
 
-        const comp = select('#app');
-        const svg = select('#preload');
-        svg.remove();
+        const comp = select('#app')
+        const svg = select('#preload')
+        svg.remove()
 
-        comp.prepend(app.view);
+        comp.prepend(app.view)
 
-        const loadScene = LoadScene.create(app);
-        app.stage.addChild(loadScene);
-        app.resize();
+        const loadScene = LoadScene.create(app)
+        app.stage.addChild(loadScene)
+        app.resize()
 
-        enableFullScreenMask(app);
+        enableFullscreen()
 
         //  Import Main Scene
         const [Interface, MainScene, initData] = await Promise.all([
@@ -45,42 +64,41 @@ async function main() {
             import('./game/scenes/main'),
 
             app.service.init(),
-        ]);
+        ])
 
-        app.user.id = initData['player']['id'];
-        app.user.cash = initData['player']['money'];
+        app.user.id = initData['player']['id']
+        app.user.cash = initData['player']['money']
 
-        app.user.betOptions = initData['betrate']['betrate'];
-        app.user.betOptionsHotKey = initData['betrate']['betratelinkindex'];
-        app.user.bet = initData['betrate']['betratedefaultindex'];
+        app.user.betOptions = initData['betrate']['betrate']
+        app.user.betOptionsHotKey = initData['betrate']['betratelinkindex']
+        app.user.bet = initData['betrate']['betratedefaultindex']
 
-        await app.resource.load(Interface, MainScene);
+        await app.resource.load(Interface, MainScene)
 
         const mainScene = MainScene.create(app, {
             normalTable: initData['reel']['normalreel'],
             freeGameTable: initData['reel']['respinreel'],
-        });
-        const ui = Interface.create(app);
+        })
+        const ui = Interface.create(app)
 
-        mainScene.addChild(ui);
+        mainScene.addChild(ui)
 
-        app.stage.addChildAt(mainScene, 0);
+        app.stage.addChildAt(mainScene, 0)
 
-        select('script').forEach((el) => el.remove());
+        select('script').forEach((el) => el.remove())
 
-        app.resize();
+        app.resize()
+        app.emit('Idle')
 
-        app.emit('Idle');
-
-        document.title = app.translate('title');
+        document.title = app.translate('title')
         //
     } catch (error) {
-        console.error(error);
+        console.error(error)
 
-        const msg = {title: error.message};
+        const msg = {title: error.message}
 
-        app.alert.error(msg);
+        app.alert.error(msg)
     }
 }
 
-main();
+main()
