@@ -1,31 +1,40 @@
-import './styles/App.scss';
+import './styles/App.scss'
 
-import {Application} from 'pixi.js';
-import EventEmitter from 'eventemitter3';
-import {Sound} from './modules/sound';
-import {Resource} from './modules/resource';
-import {resize} from './modules/screen';
-import {User} from './user';
+import {Application} from 'pixi.js'
+import EventEmitter from 'eventemitter3'
+import {Sound} from './modules/sound'
+import {Resource} from './modules/resource'
+import {User} from './user'
+import {isMobile} from './modules/device'
 
-const {defineProperties, assign, freeze} = Object;
+const {defineProperties, assign, freeze} = Object
+
+function getScale () {
+    return isMobile() ? 0.5 : 1
+}
+
+function getSize () {
+    return {
+        width: 1920 * getScale(),
+        height: 1080 * getScale(),
+    }
+}
 
 export default (function () {
     const app = new Application({
-        width: window.innerHeight * (16 / 9),
-        height: window.innerHeight,
-        antialias: true,
-    });
+        ...getSize(),
+    })
 
     //  Resource
-    const resource = Resource(app);
-    const user = User(app);
+    const resource = Resource(app)
+    const user = User(app)
     //  Sound
-    const sound = Sound(app);
+    const sound = Sound(app)
 
-    let translate = undefined;
-    let service = undefined;
-    let control = undefined;
-    let alert = undefined;
+    let translate = undefined
+    let service = undefined
+    let control = undefined
+    let alert = undefined
 
     //  Modules
     defineProperties(app, {
@@ -54,36 +63,33 @@ export default (function () {
             get: () => translate,
             set: (translateFunc) => (translate = translateFunc),
         },
-    });
+    })
 
     //  EventCore
-    const eventCore = new EventEmitter();
+    const eventCore = new EventEmitter()
 
     //  Functions
     assign(app, {
         //  EventEmitter ==================
-        on(event, listener) {
-            eventCore.on(event, listener);
+        on (event, listener) {
+            eventCore.on(event, listener)
         },
-        once(event, listener) {
-            eventCore.once(event, listener);
+        once (event, listener) {
+            eventCore.once(event, listener)
         },
-        off(event, listener) {
-            eventCore.off(event, listener);
+        off (event, listener) {
+            eventCore.off(event, listener)
         },
-        emit(event, ...args) {
-            eventCore.emit(event, ...args);
+        emit (event, ...args) {
+            eventCore.emit(event, ...args)
         },
         //  Screen Management ==================
-        resize() {
-            resize(app);
-            app.emit('resize');
+        resize () {
+            app.stage.children.forEach((scene) => {
+                scene.scale.set(getScale())
+            })
         },
-    });
+    })
 
-    //  Event Binding
-    global.addEventListener('resize', app.resize);
-    global.addEventListener('orientationchange', app.resize);
-
-    return freeze(app);
-})();
+    return freeze(app)
+})()
