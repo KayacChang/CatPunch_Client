@@ -9,21 +9,37 @@ import {isMobile} from './modules/device'
 
 const {defineProperties, assign, freeze} = Object
 
-function getScale () {
+function getQuality () {
+    return (
+        new URL(location).searchParams.get('quality') ||
+        localStorage.getItem('quality')
+    )
+}
+
+function getScale (quality) {
+    if (quality === 'high') {
+        return 1
+    }
+    if (quality === 'low') {
+        return 0.5
+    }
+
     return isMobile() ? 0.5 : 1
 }
 
-function getSize () {
+function getSize (quality) {
     return {
-        width: 1920 * getScale(),
-        height: 1080 * getScale(),
+        width: 1920 * getScale(quality),
+        height: 1080 * getScale(quality),
     }
 }
 
 export default (function () {
     const app = new Application({
-        ...getSize(),
+        ...getSize(getQuality()),
     })
+
+    localStorage.setItem('quality', getQuality())
 
     //  Resource
     const resource = Resource(app)
@@ -86,7 +102,7 @@ export default (function () {
         //  Screen Management ==================
         resize () {
             app.stage.children.forEach((scene) => {
-                scene.scale.set(getScale())
+                scene.scale.set(getScale(getQuality()))
             })
         },
     })
