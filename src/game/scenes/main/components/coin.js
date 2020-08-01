@@ -56,14 +56,13 @@ export async function playCoin (scene, {x, y}, coins) {
             easing: () => Easing.Bounce.Out,
         }).finished
 
-    anime.timeline({targets: coins}).add({
+    await anime.timeline({targets: coins}).add({
         x: scene._width / 2,
         y: 1300,
-        delay: anime.stagger(60, {easing: 'easeInCubic'}),
+        delay: 60,
         duration: 500,
         easing: 'easeInExpo',
-        complete () {
-            scene.removeChild(...coins)
-        },
-    })
+    }).finished
+
+    scene.removeChild(...coins)
 }

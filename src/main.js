@@ -77,7 +77,7 @@ async function main () {
 
         const mainScene = MainScene.create(app, {
             normalTable: initData['reel']['normalreel'],
-            freeGameTable: initData['reel']['respinreel'],
+            respinTable: initData['reel']['normalreel'],
         })
         const ui = Interface.create(app)
 
