@@ -9,12 +9,6 @@ export default function iPhoneFullScreen () {
     const icon = select('#icon')
     const mask = select('#mask')
 
-    // const img = ScrollImg()
-
-    // const mask = ScrollMask()
-
-    // document.body.append(img, mask)
-
     const scrollToTop = debounce(() => window.scrollTo({top: 0}))
 
     let holding = false

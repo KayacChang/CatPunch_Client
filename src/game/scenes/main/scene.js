@@ -1,38 +1,28 @@
-import {addPackage} from 'pixi_fairygui';
+import {addPackage} from 'pixi_fairygui'
 
-import * as data from './data';
+import * as data from './data'
 
-import {SlotMachine} from './components/slot';
-import {Neko} from './components/neko';
-import {FreeSpinIcon} from './components/freespin';
-import {EnergyBar} from './components/energy';
+import {SlotMachine} from './components/slot'
+import {Neko} from './components/neko'
+import {FreeSpinIcon} from './components/freespin'
+import {EnergyBar} from './components/energy'
 
-import {setBevel, setDropShadow, setGlow} from '../../plugin/filter';
+import {setBevel, setGlow} from '../../plugin/filter'
 
-import {play} from './func/play';
+import {play} from './func/play'
 
-function initSlotMachine(scene, reelTables) {
+function initSlotMachine (scene, reelTables) {
     const slot = SlotMachine({
         view: scene.getChildByName('SlotMachine'),
         reelTables,
         ...data,
-    });
+    })
 
-    setBevel(slot.view, {thickness: 5});
+    setBevel(slot.view, {thickness: 5})
 
-    const title = slot.view.getChildByName('Title');
+    const title = slot.view.getChildByName('Title')
 
-    setBevel(title);
-
-    slot.reels.forEach((reel) =>
-        setDropShadow(reel.view, {
-            blur: 3.2,
-            quality: 2,
-            alpha: 0.58,
-            distance: 8,
-            rotation: [45, 90, 135][reel.reelIdx],
-        }),
-    );
+    setBevel(title)
 
     const tasks = slot.view.children
         .map((target) => {
@@ -42,70 +32,68 @@ function initSlotMachine(scene, reelTables) {
                     outerStrength: 1,
                     distance: 6,
                     color: 0xfcffa3,
-                });
+                })
 
-                return whenAnimComplete(target);
+                return whenAnimComplete(target)
             } else if (target.name.includes('Effect')) {
-                return target.children.map(whenAnimComplete);
+                return target.children.map(whenAnimComplete)
             }
-            return Promise.resolve();
+            return Promise.resolve()
         })
-        .flat();
+        .flat()
 
-    Promise.all(tasks).then(() => slot.view.emit('Ready'));
+    Promise.all(tasks).then(() => slot.view.emit('Ready'))
 
-    return slot;
+    return slot
 
-    function whenAnimComplete(fx) {
-        fx.anim.gotoAndPlay(0);
+    function whenAnimComplete (fx) {
+        fx.anim.gotoAndPlay(0)
 
         return new Promise((resolve) =>
-            fx.anim.once('complete', function onComplete() {
-                fx.anim.visible = false;
-                fx.anim.off('complete', onComplete);
-                resolve();
+            fx.anim.once('complete', function onComplete () {
+                fx.anim.visible = false
+                fx.anim.off('complete', onComplete)
+                resolve()
             }),
-        );
+        )
     }
 }
 
-export function create(app, {normalTable, freeGameTable}) {
-    const create = addPackage(app, 'main');
-    const scene = create('MainScene');
+export function create (app, {normalTable, freeGameTable}) {
+    const create = addPackage(app, 'main')
+    const scene = create('MainScene')
 
-    const slot = initSlotMachine(scene, normalTable);
+    const slot = initSlotMachine(scene, normalTable)
 
-    const energy = EnergyBar(slot.view.getChildByName('EnergyBar'));
+    const energy = EnergyBar(slot.view.getChildByName('EnergyBar'))
 
-    const freeSpinIcon = FreeSpinIcon(
-        slot.view.getChildByName('Icon@freespin'),
-    );
+    const freeSpinIcon = FreeSpinIcon(slot.view.getChildByName('Icon@freespin'))
 
-    const neko = Neko(scene);
+    const neko = Neko(scene)
 
-    scene.slot = slot;
-    scene.energy = energy;
-    scene.neko = neko;
-    scene.freeSpinIcon = freeSpinIcon;
-    scene.normalTable = normalTable;
-    scene.freeGameTable = freeGameTable;
+    scene.slot = slot
+    scene.energy = energy
+    scene.neko = neko
+    scene.freeSpinIcon = freeSpinIcon
+    scene.normalTable = normalTable
+    scene.freeGameTable = freeGameTable
 
-    play(scene);
+    play(scene)
 
     slot.view.once('Ready', () => {
-        app.emit('GameReady');
+        app.emit('GameReady')
 
-        const loadScene = app.stage.getChildByName('LoadScene');
-        app.stage.removeChild(loadScene);
-    });
+        const loadScene = app.stage.getChildByName('LoadScene')
+        app.stage.removeChild(loadScene)
+    })
 
     app.alert
         .request({title: app.translate(`common:message.audio`)})
         .then(({value}) => {
-            app.sound.mute(!value);
+            app.sound.mute(!value)
 
-            app.sound.play('mainBGM');
-        });
+            app.sound.play('mainBGM')
+        })
 
-    return scene;
+    return scene
 }

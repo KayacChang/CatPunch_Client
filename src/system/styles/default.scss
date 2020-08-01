@@ -2,21 +2,18 @@
 @import './reset';
 
 //  Variables ======================================
-$full: 100%;
-
 $black: #010101;
 
 //  Prototype =====================================
 @mixin full-size {
-    width: $full;
-    height: $full;
+    width: 100vw;
+    height: 100vh;
 }
 
 //  Function =====================================
 .hidden {
     opacity: 0;
     visibility: hidden;
-    //display: none;
     pointer-events: none;
 }
 
@@ -57,4 +54,5 @@ body {
     @include full-size;
 
     background: $black;
+    overflow: hidden;
 }
