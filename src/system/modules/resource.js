@@ -84,6 +84,7 @@ export function Resource(app) {
 
         resource.data = new Howl({
             ...task,
+            html5: true,
             onload,
             onloaderror,
         });

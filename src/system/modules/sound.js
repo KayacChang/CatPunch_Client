@@ -10,8 +10,8 @@ export function Sound({loader}) {
 
     function play(name, rate = 1) {
         const sound = loader.resources[name].data;
-        sound.play();
 
+        sound.play();
         sound.rate = rate;
 
         return sound;
@@ -43,25 +43,28 @@ export function Sound({loader}) {
 
     function getBy(predicate) {
         return values(loader.resources)
-            .filter((res) =>
-                res.metadata && res.metadata.type === 'sound')
+            .filter((res) => res.metadata && res.metadata.type === 'sound')
             .filter(predicate);
     }
 
-    document
-        .addEventListener('visibilitychange', () => {
-            return mute(document.hidden);
-        });
+    document.addEventListener('visibilitychange', () => {
+        return mute(document.hidden);
+    });
 
     return {
-        play, mute, volume, getBy, stop,
+        play,
+        mute,
+        volume,
+        getBy,
+        stop,
 
         get effects() {
             return soundType.effects;
         },
         set effects(flag) {
-            getBy(({metadata}) => metadata.subType === 'effects')
-                .forEach(({data}) => data.mute(!flag));
+            getBy(
+                ({metadata}) => metadata.subType === 'effects',
+            ).forEach(({data}) => data.mute(!flag));
 
             soundType.effects = flag;
         },
@@ -70,8 +73,9 @@ export function Sound({loader}) {
             return soundType.ambience;
         },
         set ambience(flag) {
-            getBy(({metadata}) => metadata.subType === 'ambience')
-                .forEach(({data}) => data.mute(!flag));
+            getBy(
+                ({metadata}) => metadata.subType === 'ambience',
+            ).forEach(({data}) => data.mute(!flag));
 
             soundType.ambience = flag;
         },
